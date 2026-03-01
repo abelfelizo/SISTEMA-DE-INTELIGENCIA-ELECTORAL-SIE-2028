@@ -1,0 +1,298 @@
+{
+  "meta": {
+    "source": "Detalle de Ganado y No Ganado Nivel Diputado 2024 (Excel)",
+    "territorial_total": 178,
+    "exterior_total": 7,
+    "nacionales_total": 5,
+    "total_diputados": 190
+  },
+  "territorial": [
+    {
+      "provincia_id": 1,
+      "provincia": "Distrito Nacional",
+      "circ": 1,
+      "seats": 6
+    },
+    {
+      "provincia_id": 1,
+      "provincia": "Distrito Nacional",
+      "circ": 2,
+      "seats": 5
+    },
+    {
+      "provincia_id": 1,
+      "provincia": "Distrito Nacional",
+      "circ": 3,
+      "seats": 7
+    },
+    {
+      "provincia_id": 2,
+      "provincia": "La Altagracia",
+      "circ": 0,
+      "seats": 5
+    },
+    {
+      "provincia_id": 3,
+      "provincia": "Azua",
+      "circ": 0,
+      "seats": 4
+    },
+    {
+      "provincia_id": 4,
+      "provincia": "Bahoruco",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 5,
+      "provincia": "Barahona",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 6,
+      "provincia": "Dajabon",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 7,
+      "provincia": "Duarte",
+      "circ": 0,
+      "seats": 5
+    },
+    {
+      "provincia_id": 8,
+      "provincia": "El Seibo",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 9,
+      "provincia": "Elias Piña",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 10,
+      "provincia": "Espaillat",
+      "circ": 0,
+      "seats": 4
+    },
+    {
+      "provincia_id": 11,
+      "provincia": "Hato Mayor",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 12,
+      "provincia": "Independencia",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 13,
+      "provincia": "La Romana",
+      "circ": 0,
+      "seats": 4
+    },
+    {
+      "provincia_id": 14,
+      "provincia": "La Vega",
+      "circ": 1,
+      "seats": 5
+    },
+    {
+      "provincia_id": 14,
+      "provincia": "La Vega",
+      "circ": 2,
+      "seats": 2
+    },
+    {
+      "provincia_id": 15,
+      "provincia": "Maria Trinidad Sanchez",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 16,
+      "provincia": "Monseñor Nouel",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 17,
+      "provincia": "Monte Cristi",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 18,
+      "provincia": "Monte Plata",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 19,
+      "provincia": "Pedernales",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 20,
+      "provincia": "Peravia",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 21,
+      "provincia": "Puerto Plata",
+      "circ": 1,
+      "seats": 4
+    },
+    {
+      "provincia_id": 21,
+      "provincia": "Puerto Plata",
+      "circ": 2,
+      "seats": 2
+    },
+    {
+      "provincia_id": 22,
+      "provincia": "Hermanas Mirabal",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 23,
+      "provincia": "Samana",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 24,
+      "provincia": "San Cristobal",
+      "circ": 1,
+      "seats": 4
+    },
+    {
+      "provincia_id": 24,
+      "provincia": "San Cristobal",
+      "circ": 2,
+      "seats": 3
+    },
+    {
+      "provincia_id": 24,
+      "provincia": "San Cristobal",
+      "circ": 3,
+      "seats": 3
+    },
+    {
+      "provincia_id": 25,
+      "provincia": "San Juan",
+      "circ": 0,
+      "seats": 4
+    },
+    {
+      "provincia_id": 26,
+      "provincia": "San Pedro De Macoris",
+      "circ": 0,
+      "seats": 5
+    },
+    {
+      "provincia_id": 27,
+      "provincia": "Sanchez Ramirez",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 28,
+      "provincia": "Santiago",
+      "circ": 1,
+      "seats": 8
+    },
+    {
+      "provincia_id": 28,
+      "provincia": "Santiago",
+      "circ": 2,
+      "seats": 4
+    },
+    {
+      "provincia_id": 28,
+      "provincia": "Santiago",
+      "circ": 3,
+      "seats": 6
+    },
+    {
+      "provincia_id": 29,
+      "provincia": "Santiago Rodriguez",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 30,
+      "provincia": "Valverde",
+      "circ": 0,
+      "seats": 3
+    },
+    {
+      "provincia_id": 31,
+      "provincia": "San Jose De Ocoa",
+      "circ": 0,
+      "seats": 2
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 1,
+      "seats": 6
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 2,
+      "seats": 4
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 3,
+      "seats": 11
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 4,
+      "seats": 7
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 5,
+      "seats": 6
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 6,
+      "seats": 9
+    }
+  ],
+  "exterior": [
+    {
+      "circ_exterior": 1,
+      "seats": 3
+    },
+    {
+      "circ_exterior": 2,
+      "seats": 2
+    },
+    {
+      "circ_exterior": 3,
+      "seats": 2
+    }
+  ],
+  "nacionales": {
+    "seats": 5
+  }
+}

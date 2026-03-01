@@ -1,0 +1,26 @@
+{
+  "type": "seats",
+  "year": 2024,
+  "rules": {
+    "dip_total_expected": 190,
+    "sen_total_expected": 32
+  },
+  "entries": [
+    {
+      "prov_code": "DO-01",
+      "sen": 1,
+      "dip": null,
+      "circunscripciones": null
+    },
+    {
+      "prov_code": "DO-32",
+      "sen": 1,
+      "dip": null,
+      "circunscripciones": null
+    }
+  ],
+  "notes": [
+    "Completar dip por provincia/circunscripción cuando exista fuente oficial.",
+    "El sistema debe validar que suma dip == 190."
+  ]
+}

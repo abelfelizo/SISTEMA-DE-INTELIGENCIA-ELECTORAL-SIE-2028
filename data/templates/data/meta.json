@@ -1,0 +1,9 @@
+{
+  "dataset_name": "SIE_RD_2028_local_json",
+  "dataset_version": "0.1.0",
+  "generated_on": "2026-03-01",
+  "notes": [
+    "Base inicial: estructura lista; datos reales se completan posteriormente.",
+    "Padrón y edad: solo 2024 por ahora. Distribución etaria se integrará el próximo año."
+  ]
+}

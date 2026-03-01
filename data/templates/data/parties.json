@@ -1,0 +1,33 @@
+{
+  "party_target": "FP",
+  "parties": [
+    {
+      "id": "FP",
+      "name": "Fuerza del Pueblo",
+      "color": "#22c55e",
+      "family": "oposicion"
+    },
+    {
+      "id": "PRM",
+      "name": "PRM",
+      "color": "#3b82f6",
+      "family": "oficialismo"
+    },
+    {
+      "id": "PLD",
+      "name": "PLD",
+      "color": "#f59e0b",
+      "family": "oposicion"
+    },
+    {
+      "id": "OTR",
+      "name": "Otros",
+      "color": "#94a3b8",
+      "family": "otros"
+    }
+  ],
+  "rules": {
+    "no_grouped_alliances": true,
+    "alliances_per_party": true
+  }
+}

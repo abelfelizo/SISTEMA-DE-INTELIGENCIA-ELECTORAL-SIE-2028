@@ -1,0 +1,16 @@
+{
+  "type": "padron_and_turnout",
+  "year": 2024,
+  "entries": [
+    {
+      "prov_code": "DO-01",
+      "registered_voters": null,
+      "turnout_pct": null,
+      "abstention_pct": null,
+      "valid_votes_total": null
+    }
+  ],
+  "notes": [
+    "Si turnout_pct es null, se calcula como valid_votes_total / registered_voters * 100."
+  ]
+}

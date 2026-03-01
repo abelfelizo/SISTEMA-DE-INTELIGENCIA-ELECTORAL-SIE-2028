@@ -1,0 +1,134 @@
+{
+  "type": "province_catalog",
+  "key": "prov_code",
+  "provinces": [
+    {
+      "prov_code": "DO-01",
+      "name": "Distrito Nacional"
+    },
+    {
+      "prov_code": "DO-02",
+      "name": "Azua"
+    },
+    {
+      "prov_code": "DO-03",
+      "name": "Baoruco"
+    },
+    {
+      "prov_code": "DO-04",
+      "name": "Barahona"
+    },
+    {
+      "prov_code": "DO-05",
+      "name": "Dajabón"
+    },
+    {
+      "prov_code": "DO-06",
+      "name": "Duarte"
+    },
+    {
+      "prov_code": "DO-07",
+      "name": "Elías Piña"
+    },
+    {
+      "prov_code": "DO-08",
+      "name": "El Seibo"
+    },
+    {
+      "prov_code": "DO-09",
+      "name": "Espaillat"
+    },
+    {
+      "prov_code": "DO-10",
+      "name": "Independencia"
+    },
+    {
+      "prov_code": "DO-11",
+      "name": "La Altagracia"
+    },
+    {
+      "prov_code": "DO-12",
+      "name": "La Romana"
+    },
+    {
+      "prov_code": "DO-13",
+      "name": "La Vega"
+    },
+    {
+      "prov_code": "DO-14",
+      "name": "María Trinidad Sánchez"
+    },
+    {
+      "prov_code": "DO-15",
+      "name": "Monte Cristi"
+    },
+    {
+      "prov_code": "DO-16",
+      "name": "Pedernales"
+    },
+    {
+      "prov_code": "DO-17",
+      "name": "Peravia"
+    },
+    {
+      "prov_code": "DO-18",
+      "name": "Puerto Plata"
+    },
+    {
+      "prov_code": "DO-19",
+      "name": "Hermanas Mirabal"
+    },
+    {
+      "prov_code": "DO-20",
+      "name": "Samaná"
+    },
+    {
+      "prov_code": "DO-21",
+      "name": "San Cristóbal"
+    },
+    {
+      "prov_code": "DO-22",
+      "name": "San Juan"
+    },
+    {
+      "prov_code": "DO-23",
+      "name": "San Pedro de Macorís"
+    },
+    {
+      "prov_code": "DO-24",
+      "name": "Sánchez Ramírez"
+    },
+    {
+      "prov_code": "DO-25",
+      "name": "Santiago"
+    },
+    {
+      "prov_code": "DO-26",
+      "name": "Santiago Rodríguez"
+    },
+    {
+      "prov_code": "DO-27",
+      "name": "Valverde"
+    },
+    {
+      "prov_code": "DO-28",
+      "name": "Monseñor Nouel"
+    },
+    {
+      "prov_code": "DO-29",
+      "name": "Monte Plata"
+    },
+    {
+      "prov_code": "DO-30",
+      "name": "Hato Mayor"
+    },
+    {
+      "prov_code": "DO-31",
+      "name": "San José de Ocoa"
+    },
+    {
+      "prov_code": "DO-32",
+      "name": "Santo Domingo"
+    }
+  ]
+}

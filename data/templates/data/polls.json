@@ -1,0 +1,32 @@
+{
+  "type": "polls_registry",
+  "target_party": "FP",
+  "polls": [
+    {
+      "poll_id": "POLL_YYYYMMDD_FIRMA",
+      "date": "2026-02-28",
+      "firm": "EJEMPLO",
+      "sample_size": null,
+      "methodology": null,
+      "geography": "national",
+      "party_sympathy": {
+        "FP": null,
+        "PRM": null,
+        "PLD": null,
+        "OTR": null
+      },
+      "presidential_intent": {
+        "FP": null,
+        "PRM": null,
+        "PLD": null,
+        "OTR": null
+      },
+      "moe_pct": null,
+      "notes": ""
+    }
+  ],
+  "weighting": {
+    "lambda_default": 0.03,
+    "credibility_default": 1.0
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "fecha": "2027-02-15",
+    "encuestadora": "Ejemplo",
+    "nivel": "presidencial",
+    "tipo": "intencion_voto",
+    "muestra": 1200,
+    "margen_error": 2.8,
+    "credibilidad": 0.9,
+    "resultados": {
+      "FP": 40,
+      "PRM": 43,
+      "PLD": 10,
+      "BIS": 2,
+      "PRD": 1,
+      "DXC": 1,
+      "OTROS": 3
+    }
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "type": "election_results",
+  "year": 2020,
+  "levels": [
+    "pres",
+    "sen",
+    "dip",
+    "alc"
+  ],
+  "entries": [
+    {
+      "prov_code": "DO-01",
+      "level": "pres",
+      "valid_votes_total": null,
+      "shares": {
+        "FP": null,
+        "PRM": null,
+        "PLD": null,
+        "OTR": null
+      }
+    }
+  ],
+  "notes": [
+    "shares son porcentajes (0-100) de votos válidos por partido.",
+    "La suma de shares por entry debe ser 100 (tolerancia +/-0.05)."
+  ]
+}

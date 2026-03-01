@@ -1,0 +1,25 @@
+{
+  "type": "svg_id_to_prov_code",
+  "preferred_key": "prov_code",
+  "mappings": [
+    {
+      "svg_id": "DO-01",
+      "prov_code": "DO-01"
+    },
+    {
+      "svg_id": "Distrito_Nacional",
+      "prov_code": "DO-01"
+    },
+    {
+      "svg_id": "DO-32",
+      "prov_code": "DO-32"
+    },
+    {
+      "svg_id": "Santo_Domingo",
+      "prov_code": "DO-32"
+    }
+  ],
+  "notes": [
+    "Completar al leer el SVG real: todo path con id debe mapearse a un prov_code."
+  ]
+}
