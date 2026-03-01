@@ -315,8 +315,8 @@ export async function renderSimulador(state){
 
   function selectedAllies(){
     return Array.from(allySel.selectedOptions).map(o=>o.value);
-}
-  
+  }
+
   function applyMovilizacionVotes(votes, provId){
     const m = state.movilizacion;
     if(!m || !m.byProv) return votes;
@@ -341,8 +341,6 @@ export async function renderSimulador(state){
     }
     return out;
   }
-
-}
 
   function simulateOne(){
     const prov = provSel.value;
