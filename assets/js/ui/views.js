@@ -30,8 +30,8 @@ export async function renderDashboard(state){
   `;
 
   const status = document.getElementById("data-status");
-  const polls = await loadPolls("/data/polls.json");
-  const curules = await fetch("/data/curules_2024.json",{cache:"no-store"}).then(r=>r.json()).catch(()=>null);
+  const polls = await loadPolls("./data/polls.json");
+  const curules = await fetch("./data/curules_2024.json",{cache:"no-store"}).then(r=>r.json()).catch(()=>null);
 
   const lines = [];
   lines.push(curules ? `<div class="pill good">Curules 2024 cargadas: ${curules.meta.total_diputados} (178 territorial + 7 exterior + 5 nacionales)</div>` :
@@ -84,7 +84,7 @@ export async function renderMapa(state, mapApi){
   const panel = document.getElementById("map-panel");
 
   function loadMode(mode){
-    const url = mode==="reg" ? "/assets/maps/regiones.svg" : "/assets/maps/provincias.svg";
+    const url = mode==="reg" ? "./assets/maps/regiones.svg" : "./assets/maps/provincias.svg";
     mapApi.load(url, (id)=>{
       panel.innerHTML = `<div class="pill">ID seleccionado: <b>${id}</b></div><br/><span class="small">Enlace a datos por provincia se activa cuando carguemos padrones y resultados por demarcación.</span>`;
     });
@@ -103,8 +103,8 @@ export async function renderEncuestas(state){
         Este módulo NO requiere codificar. Tú editas <b>data/encuestas_master.xlsx</b> y cada vez exportas a <b>data/polls.json</b> y lo subes al repo.
       </p>
       <div class="row">
-        <a class="pill" href="/data/encuestas_master.xlsx" download>Descargar plantilla Excel</a>
-        <a class="pill" href="/data/polls.json" download>Descargar polls.json actual</a>
+        <a class="pill" href="./data/encuestas_master.xlsx" download>Descargar plantilla Excel</a>
+        <a class="pill" href="./data/polls.json" download>Descargar polls.json actual</a>
       </div>
       <hr/>
       <div id="polls-status" class="small">Cargando…</div>
@@ -116,7 +116,7 @@ export async function renderEncuestas(state){
 
   const status = document.getElementById("polls-status");
   const table = document.getElementById("polls-table");
-  const res = await loadPolls("/data/polls.json");
+  const res = await loadPolls("./data/polls.json");
   if(!res.ok){
     status.innerHTML = `<div class="pill warn">${res.error}</div><br/>Fallback: base 2024 sin encuestas.`;
     table.innerHTML = "";
@@ -148,7 +148,7 @@ export async function renderEncuestas(state){
 
 export async function renderSimulador(state){
   const el = document.getElementById("view");
-  const curules = await fetch("/data/curules_2024.json",{cache:"no-store"}).then(r=>r.json()).catch(()=>null);
+  const curules = await fetch("./data/curules_2024.json",{cache:"no-store"}).then(r=>r.json()).catch(()=>null);
   const territorial = curules?.territorial || [];
   const provList = [...new Set(territorial.map(x=>x.provincia))].sort((a,b)=>a.localeCompare(b));
   el.innerHTML = `
