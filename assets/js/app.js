@@ -33,7 +33,7 @@ function setActive(routeId){
   });
   const r = routes.find(x=>x.id===routeId) || routes[0];
   history.replaceState({}, "", "#"+r.id);
-  Promise.resolve(r.render()).catch(e=>toast("Error: "+e.message));
+  r.render().catch(e=>toast("Error: "+e.message));
 }
 
 function boot(){

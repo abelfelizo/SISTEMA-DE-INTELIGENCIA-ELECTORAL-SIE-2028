@@ -1,36 +1,57 @@
-
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>SIE 2028</title>
+  <title>SIE 2028 · Sistema Inteligente Electoral</title>
   <base href="./">
   <link rel="stylesheet" href="./assets/css/styles.css"/>
 </head>
 <body>
+
   <div class="topbar">
     <div class="wrap">
-      <div class="row" style="justify-content:space-between">
+      <div class="topbar-inner">
         <div class="brand">
-          <span style="width:12px;height:12px;border-radius:4px;background:var(--accent);display:inline-block"></span>
+          <div class="brand-icon">⬡</div>
           <span>SIE 2028</span>
-          <span class="badge">SPA · JSON local · GitHub Ready</span>
+          <span class="badge">BETA</span>
         </div>
-        <div class="row">
+        <div class="topbar-right">
           <a class="badge" href="./docs/README.html" target="_blank">Guía</a>
           <span class="badge">Base: 2024</span>
+          <button class="theme-toggle" id="theme-toggle" title="Cambiar tema">🌙</button>
         </div>
       </div>
-      <div class="nav" id="nav"></div>
+      <nav class="nav" id="nav" role="navigation" aria-label="Navegación principal"></nav>
     </div>
   </div>
 
-  <div class="wrap" style="padding-top:14px">
+  <div class="wrap" style="padding-top:20px">
     <div id="view"></div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function(){
+      const saved = localStorage.getItem('sie-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+      const icons = { dark: '🌙', light: '☀️' };
+      document.addEventListener('DOMContentLoaded', function(){
+        const btn = document.getElementById('theme-toggle');
+        if(!btn) return;
+        btn.textContent = icons[saved] || '🌙';
+        btn.addEventListener('click', function(){
+          const current = document.documentElement.getAttribute('data-theme');
+          const next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('sie-theme', next);
+          btn.textContent = icons[next];
+        });
+      });
+    })();
+  </script>
 
   <script type="module" src="./assets/js/app.js"></script>
 </body>
