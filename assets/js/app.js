@@ -1,6 +1,6 @@
 
 import {initMap} from "./ui/map.js";
-import {renderDashboard, renderMapa, renderEncuestas, renderSimulador, renderPlaceholder} from "./ui/views.js";
+import {renderDashboard, renderMapa, renderEncuestas, renderSimulador, renderPotencial, renderMovilizacion, renderObjetivo} from "./ui/views.js";
 import {toast} from "./ui/toast.js";
 
 const state = {
@@ -21,9 +21,9 @@ const routes = [
   {id:"dashboard", label:"Dashboard", render: ()=>renderDashboard(state)},
   {id:"mapa", label:"Mapa", render: ()=>renderMapa(state, mapApi)},
   {id:"simulador", label:"Simulador", render: ()=>renderSimulador(state)},
-  {id:"potencial", label:"Potencial", render: ()=>renderPlaceholder("Clasificador de Potencial", "Se integrará después de cargar padrón y resultados 2020–2024 por demarcación. La UI se mantiene estable.")},
-  {id:"movilizacion", label:"Movilización", render: ()=>renderPlaceholder("Analizador de Abstención / Movilización", "Se integrará con escenarios (+3/+5/+7) y sensibilidad territorial. La UI se mantiene estable.")},
-  {id:"objetivo", label:"Objetivo", render: ()=>renderPlaceholder("Módulo Objetivo (Simulación Inversa)", "Se integrará para calcular crecimiento/alianzas necesarias por nivel electoral. La UI se mantiene estable.")},
+  {id:"potencial", label:"Potencial", render: ()=>renderPotencial(state)},
+  {id:"movilizacion", label:"Movilización", render: ()=>renderMovilizacion(state)},
+  {id:"objetivo", label:"Objetivo", render: ()=>renderObjetivo(state)},
   {id:"encuestas", label:"Encuestas", render: ()=>renderEncuestas(state)},
 ];
 

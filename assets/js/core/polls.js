@@ -1,9 +1,10 @@
 
 import {safeJsonParse} from "./utils.js";
 
-export async function loadPolls(url="./data/polls.json"){
+export async function loadPolls(url=null){
   try{
-    const res = await fetch(url, {cache:"no-store"});
+    const u = url ? url : new URL("../../../data/polls.json", import.meta.url);
+    const res = await fetch(u, {cache:"no-store"});
     if(!res.ok) throw new Error("No se pudo cargar polls.json ("+res.status+")");
     const text = await res.text();
     const parsed = safeJsonParse(text);

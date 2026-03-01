@@ -1,0 +1,16 @@
+{
+  "totales": {
+    "inscritos_interior": 7281764,
+    "inscritos_exterior": 863784,
+    "inscritos_total": 8145548,
+    "emitidos_pres_interior": 4258216,
+    "emitidos_pres_exterior": 167634,
+    "emitidos_pres_penitenciario": 3229,
+    "emitidos_pres_total": 4429079
+  },
+  "validaciones": {
+    "inscritos_total_coincide": true,
+    "emitidos_total_coincide": true,
+    "participacion_nacional_pres": 0.543742
+  }
+}

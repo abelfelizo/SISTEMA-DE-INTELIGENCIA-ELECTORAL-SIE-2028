@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "fuente_inscritos": "DE 2024.aspx.pdf (Diputado Exterior 19 Mayo 2024)",
+    "fuente_emitidos": "Resultado Presidencial por colegios 2024.xlsx (COD_CIRC)",
+    "nivel": "exterior_circ"
+  },
+  "rows": [
+    {
+      "circ": 1,
+      "inscritos": 549553,
+      "emitidos_pres": 99140,
+      "participacion_pres": 0.180401,
+      "abstencion_pres": 450413
+    },
+    {
+      "circ": 2,
+      "inscritos": 164795,
+      "emitidos_pres": 31415,
+      "participacion_pres": 0.190631,
+      "abstencion_pres": 133380
+    },
+    {
+      "circ": 3,
+      "inscritos": 149436,
+      "emitidos_pres": 37079,
+      "participacion_pres": 0.248126,
+      "abstencion_pres": 112357
+    }
+  ]
+}

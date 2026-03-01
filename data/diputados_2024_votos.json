@@ -1,0 +1,734 @@
+{
+  "meta": {
+    "level": "diputados",
+    "year": 2024,
+    "source": "Detalle de Ganado y No Ganado Nivel Diputado con Votos Obtenidos 2024.xlsx",
+    "note": "Votos agregados por provincia+circ+partido usando columna IdEntidad.1 como sigla de partido.",
+    "parties": [
+      "PRM",
+      "FP",
+      "PLD",
+      "PRD",
+      "F.AMPLIO",
+      "BIS",
+      "PRSC",
+      "GENS",
+      "OD",
+      "PP",
+      "PPG",
+      "PED",
+      "PHD",
+      "PRSD",
+      "PPC",
+      "ALPAIS",
+      "PPT",
+      "PSC",
+      "PQDC",
+      "MODA",
+      "PCR"
+    ],
+    "total_votes": 3624769,
+    "totals_by_party": {
+      "PRM": 2211889,
+      "FP": 642329,
+      "PLD": 573019,
+      "PRD": 61778,
+      "F.AMPLIO": 22326,
+      "BIS": 19158,
+      "PRSC": 19039,
+      "GENS": 15655,
+      "OD": 12229,
+      "PP": 9324,
+      "PPG": 9006,
+      "PED": 8866,
+      "PHD": 4642,
+      "PRSD": 3919,
+      "PPC": 3649,
+      "ALPAIS": 3467,
+      "PPT": 3156,
+      "PSC": 732,
+      "PQDC": 355,
+      "MODA": 217,
+      "PCR": 14
+    }
+  },
+  "districts": [
+    {
+      "provincia_id": 1,
+      "provincia": "Distrito Nacional",
+      "circ": 1,
+      "votes": {
+        "F.AMPLIO": 354,
+        "FP": 23692,
+        "GENS": 4296,
+        "OD": 11914,
+        "PED": 506,
+        "PLD": 18470,
+        "PP": 600,
+        "PPT": 212,
+        "PRM": 71478,
+        "PRSC": 2906
+      }
+    },
+    {
+      "provincia_id": 1,
+      "provincia": "Distrito Nacional",
+      "circ": 2,
+      "votes": {
+        "BIS": 2648,
+        "F.AMPLIO": 227,
+        "FP": 20248,
+        "GENS": 668,
+        "PED": 403,
+        "PLD": 12722,
+        "PP": 858,
+        "PPT": 130,
+        "PRM": 59468,
+        "PRSC": 858
+      }
+    },
+    {
+      "provincia_id": 1,
+      "provincia": "Distrito Nacional",
+      "circ": 3,
+      "votes": {
+        "BIS": 1848,
+        "F.AMPLIO": 326,
+        "FP": 24199,
+        "GENS": 833,
+        "PED": 304,
+        "PLD": 20551,
+        "PP": 921,
+        "PPT": 222,
+        "PRM": 74360,
+        "PRSC": 1778
+      }
+    },
+    {
+      "provincia_id": 2,
+      "provincia": "La Altagracia",
+      "circ": 0,
+      "votes": {
+        "ALPAIS": 959,
+        "F.AMPLIO": 252,
+        "FP": 14917,
+        "GENS": 184,
+        "PED": 523,
+        "PLD": 11159,
+        "PP": 946,
+        "PPG": 759,
+        "PPT": 42,
+        "PRD": 839,
+        "PRM": 57372
+      }
+    },
+    {
+      "provincia_id": 3,
+      "provincia": "Azua",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 355,
+        "FP": 19283,
+        "PED": 201,
+        "PLD": 15905,
+        "PPG": 1581,
+        "PPT": 101,
+        "PRD": 1825,
+        "PRM": 65636
+      }
+    },
+    {
+      "provincia_id": 4,
+      "provincia": "Bahoruco",
+      "circ": 0,
+      "votes": {
+        "FP": 4504,
+        "GENS": 33,
+        "PLD": 8134,
+        "PRD": 320,
+        "PRM": 31321,
+        "PRSD": 3919
+      }
+    },
+    {
+      "provincia_id": 5,
+      "provincia": "Barahona",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 231,
+        "FP": 16510,
+        "GENS": 118,
+        "PED": 139,
+        "PLD": 13327,
+        "PPT": 113,
+        "PRD": 1416,
+        "PRM": 51328
+      }
+    },
+    {
+      "provincia_id": 6,
+      "provincia": "Dajabon",
+      "circ": 0,
+      "votes": {
+        "ALPAIS": 98,
+        "FP": 1698,
+        "PLD": 8928,
+        "PRD": 324,
+        "PRM": 23415
+      }
+    },
+    {
+      "provincia_id": 7,
+      "provincia": "Duarte",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 291,
+        "FP": 15412,
+        "GENS": 145,
+        "PED": 216,
+        "PLD": 14977,
+        "PPT": 89,
+        "PRM": 80021
+      }
+    },
+    {
+      "provincia_id": 8,
+      "provincia": "El Seibo",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 21,
+        "FP": 4926,
+        "PED": 89,
+        "PLD": 5543,
+        "PPT": 45,
+        "PRD": 791,
+        "PRM": 24645
+      }
+    },
+    {
+      "provincia_id": 9,
+      "provincia": "Elias Piña",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 15,
+        "FP": 4399,
+        "GENS": 57,
+        "PED": 19,
+        "PLD": 6419,
+        "PPG": 19,
+        "PPT": 7,
+        "PRM": 16199
+      }
+    },
+    {
+      "provincia_id": 10,
+      "provincia": "Espaillat",
+      "circ": 0,
+      "votes": {
+        "BIS": 339,
+        "F.AMPLIO": 158,
+        "FP": 11299,
+        "GENS": 560,
+        "PLD": 14298,
+        "PPT": 94,
+        "PRD": 1227,
+        "PRM": 70918
+      }
+    },
+    {
+      "provincia_id": 11,
+      "provincia": "Hato Mayor",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 28,
+        "FP": 4005,
+        "GENS": 57,
+        "PED": 89,
+        "PLD": 4107,
+        "PRD": 2210,
+        "PRM": 33240
+      }
+    },
+    {
+      "provincia_id": 12,
+      "provincia": "Independencia",
+      "circ": 0,
+      "votes": {
+        "FP": 1487,
+        "GENS": 36,
+        "PED": 28,
+        "PLD": 5712,
+        "PPC": 3649,
+        "PRM": 15295
+      }
+    },
+    {
+      "provincia_id": 13,
+      "provincia": "La Romana",
+      "circ": 0,
+      "votes": {
+        "ALPAIS": 302,
+        "BIS": 1144,
+        "F.AMPLIO": 206,
+        "FP": 21488,
+        "GENS": 329,
+        "PED": 340,
+        "PHD": 197,
+        "PLD": 7611,
+        "PPT": 58,
+        "PQDC": 355,
+        "PRD": 5901,
+        "PRM": 43428,
+        "PRSC": 11932
+      }
+    },
+    {
+      "provincia_id": 14,
+      "provincia": "La Vega",
+      "circ": 1,
+      "votes": {
+        "BIS": 325,
+        "FP": 18505,
+        "GENS": 124,
+        "PED": 311,
+        "PHD": 1533,
+        "PLD": 16782,
+        "PPT": 113,
+        "PRD": 1426,
+        "PRM": 72338
+      }
+    },
+    {
+      "provincia_id": 14,
+      "provincia": "La Vega",
+      "circ": 2,
+      "votes": {
+        "FP": 5921,
+        "PED": 100,
+        "PHD": 225,
+        "PLD": 12198,
+        "PRD": 605,
+        "PRM": 29638
+      }
+    },
+    {
+      "provincia_id": 15,
+      "provincia": "Maria Trinidad Sanchez",
+      "circ": 0,
+      "votes": {
+        "BIS": 130,
+        "FP": 2623,
+        "GENS": 309,
+        "PED": 176,
+        "PLD": 15280,
+        "PRM": 47719
+      }
+    },
+    {
+      "provincia_id": 16,
+      "provincia": "Monseñor Nouel",
+      "circ": 0,
+      "votes": {
+        "BIS": 1072,
+        "F.AMPLIO": 44,
+        "FP": 17929,
+        "PED": 228,
+        "PLD": 7254,
+        "PPT": 57,
+        "PRM": 43925
+      }
+    },
+    {
+      "provincia_id": 17,
+      "provincia": "Monte Cristi",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 86,
+        "FP": 5247,
+        "PLD": 8337,
+        "PPT": 13,
+        "PRD": 511,
+        "PRM": 33912
+      }
+    },
+    {
+      "provincia_id": 18,
+      "provincia": "Monte Plata",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 236,
+        "FP": 19570,
+        "GENS": 195,
+        "PED": 84,
+        "PLD": 22546,
+        "PPG": 143,
+        "PPT": 63,
+        "PRM": 46913
+      }
+    },
+    {
+      "provincia_id": 19,
+      "provincia": "Pedernales",
+      "circ": 0,
+      "votes": {
+        "FP": 3482,
+        "PCR": 14,
+        "PLD": 2981,
+        "PPT": 14,
+        "PRM": 6838
+      }
+    },
+    {
+      "provincia_id": 20,
+      "provincia": "Peravia",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 365,
+        "FP": 7345,
+        "GENS": 96,
+        "OD": 137,
+        "PED": 287,
+        "PLD": 6519,
+        "PPT": 28,
+        "PRM": 60141
+      }
+    },
+    {
+      "provincia_id": 21,
+      "provincia": "Puerto Plata",
+      "circ": 1,
+      "votes": {
+        "ALPAIS": 1225,
+        "BIS": 442,
+        "F.AMPLIO": 108,
+        "FP": 13529,
+        "GENS": 92,
+        "MODA": 129,
+        "PED": 171,
+        "PLD": 14679,
+        "PPG": 732,
+        "PRM": 55133
+      }
+    },
+    {
+      "provincia_id": 21,
+      "provincia": "Puerto Plata",
+      "circ": 2,
+      "votes": {
+        "ALPAIS": 339,
+        "F.AMPLIO": 54,
+        "FP": 2920,
+        "MODA": 88,
+        "PLD": 12351,
+        "PPG": 20,
+        "PRM": 30725
+      }
+    },
+    {
+      "provincia_id": 22,
+      "provincia": "Hermanas Mirabal",
+      "circ": 0,
+      "votes": {
+        "FP": 8975,
+        "GENS": 73,
+        "PED": 88,
+        "PLD": 7067,
+        "PPT": 22,
+        "PRM": 29636
+      }
+    },
+    {
+      "provincia_id": 23,
+      "provincia": "Samana",
+      "circ": 0,
+      "votes": {
+        "ALPAIS": 544,
+        "F.AMPLIO": 39,
+        "FP": 8400,
+        "PHD": 2687,
+        "PLD": 6571,
+        "PPG": 43,
+        "PRD": 533,
+        "PRM": 25077,
+        "PRSC": 1565
+      }
+    },
+    {
+      "provincia_id": 24,
+      "provincia": "San Cristobal",
+      "circ": 1,
+      "votes": {
+        "F.AMPLIO": 360,
+        "FP": 17891,
+        "PED": 271,
+        "PLD": 23114,
+        "PPT": 70,
+        "PRM": 55061
+      }
+    },
+    {
+      "provincia_id": 24,
+      "provincia": "San Cristobal",
+      "circ": 2,
+      "votes": {
+        "BIS": 1033,
+        "F.AMPLIO": 101,
+        "FP": 9442,
+        "PLD": 24924,
+        "PRM": 47809
+      }
+    },
+    {
+      "provincia_id": 24,
+      "provincia": "San Cristobal",
+      "circ": 3,
+      "votes": {
+        "F.AMPLIO": 252,
+        "FP": 20365,
+        "GENS": 382,
+        "PLD": 8863,
+        "PPT": 53,
+        "PRM": 31123
+      }
+    },
+    {
+      "provincia_id": 25,
+      "provincia": "San Juan",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 307,
+        "FP": 26987,
+        "GENS": 1366,
+        "OD": 178,
+        "PED": 71,
+        "PLD": 17826,
+        "PPG": 77,
+        "PPT": 37,
+        "PRM": 65367
+      }
+    },
+    {
+      "provincia_id": 26,
+      "provincia": "San Pedro De Macoris",
+      "circ": 0,
+      "votes": {
+        "BIS": 909,
+        "F.AMPLIO": 293,
+        "FP": 17637,
+        "GENS": 480,
+        "PED": 297,
+        "PLD": 16476,
+        "PPG": 533,
+        "PPT": 141,
+        "PRD": 4930,
+        "PRM": 72990
+      }
+    },
+    {
+      "provincia_id": 27,
+      "provincia": "Sanchez Ramirez",
+      "circ": 0,
+      "votes": {
+        "BIS": 231,
+        "F.AMPLIO": 150,
+        "GENS": 35,
+        "PPT": 66,
+        "PRD": 23291,
+        "PRM": 53665
+      }
+    },
+    {
+      "provincia_id": 28,
+      "provincia": "Santiago",
+      "circ": 1,
+      "votes": {
+        "BIS": 495,
+        "F.AMPLIO": 328,
+        "FP": 22590,
+        "GENS": 630,
+        "PED": 588,
+        "PLD": 24797,
+        "PPT": 131,
+        "PRM": 101788,
+        "PSC": 476
+      }
+    },
+    {
+      "provincia_id": 28,
+      "provincia": "Santiago",
+      "circ": 2,
+      "votes": {
+        "BIS": 514,
+        "F.AMPLIO": 139,
+        "FP": 11385,
+        "GENS": 263,
+        "PED": 398,
+        "PLD": 11335,
+        "PPT": 79,
+        "PRM": 36691,
+        "PSC": 64
+      }
+    },
+    {
+      "provincia_id": 28,
+      "provincia": "Santiago",
+      "circ": 3,
+      "votes": {
+        "BIS": 1166,
+        "F.AMPLIO": 262,
+        "FP": 13816,
+        "GENS": 512,
+        "PED": 402,
+        "PLD": 24368,
+        "PPT": 111,
+        "PRM": 60105,
+        "PSC": 79
+      }
+    },
+    {
+      "provincia_id": 29,
+      "provincia": "Santiago Rodriguez",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 40,
+        "FP": 3629,
+        "GENS": 60,
+        "PLD": 7137,
+        "PRD": 435,
+        "PRM": 17950
+      }
+    },
+    {
+      "provincia_id": 30,
+      "provincia": "Valverde",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 104,
+        "FP": 6178,
+        "GENS": 48,
+        "PED": 164,
+        "PLD": 11122,
+        "PPT": 24,
+        "PRD": 1023,
+        "PRM": 43994
+      }
+    },
+    {
+      "provincia_id": 31,
+      "provincia": "San Jose De Ocoa",
+      "circ": 0,
+      "votes": {
+        "F.AMPLIO": 56,
+        "FP": 6410,
+        "PLD": 5938,
+        "PPT": 58,
+        "PRD": 185,
+        "PRM": 17261
+      }
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 1,
+      "votes": {
+        "BIS": 1627,
+        "F.AMPLIO": 1451,
+        "FP": 21931,
+        "GENS": 622,
+        "PLD": 16396,
+        "PP": 898,
+        "PPG": 269,
+        "PPT": 366,
+        "PRD": 1911,
+        "PRM": 50838
+      }
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 2,
+      "votes": {
+        "BIS": 657,
+        "F.AMPLIO": 1146,
+        "FP": 15199,
+        "GENS": 267,
+        "PED": 284,
+        "PLD": 7611,
+        "PP": 278,
+        "PPG": 172,
+        "PPT": 154,
+        "PRD": 1233,
+        "PRM": 34445
+      }
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 3,
+      "votes": {
+        "BIS": 3155,
+        "F.AMPLIO": 7348,
+        "FP": 39444,
+        "GENS": 967,
+        "PED": 1039,
+        "PLD": 30446,
+        "PP": 1506,
+        "PPG": 1183,
+        "PPT": 167,
+        "PRD": 3861,
+        "PRM": 100002
+      }
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 4,
+      "votes": {
+        "F.AMPLIO": 2452,
+        "FP": 28969,
+        "GENS": 920,
+        "PED": 402,
+        "PLD": 12215,
+        "PP": 780,
+        "PPT": 68,
+        "PRD": 1628,
+        "PRM": 75459,
+        "PSC": 113
+      }
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 5,
+      "votes": {
+        "F.AMPLIO": 942,
+        "FP": 26274,
+        "GENS": 343,
+        "PLD": 8973,
+        "PP": 1745,
+        "PPG": 382,
+        "PPT": 92,
+        "PRD": 1839,
+        "PRM": 63179
+      }
+    },
+    {
+      "provincia_id": 32,
+      "provincia": "Santo Domingo",
+      "circ": 6,
+      "votes": {
+        "BIS": 1423,
+        "F.AMPLIO": 3199,
+        "FP": 51669,
+        "GENS": 555,
+        "PED": 648,
+        "PLD": 21050,
+        "PP": 792,
+        "PPG": 3093,
+        "PPT": 116,
+        "PRD": 3514,
+        "PRM": 84043
+      }
+    }
+  ]
+}
