@@ -11,7 +11,7 @@ async function loadJson(url){
 }
 
 export async function loadDiputados2024(){
-  return await loadJson(new URL("../../../data/diputados_2024_votos.json", import.meta.url));
+  return await loadJson(new URL("../../../data/templates/data/results_2024.json", import.meta.url));
 }
 
 export async function loadCurules2024(){
@@ -20,11 +20,11 @@ export async function loadCurules2024(){
 
 
 export async function loadPadron2024Provincial(){
-  return await loadJson(new URL("../../../data/padron_2024_provincial.json", import.meta.url));
+  return await loadJson(new URL("../../../data/templates/data/padron_2024.json", import.meta.url));
 }
 
 export async function loadPadron2024Exterior(){
-  return await loadJson(new URL("../../../data/padron_2024_exterior.json", import.meta.url));
+  return await loadJson(new URL("../../../data/templates/data/padron_2024.json", import.meta.url));
 }
 
 export async function loadPadron2024Meta(){
@@ -32,5 +32,5 @@ export async function loadPadron2024Meta(){
 }
 
 export async function loadPres2024VotosProv(){
-  return await loadJson(new URL("../../../data/pres_2024_votos_prov.json", import.meta.url));
+  return await loadJson(new URL("../../../data/templates/data/results_2024.json", import.meta.url));
 }

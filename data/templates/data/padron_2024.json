@@ -1,16 +1,308 @@
 {
-  "type": "padron_and_turnout",
-  "year": 2024,
-  "entries": [
-    {
-      "prov_code": "DO-01",
-      "registered_voters": null,
-      "turnout_pct": null,
-      "abstention_pct": null,
-      "valid_votes_total": null
+  "mayo2024": {
+    "provincial": {
+      "meta": {
+        "fuente_inscritos": "S 2024.aspx.pdf (Senadores 19 Mayo 2024)",
+        "fuente_emitidos": "Resultado Presidencial por colegios 2024.xlsx",
+        "nivel": "provincia",
+        "nota": "Inscritos (padr\u00f3n) proviene del nivel senatorial; emitidos y votos de presidencial provienen del consolidado por colegios."
+      },
+      "rows": [
+        {
+          "provincia_id": 1,
+          "provincia": "Distrito Nacional",
+          "inscritos": 794080,
+          "emitidos_pres": 463364,
+          "participacion_pres": 0.583523,
+          "abstencion_pres": 330716
+        },
+        {
+          "provincia_id": 2,
+          "provincia": "La Altagracia",
+          "inscritos": 186886,
+          "emitidos_pres": 103607,
+          "participacion_pres": 0.554386,
+          "abstencion_pres": 83279
+        },
+        {
+          "provincia_id": 3,
+          "provincia": "Azua",
+          "inscritos": 172801,
+          "emitidos_pres": 116639,
+          "participacion_pres": 0.67499,
+          "abstencion_pres": 56162
+        },
+        {
+          "provincia_id": 4,
+          "provincia": "Bahoruco",
+          "inscritos": 76436,
+          "emitidos_pres": 52708,
+          "participacion_pres": 0.68957,
+          "abstencion_pres": 23728
+        },
+        {
+          "provincia_id": 5,
+          "provincia": "Barahona",
+          "inscritos": 135743,
+          "emitidos_pres": 90833,
+          "participacion_pres": 0.669154,
+          "abstencion_pres": 44910
+        },
+        {
+          "provincia_id": 6,
+          "provincia": "Dajabon",
+          "inscritos": 52824,
+          "emitidos_pres": 37809,
+          "participacion_pres": 0.715754,
+          "abstencion_pres": 15015
+        },
+        {
+          "provincia_id": 7,
+          "provincia": "Duarte",
+          "inscritos": 234553,
+          "emitidos_pres": 126561,
+          "participacion_pres": 0.539584,
+          "abstencion_pres": 107992
+        },
+        {
+          "provincia_id": 8,
+          "provincia": "El Seibo",
+          "inscritos": 63596,
+          "emitidos_pres": 41324,
+          "participacion_pres": 0.649789,
+          "abstencion_pres": 22272
+        },
+        {
+          "provincia_id": 9,
+          "provincia": "Elias Pi\u00f1a",
+          "inscritos": 45337,
+          "emitidos_pres": 30153,
+          "participacion_pres": 0.665086,
+          "abstencion_pres": 15184
+        },
+        {
+          "provincia_id": 10,
+          "provincia": "Espaillat",
+          "inscritos": 191403,
+          "emitidos_pres": 111401,
+          "participacion_pres": 0.582023,
+          "abstencion_pres": 80002
+        },
+        {
+          "provincia_id": 11,
+          "provincia": "Hato Mayor",
+          "inscritos": 73367,
+          "emitidos_pres": 48559,
+          "participacion_pres": 0.661864,
+          "abstencion_pres": 24808
+        },
+        {
+          "provincia_id": 12,
+          "provincia": "Independencia",
+          "inscritos": 38238,
+          "emitidos_pres": 28461,
+          "participacion_pres": 0.744312,
+          "abstencion_pres": 9777
+        },
+        {
+          "provincia_id": 13,
+          "provincia": "La Romana",
+          "inscritos": 189231,
+          "emitidos_pres": 112530,
+          "participacion_pres": 0.59467,
+          "abstencion_pres": 76701
+        },
+        {
+          "provincia_id": 14,
+          "provincia": "La Vega",
+          "inscritos": 318532,
+          "emitidos_pres": 184120,
+          "participacion_pres": 0.578027,
+          "abstencion_pres": 134412
+        },
+        {
+          "provincia_id": 15,
+          "provincia": "Maria Trinidad Sanchez",
+          "inscritos": 113091,
+          "emitidos_pres": 71295,
+          "participacion_pres": 0.630422,
+          "abstencion_pres": 41796
+        },
+        {
+          "provincia_id": 16,
+          "provincia": "Monse\u00f1or Nouel",
+          "inscritos": 144045,
+          "emitidos_pres": 79274,
+          "participacion_pres": 0.550342,
+          "abstencion_pres": 64771
+        },
+        {
+          "provincia_id": 17,
+          "provincia": "Monte Cristi",
+          "inscritos": 82552,
+          "emitidos_pres": 53103,
+          "participacion_pres": 0.643267,
+          "abstencion_pres": 29449
+        },
+        {
+          "provincia_id": 18,
+          "provincia": "Monte Plata",
+          "inscritos": 142460,
+          "emitidos_pres": 98695,
+          "participacion_pres": 0.692791,
+          "abstencion_pres": 43765
+        },
+        {
+          "provincia_id": 19,
+          "provincia": "Pedernales",
+          "inscritos": 19720,
+          "emitidos_pres": 14633,
+          "participacion_pres": 0.742039,
+          "abstencion_pres": 5087
+        },
+        {
+          "provincia_id": 20,
+          "provincia": "Peravia",
+          "inscritos": 140956,
+          "emitidos_pres": 81010,
+          "participacion_pres": 0.574718,
+          "abstencion_pres": 59946
+        },
+        {
+          "provincia_id": 21,
+          "provincia": "Puerto Plata",
+          "inscritos": 258042,
+          "emitidos_pres": 151027,
+          "participacion_pres": 0.585281,
+          "abstencion_pres": 107015
+        },
+        {
+          "provincia_id": 22,
+          "provincia": "Hermanas Mirabal",
+          "inscritos": 84835,
+          "emitidos_pres": 52101,
+          "participacion_pres": 0.614145,
+          "abstencion_pres": 32734
+        },
+        {
+          "provincia_id": 23,
+          "provincia": "Samana",
+          "inscritos": 81061,
+          "emitidos_pres": 51065,
+          "participacion_pres": 0.629958,
+          "abstencion_pres": 29996
+        },
+        {
+          "provincia_id": 24,
+          "provincia": "San Cristobal",
+          "inscritos": 441258,
+          "emitidos_pres": 283110,
+          "participacion_pres": 0.641597,
+          "abstencion_pres": 158148
+        },
+        {
+          "provincia_id": 25,
+          "provincia": "San Juan",
+          "inscritos": 192039,
+          "emitidos_pres": 128214,
+          "participacion_pres": 0.667646,
+          "abstencion_pres": 63825
+        },
+        {
+          "provincia_id": 26,
+          "provincia": "San Pedro De Macoris",
+          "inscritos": 229372,
+          "emitidos_pres": 135613,
+          "participacion_pres": 0.591236,
+          "abstencion_pres": 93759
+        },
+        {
+          "provincia_id": 27,
+          "provincia": "Sanchez Ramirez",
+          "inscritos": 126090,
+          "emitidos_pres": 82701,
+          "participacion_pres": 0.655889,
+          "abstencion_pres": 43389
+        },
+        {
+          "provincia_id": 28,
+          "provincia": "Santiago",
+          "inscritos": 785288,
+          "emitidos_pres": 374883,
+          "participacion_pres": 0.477383,
+          "abstencion_pres": 410405
+        },
+        {
+          "provincia_id": 29,
+          "provincia": "Santiago Rodriguez",
+          "inscritos": 49639,
+          "emitidos_pres": 32647,
+          "participacion_pres": 0.657689,
+          "abstencion_pres": 16992
+        },
+        {
+          "provincia_id": 30,
+          "provincia": "Valverde",
+          "inscritos": 116738,
+          "emitidos_pres": 67814,
+          "participacion_pres": 0.580908,
+          "abstencion_pres": 48924
+        },
+        {
+          "provincia_id": 31,
+          "provincia": "San Jose De Ocoa",
+          "inscritos": 52519,
+          "emitidos_pres": 34521,
+          "participacion_pres": 0.657305,
+          "abstencion_pres": 17998
+        },
+        {
+          "provincia_id": 32,
+          "provincia": "Santo Domingo",
+          "inscritos": 1649032,
+          "emitidos_pres": 918441,
+          "participacion_pres": 0.556958,
+          "abstencion_pres": 730591
+        }
+      ],
+      "totales": {
+        "inscritos_interior": 7281764,
+        "emitidos_pres_interior": 4258216
+      }
+    },
+    "exterior": {
+      "meta": {
+        "fuente_inscritos": "DE 2024.aspx.pdf (Diputado Exterior 19 Mayo 2024)",
+        "fuente_emitidos": "Resultado Presidencial por colegios 2024.xlsx (COD_CIRC)",
+        "nivel": "exterior_circ"
+      },
+      "rows": [
+        {
+          "circ": 1,
+          "inscritos": 549553,
+          "emitidos_pres": 99140,
+          "participacion_pres": 0.180401,
+          "abstencion_pres": 450413
+        },
+        {
+          "circ": 2,
+          "inscritos": 164795,
+          "emitidos_pres": 31415,
+          "participacion_pres": 0.190631,
+          "abstencion_pres": 133380
+        },
+        {
+          "circ": 3,
+          "inscritos": 149436,
+          "emitidos_pres": 37079,
+          "participacion_pres": 0.248126,
+          "abstencion_pres": 112357
+        }
+      ]
     }
-  ],
-  "notes": [
-    "Si turnout_pct es null, se calcula como valid_votes_total / registered_voters * 100."
-  ]
+  },
+  "feb2024": {},
+  "proy2028": {
+    "growth_default": 0.0763
+  }
 }
