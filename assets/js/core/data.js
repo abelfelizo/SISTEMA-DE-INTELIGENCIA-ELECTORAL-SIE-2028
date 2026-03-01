@@ -27,8 +27,37 @@ async function loadJson(url){
   return p.value;
 }
 
+// === Unified loaders (prefer /data, fallback to legacy) ===
+async function loadResults2024Unified(){
+  const p1 = new URL("../../../data/results_2024.json", import.meta.url);
+  let u = await loadJson(p1).catch(()=>null);
+  if(u) return u;
+  const p2 = new URL("../../../data/templates/data/results_2024.json", import.meta.url);
+  return await loadJson(p2);
+}
+
+async function loadPadron2024Unified(){
+  const p1 = new URL("../../../data/padron_2024_unificado.json", import.meta.url);
+  let u = await loadJson(p1).catch(()=>null);
+  if(u) return u;
+  const p2 = new URL("../../../data/templates/data/padron_2024.json", import.meta.url);
+  return await loadJson(p2);
+}
+// === /Unified loaders ===
+
+
 export async function loadDiputados2024(){
-  return await loadJson(new URL("../../../data/templates/data/results_2024.json", import.meta.url));
+  // Prefer legacy file for maximum compatibility; fallback to unified container if present.
+  const legacy = await loadJson(new URL("../../../data/diputados_2024_votos.json", import.meta.url)).catch(()=>null);
+  if(legacy && legacy.meta && legacy.districts) return legacy;
+
+  const u = await loadResults2024Unified().catch(()=>null);
+  const dip = (u && u.dip) ? u.dip : null;
+
+  if(dip && dip.meta && dip.districts) return dip;
+
+  // Last resort: throw with clear message
+  throw new Error("Diputados 2024: datos no disponibles o estructura inválida (faltan meta/districts).");
 }
 
 export async function loadCurules2024(){
@@ -37,11 +66,25 @@ export async function loadCurules2024(){
 
 
 export async function loadPadron2024Provincial(){
-  return await loadJson(new URL("../../../data/templates/data/padron_2024.json", import.meta.url));
+  // Prefer legacy file; fallback to unified.
+  const legacy = await loadJson(new URL("../../../data/padron_2024_provincial.json", import.meta.url)).catch(()=>null);
+  if(legacy) return legacy;
+
+  const u = await loadPadron2024Unified().catch(()=>null);
+  if(u && u.mayo2024 && u.mayo2024.provincial) return u.mayo2024.provincial;
+
+  throw new Error("Padrón 2024 provincial: datos no disponibles.");
 }
 
 export async function loadPadron2024Exterior(){
-  return await loadJson(new URL("../../../data/templates/data/padron_2024.json", import.meta.url));
+  // Prefer legacy file; fallback to unified.
+  const legacy = await loadJson(new URL("../../../data/padron_2024_exterior.json", import.meta.url)).catch(()=>null);
+  if(legacy) return legacy;
+
+  const u = await loadPadron2024Unified().catch(()=>null);
+  if(u && u.mayo2024 && u.mayo2024.exterior) return u.mayo2024.exterior;
+
+  throw new Error("Padrón 2024 exterior: datos no disponibles.");
 }
 
 export async function loadPadron2024Meta(){
@@ -49,7 +92,15 @@ export async function loadPadron2024Meta(){
 }
 
 export async function loadPres2024VotosProv(){
-  return await loadJson(new URL("../../../data/templates/data/results_2024.json", import.meta.url));
+  // Prefer legacy file for compatibility; fallback to unified container.
+  const legacy = await loadJson(new URL("../../../data/pres_2024_votos_prov.json", import.meta.url)).catch(()=>null);
+  if(legacy) return legacy;
+
+  const u = await loadResults2024Unified().catch(()=>null);
+  const pres = (u && u.pres) ? u.pres : null;
+  if(pres) return pres;
+
+  throw new Error("Presidencial 2024: datos no disponibles.");
 }
 
 
