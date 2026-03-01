@@ -315,6 +315,7 @@ export async function renderSimulador(state){
 
   function selectedAllies(){
     return Array.from(allySel.selectedOptions).map(o=>o.value);
+}
   
   function applyMovilizacionVotes(votes, provId){
     const m = state.movilizacion;
@@ -482,7 +483,6 @@ export async function renderPotencial(state){
   `;
 }
 
-export async 
 export function renderMovilizacion(state){
   const el = document.getElementById("view");
   el.innerHTML = `
