@@ -48,4 +48,4 @@ function boot(){
   setActive(initial);
 }
 
-window.addEventListener("DOMContentLoaded", boot);
+boot();
