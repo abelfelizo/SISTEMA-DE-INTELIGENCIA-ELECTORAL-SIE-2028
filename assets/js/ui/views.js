@@ -1,20 +1,21 @@
 import {toast} from "./toast.js";
-import {loadResults2024, loadResults2020, loadPadron, loadGeography, loadCurules2024, loadPadron2024Meta, loadPolls} from "../core/data.js";
+import { getCTX } from "../core/data.js";
 import {dhondt} from "../core/dhondt.js";
 import {formatPct, clamp} from "../core/utils.js";
 
 const NIVEL_LABEL = {pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM"};
 const CORTE_OPTIONS = ["Mayo 2024","Base 2024","Proyección 2028","Febrero 2024"];
 
+function getLevel(ctxYearObj, nivel){
+  return (ctxYearObj && ctxYearObj[nivel]) ? ctxYearObj[nivel] : {nacional:{meta:{},votes:{}}, territorios:{}};
+}
+
+
 let CTX = null;
 async function getCtx(){
-  if(CTX) return CTX;
-  const [r24,r20,pad,geo,cur,pmeta,polls] = await Promise.all([
-    loadResults2024(), loadResults2020(), loadPadron(), loadGeography(), loadCurules2024(), loadPadron2024Meta(), loadPolls()
-  ]);
-  CTX = {r24,r20,pad,geo,cur,pmeta,polls};
-  return CTX;
+  return await getCTX();
 }
+
 
 function moduleControlsHtml(state, moduleId){
   const eff = state.getEffective ? state.getEffective(moduleId) : {nivel:"dip", corte:"Base 2024", override:false};
@@ -69,20 +70,9 @@ function presToMetaVotes(obj){
 }
 
 function getLevelBundle(r, nivel){
-  const lvl = r?.[nivel] || {};
-  if(nivel==="pres"){
-    const nat = presToMetaVotes(lvl?.nacional||{});
-    const provincias = {}; Object.entries(lvl?.provincias||{}).forEach(([id,o])=> provincias[id]=presToMetaVotes(o));
-    const municipios = {}; Object.entries(lvl?.municipios||{}).forEach(([id,o])=> municipios[id]=presToMetaVotes(o));
-    const dm = {}; Object.entries(lvl?.dm||{}).forEach(([id,o])=> dm[id]=presToMetaVotes(o));
-    return {nacional:nat, provincias, municipios, dm};
-  }
-  if(nivel==="sen") return {nacional:lvl?.nacional||{meta:{},votes:{}}, provincias:lvl?.provincias||{}};
-  if(nivel==="dip") return {nacional:lvl?.nacional||{meta:{},votes:{}}, provincias:lvl?.provincias||{}, circunscripciones:lvl?.circunscripciones||{}, exterior:lvl?.exterior||{}};
-  if(nivel==="mun") return {nacional:lvl?.nacional||{meta:{},votes:{}}, municipios:lvl?.municipios||{}};
-  if(nivel==="dm")  return {nacional:lvl?.nacional||{meta:{},votes:{}}, dm:lvl?.dm||{}};
-  return lvl;
+  return getLevel(r, nivel);
 }
+
 
 function partyList(votes){ return Object.keys(votes||{}).filter(k=>k && !["EMITIDOS","VALIDOS","NULOS","INSCRITOS"].includes(k)); }
 function fmtInt(n){ return (Number(n)||0).toLocaleString("en-US"); }
@@ -94,7 +84,7 @@ export async function renderDashboard(state, moduleId="dashboard"){
   const eff = state.getEffective(moduleId);
   const ctx = await getCtx();
   const nivel = eff.nivel;
-  const b = getLevelBundle(ctx.r24, nivel);
+  const b = getLevel(ctx.normalized[2024], nivel);
   const pad = ctx.pad?.mayo2024?.nacional?.inscritos ?? null;
   const meta = b?.nacional?.meta || {};
   const inscritos = (nivel==="pres" && pad) ? pad : (meta.inscritos||0);
@@ -138,7 +128,7 @@ export async function renderMapa(state, mapApi, moduleId="mapa"){
   const eff = state.getEffective(moduleId);
   const ctx = await getCtx();
   const nivel = eff.nivel;
-  const b = getLevelBundle(ctx.r24, nivel);
+  const b = getLevel(ctx.normalized[2024], nivel);
   cont.innerHTML = `
     ${moduleControlsHtml(state, moduleId)}
     <div class="layout-2col">
@@ -166,7 +156,7 @@ export async function renderMapa(state, mapApi, moduleId="mapa"){
     const panel = document.getElementById("map-panel");
     const provId = String(territoryId).replace(/\\D/g,"").padStart(2,"0");
     let obj = null;
-    if(nivel==="pres" || nivel==="sen" || nivel==="dip") obj = b?.provincias?.[provId] || null;
+    if(nivel==="pres" || nivel==="sen" || nivel==="dip") obj = b?.territorios?.[provId] || null;
     if(!obj){
       panel.innerHTML = `<h3 style="margin:0 0 8px 0;">${territoryId}</h3><div class="muted">No hay data.</div>`;
       return;
@@ -200,7 +190,7 @@ export async function renderSimulador(state, moduleId="simulador"){
   const eff = state.getEffective(moduleId);
   const ctx = await getCtx();
   const nivel = eff.nivel;
-  const b = getLevelBundle(ctx.r24, nivel);
+  const b = getLevel(ctx.normalized[2024], nivel);
   const base = b.nacional || {meta:{}, votes:{}};
   const votes = {...(base.votes||{})};
   const parties = partyList(votes).sort();
@@ -249,9 +239,9 @@ export async function renderPotencial(state, moduleId="potencial"){
   const eff = state.getEffective(moduleId);
   const ctx = await getCtx();
   const nivel = eff.nivel;
-  const b24 = getLevelBundle(ctx.r24, nivel);
-  const scope = (nivel==="mun") ? "municipios" : (nivel==="dm" ? "dm" : "provincias");
-  const t24 = b24[scope] || {};
+  const b24 = getLevel(ctx.normalized[2024], nivel);
+  const scope = "territorios";
+  const t24 = b24.territorios || {};
   const rows = Object.entries(t24).map(([id,obj])=>{
     const meta=obj.meta||{};
     const abst = meta.inscritos ? (1-(meta.emitidos/meta.inscritos)) : 0;
@@ -278,7 +268,7 @@ export async function renderMovilizacion(state, moduleId="movilizacion"){
   const eff = state.getEffective(moduleId);
   const ctx = await getCtx();
   const nivel = eff.nivel;
-  const b = getLevelBundle(ctx.r24, nivel);
+  const b = getLevel(ctx.normalized[2024], nivel);
   const meta = b.nacional.meta||{};
   const abstVotes = Math.round((meta.inscritos||0)-(meta.emitidos||0));
   cont.innerHTML = `
