@@ -1,0 +1,3059 @@
+{
+  "meta": {
+    "version": "1.0",
+    "source": "JCE Resultados Presidencial 2024 por Colegio",
+    "estructura": "Provincia > Municipio > Distrito Municipal"
+  },
+  "territorio": {
+    "interior": {
+      "provincias": {
+        "01": {
+          "codigo": "01",
+          "nombre": "DISTRITO NACIONAL",
+          "municipios": {
+            "0001": {
+              "codigo": "0001",
+              "nombre": "DISTRITO NACIONAL",
+              "distritos_municipales": {
+                "001": {
+                  "codigo": "001",
+                  "nombre": "DM 001"
+                }
+              }
+            }
+          }
+        },
+        "24": {
+          "codigo": "24",
+          "nombre": "SAN CRISTOBAL",
+          "municipios": {
+            "0002": {
+              "codigo": "0002",
+              "nombre": "SAN CRISTOBAL",
+              "distritos_municipales": {
+                "002": {
+                  "codigo": "002",
+                  "nombre": "DM 002"
+                },
+                "306": {
+                  "codigo": "306",
+                  "nombre": "DM 306"
+                },
+                "397": {
+                  "codigo": "397",
+                  "nombre": "DM 397"
+                }
+              }
+            },
+            "0068": {
+              "codigo": "0068",
+              "nombre": "VILLA ALTAGRACIA",
+              "distritos_municipales": {
+                "068": {
+                  "codigo": "068",
+                  "nombre": "DM 068"
+                },
+                "252": {
+                  "codigo": "252",
+                  "nombre": "DM 252"
+                },
+                "256": {
+                  "codigo": "256",
+                  "nombre": "DM 256"
+                },
+                "255": {
+                  "codigo": "255",
+                  "nombre": "DM 255"
+                }
+              }
+            },
+            "0082": {
+              "codigo": "0082",
+              "nombre": "YAGUATE",
+              "distritos_municipales": {
+                "082": {
+                  "codigo": "082",
+                  "nombre": "DM 082"
+                },
+                "396": {
+                  "codigo": "396",
+                  "nombre": "DM 396"
+                }
+              }
+            },
+            "0083": {
+              "codigo": "0083",
+              "nombre": "SABANA GRANDE DE PALENQUE",
+              "distritos_municipales": {
+                "083": {
+                  "codigo": "083",
+                  "nombre": "DM 083"
+                }
+              }
+            },
+            "0093": {
+              "codigo": "0093",
+              "nombre": "BAJOS DE HAINA",
+              "distritos_municipales": {
+                "234": {
+                  "codigo": "234",
+                  "nombre": "DM 234"
+                },
+                "093": {
+                  "codigo": "093",
+                  "nombre": "DM 093"
+                },
+                "398": {
+                  "codigo": "398",
+                  "nombre": "DM 398"
+                }
+              }
+            },
+            "0104": {
+              "codigo": "0104",
+              "nombre": "CAMBITA GARABITOS",
+              "distritos_municipales": {
+                "104": {
+                  "codigo": "104",
+                  "nombre": "DM 104"
+                },
+                "315": {
+                  "codigo": "315",
+                  "nombre": "DM 315"
+                }
+              }
+            },
+            "0139": {
+              "codigo": "0139",
+              "nombre": "LOS CACAOS",
+              "distritos_municipales": {
+                "139": {
+                  "codigo": "139",
+                  "nombre": "DM 139"
+                }
+              }
+            },
+            "0140": {
+              "codigo": "0140",
+              "nombre": "SAN GREGORIO DE NIGUA",
+              "distritos_municipales": {
+                "140": {
+                  "codigo": "140",
+                  "nombre": "DM 140"
+                }
+              }
+            }
+          }
+        },
+        "20": {
+          "codigo": "20",
+          "nombre": "PERAVIA",
+          "municipios": {
+            "0003": {
+              "codigo": "0003",
+              "nombre": "BANI",
+              "distritos_municipales": {
+                "003": {
+                  "codigo": "003",
+                  "nombre": "DM 003"
+                },
+                "157": {
+                  "codigo": "157",
+                  "nombre": "DM 157"
+                },
+                "358": {
+                  "codigo": "358",
+                  "nombre": "DM 358"
+                },
+                "381": {
+                  "codigo": "381",
+                  "nombre": "DM 381"
+                },
+                "235": {
+                  "codigo": "235",
+                  "nombre": "DM 235"
+                },
+                "302": {
+                  "codigo": "302",
+                  "nombre": "DM 302"
+                },
+                "185": {
+                  "codigo": "185",
+                  "nombre": "DM 185"
+                },
+                "158": {
+                  "codigo": "158",
+                  "nombre": "DM 158"
+                },
+                "221": {
+                  "codigo": "221",
+                  "nombre": "DM 221"
+                }
+              }
+            },
+            "0084": {
+              "codigo": "0084",
+              "nombre": "NIZAO",
+              "distritos_municipales": {
+                "084": {
+                  "codigo": "084",
+                  "nombre": "DM 084"
+                },
+                "170": {
+                  "codigo": "170",
+                  "nombre": "DM 170"
+                },
+                "176": {
+                  "codigo": "176",
+                  "nombre": "DM 176"
+                }
+              }
+            },
+            "0156": {
+              "codigo": "0156",
+              "nombre": "MATANZAS",
+              "distritos_municipales": {
+                "156": {
+                  "codigo": "156",
+                  "nombre": "DM 156"
+                }
+              }
+            }
+          }
+        },
+        "18": {
+          "codigo": "18",
+          "nombre": "MONTE PLATA",
+          "municipios": {
+            "0004": {
+              "codigo": "0004",
+              "nombre": "BAYAGUANA",
+              "distritos_municipales": {
+                "004": {
+                  "codigo": "004",
+                  "nombre": "DM 004"
+                }
+              }
+            },
+            "0005": {
+              "codigo": "0005",
+              "nombre": "YAMASA",
+              "distritos_municipales": {
+                "005": {
+                  "codigo": "005",
+                  "nombre": "DM 005"
+                },
+                "391": {
+                  "codigo": "391",
+                  "nombre": "DM 391"
+                },
+                "179": {
+                  "codigo": "179",
+                  "nombre": "DM 179"
+                }
+              }
+            },
+            "0008": {
+              "codigo": "0008",
+              "nombre": "MONTE PLATA",
+              "distritos_municipales": {
+                "008": {
+                  "codigo": "008",
+                  "nombre": "DM 008"
+                },
+                "147": {
+                  "codigo": "147",
+                  "nombre": "DM 147"
+                },
+                "299": {
+                  "codigo": "299",
+                  "nombre": "DM 299"
+                },
+                "254": {
+                  "codigo": "254",
+                  "nombre": "DM 254"
+                }
+              }
+            },
+            "0090": {
+              "codigo": "0090",
+              "nombre": "SABANA GRANDE DE BOYA",
+              "distritos_municipales": {
+                "090": {
+                  "codigo": "090",
+                  "nombre": "DM 090"
+                },
+                "209": {
+                  "codigo": "209",
+                  "nombre": "DM 209"
+                },
+                "174": {
+                  "codigo": "174",
+                  "nombre": "DM 174"
+                }
+              }
+            },
+            "0153": {
+              "codigo": "0153",
+              "nombre": "PERALVILLO",
+              "distritos_municipales": {
+                "153": {
+                  "codigo": "153",
+                  "nombre": "DM 153"
+                }
+              }
+            }
+          }
+        },
+        "03": {
+          "codigo": "03",
+          "nombre": "AZUA",
+          "municipios": {
+            "0010": {
+              "codigo": "0010",
+              "nombre": "AZUA",
+              "distritos_municipales": {
+                "010": {
+                  "codigo": "010",
+                  "nombre": "DM 010"
+                },
+                "355": {
+                  "codigo": "355",
+                  "nombre": "DM 355"
+                },
+                "264": {
+                  "codigo": "264",
+                  "nombre": "DM 264"
+                },
+                "276": {
+                  "codigo": "276",
+                  "nombre": "DM 276"
+                },
+                "267": {
+                  "codigo": "267",
+                  "nombre": "DM 267"
+                },
+                "334": {
+                  "codigo": "334",
+                  "nombre": "DM 334"
+                },
+                "335": {
+                  "codigo": "335",
+                  "nombre": "DM 335"
+                },
+                "341": {
+                  "codigo": "341",
+                  "nombre": "DM 341"
+                },
+                "340": {
+                  "codigo": "340",
+                  "nombre": "DM 340"
+                }
+              }
+            },
+            "0017": {
+              "codigo": "0017",
+              "nombre": "PADRE LAS CASAS",
+              "distritos_municipales": {
+                "017": {
+                  "codigo": "017",
+                  "nombre": "DM 017"
+                },
+                "303": {
+                  "codigo": "303",
+                  "nombre": "DM 303"
+                },
+                "370": {
+                  "codigo": "370",
+                  "nombre": "DM 370"
+                },
+                "304": {
+                  "codigo": "304",
+                  "nombre": "DM 304"
+                },
+                "339": {
+                  "codigo": "339",
+                  "nombre": "DM 339"
+                }
+              }
+            },
+            "0105": {
+              "codigo": "0105",
+              "nombre": "GUAYABAL",
+              "distritos_municipales": {
+                "105": {
+                  "codigo": "105",
+                  "nombre": "DM 105"
+                }
+              }
+            },
+            "0106": {
+              "codigo": "0106",
+              "nombre": "PERALTA",
+              "distritos_municipales": {
+                "106": {
+                  "codigo": "106",
+                  "nombre": "DM 106"
+                }
+              }
+            },
+            "0107": {
+              "codigo": "0107",
+              "nombre": "SABANA YEGUA",
+              "distritos_municipales": {
+                "107": {
+                  "codigo": "107",
+                  "nombre": "DM 107"
+                },
+                "259": {
+                  "codigo": "259",
+                  "nombre": "DM 259"
+                },
+                "380": {
+                  "codigo": "380",
+                  "nombre": "DM 380"
+                },
+                "260": {
+                  "codigo": "260",
+                  "nombre": "DM 260"
+                }
+              }
+            },
+            "0125": {
+              "codigo": "0125",
+              "nombre": "LAS YAYAS DE VIAJAMA",
+              "distritos_municipales": {
+                "125": {
+                  "codigo": "125",
+                  "nombre": "DM 125"
+                },
+                "231": {
+                  "codigo": "231",
+                  "nombre": "DM 231"
+                },
+                "377": {
+                  "codigo": "377",
+                  "nombre": "DM 377"
+                }
+              }
+            },
+            "0126": {
+              "codigo": "0126",
+              "nombre": "TABARA ARRIBA",
+              "distritos_municipales": {
+                "126": {
+                  "codigo": "126",
+                  "nombre": "DM 126"
+                },
+                "282": {
+                  "codigo": "282",
+                  "nombre": "DM 282"
+                },
+                "257": {
+                  "codigo": "257",
+                  "nombre": "DM 257"
+                },
+                "283": {
+                  "codigo": "283",
+                  "nombre": "DM 283"
+                }
+              }
+            },
+            "0132": {
+              "codigo": "0132",
+              "nombre": "ESTEBANIA",
+              "distritos_municipales": {
+                "132": {
+                  "codigo": "132",
+                  "nombre": "DM 132"
+                }
+              }
+            },
+            "0135": {
+              "codigo": "0135",
+              "nombre": "LAS CHARCAS",
+              "distritos_municipales": {
+                "135": {
+                  "codigo": "135",
+                  "nombre": "DM 135"
+                },
+                "207": {
+                  "codigo": "207",
+                  "nombre": "DM 207"
+                }
+              }
+            },
+            "0154": {
+              "codigo": "0154",
+              "nombre": "PUEBLO VIEJO",
+              "distritos_municipales": {
+                "154": {
+                  "codigo": "154",
+                  "nombre": "DM 154"
+                },
+                "261": {
+                  "codigo": "261",
+                  "nombre": "DM 261"
+                }
+              }
+            }
+          }
+        },
+        "25": {
+          "codigo": "25",
+          "nombre": "SAN JUAN",
+          "municipios": {
+            "0011": {
+              "codigo": "0011",
+              "nombre": "LAS MATAS DE FARFAN",
+              "distritos_municipales": {
+                "011": {
+                  "codigo": "011",
+                  "nombre": "DM 011"
+                },
+                "330": {
+                  "codigo": "330",
+                  "nombre": "DM 330"
+                },
+                "186": {
+                  "codigo": "186",
+                  "nombre": "DM 186"
+                }
+              }
+            },
+            "0012": {
+              "codigo": "0012",
+              "nombre": "SAN JUAN DE LA MAGUANA",
+              "distritos_municipales": {
+                "012": {
+                  "codigo": "012",
+                  "nombre": "DM 012"
+                },
+                "292": {
+                  "codigo": "292",
+                  "nombre": "DM 292"
+                },
+                "336": {
+                  "codigo": "336",
+                  "nombre": "DM 336"
+                },
+                "353": {
+                  "codigo": "353",
+                  "nombre": "DM 353"
+                },
+                "326": {
+                  "codigo": "326",
+                  "nombre": "DM 326"
+                },
+                "190": {
+                  "codigo": "190",
+                  "nombre": "DM 190"
+                },
+                "390": {
+                  "codigo": "390",
+                  "nombre": "DM 390"
+                },
+                "357": {
+                  "codigo": "357",
+                  "nombre": "DM 357"
+                },
+                "319": {
+                  "codigo": "319",
+                  "nombre": "DM 319"
+                },
+                "314": {
+                  "codigo": "314",
+                  "nombre": "DM 314"
+                },
+                "331": {
+                  "codigo": "331",
+                  "nombre": "DM 331"
+                }
+              }
+            },
+            "0014": {
+              "codigo": "0014",
+              "nombre": "EL CERCADO",
+              "distritos_municipales": {
+                "014": {
+                  "codigo": "014",
+                  "nombre": "DM 014"
+                },
+                "317": {
+                  "codigo": "317",
+                  "nombre": "DM 317"
+                },
+                "329": {
+                  "codigo": "329",
+                  "nombre": "DM 329"
+                }
+              }
+            },
+            "0108": {
+              "codigo": "0108",
+              "nombre": "VALLEJUELO",
+              "distritos_municipales": {
+                "348": {
+                  "codigo": "348",
+                  "nombre": "DM 348"
+                },
+                "108": {
+                  "codigo": "108",
+                  "nombre": "DM 108"
+                }
+              }
+            },
+            "0109": {
+              "codigo": "0109",
+              "nombre": "BOHECHIO",
+              "distritos_municipales": {
+                "287": {
+                  "codigo": "287",
+                  "nombre": "DM 287"
+                },
+                "109": {
+                  "codigo": "109",
+                  "nombre": "DM 109"
+                },
+                "297": {
+                  "codigo": "297",
+                  "nombre": "DM 297"
+                }
+              }
+            },
+            "0129": {
+              "codigo": "0129",
+              "nombre": "JUAN DE HERRERA",
+              "distritos_municipales": {
+                "129": {
+                  "codigo": "129",
+                  "nombre": "DM 129"
+                },
+                "366": {
+                  "codigo": "366",
+                  "nombre": "DM 366"
+                }
+              }
+            }
+          }
+        },
+        "31": {
+          "codigo": "31",
+          "nombre": "SAN JOSE DE OCOA",
+          "municipios": {
+            "0013": {
+              "codigo": "0013",
+              "nombre": "SAN JOSE DE OCOA",
+              "distritos_municipales": {
+                "013": {
+                  "codigo": "013",
+                  "nombre": "DM 013"
+                },
+                "180": {
+                  "codigo": "180",
+                  "nombre": "DM 180"
+                },
+                "382": {
+                  "codigo": "382",
+                  "nombre": "DM 382"
+                },
+                "277": {
+                  "codigo": "277",
+                  "nombre": "DM 277"
+                },
+                "278": {
+                  "codigo": "278",
+                  "nombre": "DM 278"
+                }
+              }
+            },
+            "0150": {
+              "codigo": "0150",
+              "nombre": "SABANA LARGA",
+              "distritos_municipales": {
+                "150": {
+                  "codigo": "150",
+                  "nombre": "DM 150"
+                }
+              }
+            },
+            "0152": {
+              "codigo": "0152",
+              "nombre": "RANCHO ARRIBA",
+              "distritos_municipales": {
+                "152": {
+                  "codigo": "152",
+                  "nombre": "DM 152"
+                }
+              }
+            }
+          }
+        },
+        "09": {
+          "codigo": "09",
+          "nombre": "ELIAS PIÑA",
+          "municipios": {
+            "0015": {
+              "codigo": "0015",
+              "nombre": "BANICA",
+              "distritos_municipales": {
+                "015": {
+                  "codigo": "015",
+                  "nombre": "DM 015"
+                },
+                "338": {
+                  "codigo": "338",
+                  "nombre": "DM 338"
+                },
+                "361": {
+                  "codigo": "361",
+                  "nombre": "DM 361"
+                }
+              }
+            },
+            "0016": {
+              "codigo": "0016",
+              "nombre": "COMENDADOR",
+              "distritos_municipales": {
+                "016": {
+                  "codigo": "016",
+                  "nombre": "DM 016"
+                },
+                "280": {
+                  "codigo": "280",
+                  "nombre": "DM 280"
+                },
+                "359": {
+                  "codigo": "359",
+                  "nombre": "DM 359"
+                }
+              }
+            },
+            "0074": {
+              "codigo": "0074",
+              "nombre": "PEDRO SANTANA",
+              "distritos_municipales": {
+                "074": {
+                  "codigo": "074",
+                  "nombre": "DM 074"
+                },
+                "159": {
+                  "codigo": "159",
+                  "nombre": "DM 159"
+                }
+              }
+            },
+            "0075": {
+              "codigo": "0075",
+              "nombre": "HONDO VALLE",
+              "distritos_municipales": {
+                "368": {
+                  "codigo": "368",
+                  "nombre": "DM 368"
+                },
+                "075": {
+                  "codigo": "075",
+                  "nombre": "DM 075"
+                }
+              }
+            },
+            "0110": {
+              "codigo": "0110",
+              "nombre": "EL LLANO",
+              "distritos_municipales": {
+                "337": {
+                  "codigo": "337",
+                  "nombre": "DM 337"
+                },
+                "110": {
+                  "codigo": "110",
+                  "nombre": "DM 110"
+                }
+              }
+            },
+            "0144": {
+              "codigo": "0144",
+              "nombre": "JUAN SANTIAGO",
+              "distritos_municipales": {
+                "144": {
+                  "codigo": "144",
+                  "nombre": "DM 144"
+                }
+              }
+            }
+          }
+        },
+        "05": {
+          "codigo": "05",
+          "nombre": "BARAHONA",
+          "municipios": {
+            "0018": {
+              "codigo": "0018",
+              "nombre": "BARAHONA",
+              "distritos_municipales": {
+                "389": {
+                  "codigo": "389",
+                  "nombre": "DM 389"
+                },
+                "018": {
+                  "codigo": "018",
+                  "nombre": "DM 018"
+                },
+                "198": {
+                  "codigo": "198",
+                  "nombre": "DM 198"
+                },
+                "356": {
+                  "codigo": "356",
+                  "nombre": "DM 356"
+                }
+              }
+            },
+            "0019": {
+              "codigo": "0019",
+              "nombre": "CABRAL",
+              "distritos_municipales": {
+                "019": {
+                  "codigo": "019",
+                  "nombre": "DM 019"
+                }
+              }
+            },
+            "0021": {
+              "codigo": "0021",
+              "nombre": "ENRIQUILLO",
+              "distritos_municipales": {
+                "021": {
+                  "codigo": "021",
+                  "nombre": "DM 021"
+                },
+                "284": {
+                  "codigo": "284",
+                  "nombre": "DM 284"
+                }
+              }
+            },
+            "0079": {
+              "codigo": "0079",
+              "nombre": "VICENTE NOBLE",
+              "distritos_municipales": {
+                "079": {
+                  "codigo": "079",
+                  "nombre": "DM 079"
+                },
+                "272": {
+                  "codigo": "272",
+                  "nombre": "DM 272"
+                },
+                "279": {
+                  "codigo": "279",
+                  "nombre": "DM 279"
+                },
+                "164": {
+                  "codigo": "164",
+                  "nombre": "DM 164"
+                }
+              }
+            },
+            "0080": {
+              "codigo": "0080",
+              "nombre": "PARAISO",
+              "distritos_municipales": {
+                "080": {
+                  "codigo": "080",
+                  "nombre": "DM 080"
+                },
+                "222": {
+                  "codigo": "222",
+                  "nombre": "DM 222"
+                }
+              }
+            },
+            "0111": {
+              "codigo": "0111",
+              "nombre": "POLO",
+              "distritos_municipales": {
+                "111": {
+                  "codigo": "111",
+                  "nombre": "DM 111"
+                }
+              }
+            },
+            "0130": {
+              "codigo": "0130",
+              "nombre": "EL PEÑON",
+              "distritos_municipales": {
+                "130": {
+                  "codigo": "130",
+                  "nombre": "DM 130"
+                }
+              }
+            },
+            "0131": {
+              "codigo": "0131",
+              "nombre": "FUNDACION",
+              "distritos_municipales": {
+                "131": {
+                  "codigo": "131",
+                  "nombre": "DM 131"
+                },
+                "216": {
+                  "codigo": "216",
+                  "nombre": "DM 216"
+                }
+              }
+            },
+            "0137": {
+              "codigo": "0137",
+              "nombre": "LAS SALINAS",
+              "distritos_municipales": {
+                "137": {
+                  "codigo": "137",
+                  "nombre": "DM 137"
+                }
+              }
+            },
+            "0160": {
+              "codigo": "0160",
+              "nombre": "LA CIENAGA",
+              "distritos_municipales": {
+                "160": {
+                  "codigo": "160",
+                  "nombre": "DM 160"
+                },
+                "301": {
+                  "codigo": "301",
+                  "nombre": "DM 301"
+                }
+              }
+            },
+            "0167": {
+              "codigo": "0167",
+              "nombre": "JAQUIMEYES",
+              "distritos_municipales": {
+                "167": {
+                  "codigo": "167",
+                  "nombre": "DM 167"
+                },
+                "294": {
+                  "codigo": "294",
+                  "nombre": "DM 294"
+                }
+              }
+            }
+          }
+        },
+        "12": {
+          "codigo": "12",
+          "nombre": "INDEPENDENCIA",
+          "municipios": {
+            "0020": {
+              "codigo": "0020",
+              "nombre": "DUVERGE",
+              "distritos_municipales": {
+                "020": {
+                  "codigo": "020",
+                  "nombre": "DM 020"
+                },
+                "323": {
+                  "codigo": "323",
+                  "nombre": "DM 323"
+                }
+              }
+            },
+            "0070": {
+              "codigo": "0070",
+              "nombre": "LA DESCUBIERTA",
+              "distritos_municipales": {
+                "070": {
+                  "codigo": "070",
+                  "nombre": "DM 070"
+                }
+              }
+            },
+            "0077": {
+              "codigo": "0077",
+              "nombre": "JIMANI",
+              "distritos_municipales": {
+                "077": {
+                  "codigo": "077",
+                  "nombre": "DM 077"
+                },
+                "316": {
+                  "codigo": "316",
+                  "nombre": "DM 316"
+                },
+                "238": {
+                  "codigo": "238",
+                  "nombre": "DM 238"
+                }
+              }
+            },
+            "0099": {
+              "codigo": "0099",
+              "nombre": "POSTRER RIO",
+              "distritos_municipales": {
+                "099": {
+                  "codigo": "099",
+                  "nombre": "DM 099"
+                },
+                "178": {
+                  "codigo": "178",
+                  "nombre": "DM 178"
+                }
+              }
+            },
+            "0114": {
+              "codigo": "0114",
+              "nombre": "MELLA",
+              "distritos_municipales": {
+                "114": {
+                  "codigo": "114",
+                  "nombre": "DM 114"
+                },
+                "293": {
+                  "codigo": "293",
+                  "nombre": "DM 293"
+                }
+              }
+            },
+            "0128": {
+              "codigo": "0128",
+              "nombre": "CRISTOBAL",
+              "distritos_municipales": {
+                "128": {
+                  "codigo": "128",
+                  "nombre": "DM 128"
+                },
+                "379": {
+                  "codigo": "379",
+                  "nombre": "DM 379"
+                }
+              }
+            }
+          }
+        },
+        "04": {
+          "codigo": "04",
+          "nombre": "BAHORUCO",
+          "municipios": {
+            "0022": {
+              "codigo": "0022",
+              "nombre": "NEYBA",
+              "distritos_municipales": {
+                "022": {
+                  "codigo": "022",
+                  "nombre": "DM 022"
+                },
+                "214": {
+                  "codigo": "214",
+                  "nombre": "DM 214"
+                }
+              }
+            },
+            "0076": {
+              "codigo": "0076",
+              "nombre": "TAMAYO",
+              "distritos_municipales": {
+                "076": {
+                  "codigo": "076",
+                  "nombre": "DM 076"
+                },
+                "333": {
+                  "codigo": "333",
+                  "nombre": "DM 333"
+                },
+                "127": {
+                  "codigo": "127",
+                  "nombre": "DM 127"
+                },
+                "289": {
+                  "codigo": "289",
+                  "nombre": "DM 289"
+                },
+                "298": {
+                  "codigo": "298",
+                  "nombre": "DM 298"
+                },
+                "386": {
+                  "codigo": "386",
+                  "nombre": "DM 386"
+                },
+                "371": {
+                  "codigo": "371",
+                  "nombre": "DM 371"
+                }
+              }
+            },
+            "0078": {
+              "codigo": "0078",
+              "nombre": "VILLA JARAGUA",
+              "distritos_municipales": {
+                "078": {
+                  "codigo": "078",
+                  "nombre": "DM 078"
+                }
+              }
+            },
+            "0112": {
+              "codigo": "0112",
+              "nombre": "LOS RIOS",
+              "distritos_municipales": {
+                "112": {
+                  "codigo": "112",
+                  "nombre": "DM 112"
+                },
+                "288": {
+                  "codigo": "288",
+                  "nombre": "DM 288"
+                }
+              }
+            },
+            "0113": {
+              "codigo": "0113",
+              "nombre": "GALVAN",
+              "distritos_municipales": {
+                "113": {
+                  "codigo": "113",
+                  "nombre": "DM 113"
+                },
+                "387": {
+                  "codigo": "387",
+                  "nombre": "DM 387"
+                }
+              }
+            }
+          }
+        },
+        "26": {
+          "codigo": "26",
+          "nombre": "SAN PEDRO DE MACORIS",
+          "municipios": {
+            "0023": {
+              "codigo": "0023",
+              "nombre": "SAN PEDRO DE MACORIS",
+              "distritos_municipales": {
+                "023": {
+                  "codigo": "023",
+                  "nombre": "DM 023"
+                }
+              }
+            },
+            "0024": {
+              "codigo": "0024",
+              "nombre": "LOS LLANOS",
+              "distritos_municipales": {
+                "024": {
+                  "codigo": "024",
+                  "nombre": "DM 024"
+                },
+                "200": {
+                  "codigo": "200",
+                  "nombre": "DM 200"
+                },
+                "247": {
+                  "codigo": "247",
+                  "nombre": "DM 247"
+                }
+              }
+            },
+            "0030": {
+              "codigo": "0030",
+              "nombre": "RAMON SANTANA",
+              "distritos_municipales": {
+                "030": {
+                  "codigo": "030",
+                  "nombre": "DM 030"
+                }
+              }
+            },
+            "0138": {
+              "codigo": "0138",
+              "nombre": "CONSUELO",
+              "distritos_municipales": {
+                "138": {
+                  "codigo": "138",
+                  "nombre": "DM 138"
+                }
+              }
+            },
+            "0146": {
+              "codigo": "0146",
+              "nombre": "QUISQUEYA",
+              "distritos_municipales": {
+                "146": {
+                  "codigo": "146",
+                  "nombre": "DM 146"
+                }
+              }
+            },
+            "0364": {
+              "codigo": "0364",
+              "nombre": "GUAYACANES",
+              "distritos_municipales": {
+                "364": {
+                  "codigo": "364",
+                  "nombre": "DM 364"
+                }
+              }
+            }
+          }
+        },
+        "08": {
+          "codigo": "08",
+          "nombre": "EL SEIBO",
+          "municipios": {
+            "0025": {
+              "codigo": "0025",
+              "nombre": "EL SEIBO",
+              "distritos_municipales": {
+                "025": {
+                  "codigo": "025",
+                  "nombre": "DM 025"
+                },
+                "367": {
+                  "codigo": "367",
+                  "nombre": "DM 367"
+                },
+                "166": {
+                  "codigo": "166",
+                  "nombre": "DM 166"
+                },
+                "378": {
+                  "codigo": "378",
+                  "nombre": "DM 378"
+                }
+              }
+            },
+            "0029": {
+              "codigo": "0029",
+              "nombre": "MICHES",
+              "distritos_municipales": {
+                "029": {
+                  "codigo": "029",
+                  "nombre": "DM 029"
+                },
+                "324": {
+                  "codigo": "324",
+                  "nombre": "DM 324"
+                },
+                "237": {
+                  "codigo": "237",
+                  "nombre": "DM 237"
+                }
+              }
+            }
+          }
+        },
+        "13": {
+          "codigo": "13",
+          "nombre": "LA ROMANA",
+          "municipios": {
+            "0026": {
+              "codigo": "0026",
+              "nombre": "LA ROMANA",
+              "distritos_municipales": {
+                "026": {
+                  "codigo": "026",
+                  "nombre": "DM 026"
+                },
+                "360": {
+                  "codigo": "360",
+                  "nombre": "DM 360"
+                }
+              }
+            },
+            "0103": {
+              "codigo": "0103",
+              "nombre": "GUAYMATE",
+              "distritos_municipales": {
+                "103": {
+                  "codigo": "103",
+                  "nombre": "DM 103"
+                }
+              }
+            },
+            "0295": {
+              "codigo": "0295",
+              "nombre": "VILLA HERMOSA",
+              "distritos_municipales": {
+                "295": {
+                  "codigo": "295",
+                  "nombre": "DM 295"
+                },
+                "296": {
+                  "codigo": "296",
+                  "nombre": "DM 296"
+                }
+              }
+            }
+          }
+        },
+        "11": {
+          "codigo": "11",
+          "nombre": "HATO MAYOR",
+          "municipios": {
+            "0027": {
+              "codigo": "0027",
+              "nombre": "HATO MAYOR",
+              "distritos_municipales": {
+                "027": {
+                  "codigo": "027",
+                  "nombre": "DM 027"
+                },
+                "168": {
+                  "codigo": "168",
+                  "nombre": "DM 168"
+                },
+                "215": {
+                  "codigo": "215",
+                  "nombre": "DM 215"
+                },
+                "202": {
+                  "codigo": "202",
+                  "nombre": "DM 202"
+                }
+              }
+            },
+            "0067": {
+              "codigo": "0067",
+              "nombre": "SABANA DE LA MAR",
+              "distritos_municipales": {
+                "067": {
+                  "codigo": "067",
+                  "nombre": "DM 067"
+                },
+                "169": {
+                  "codigo": "169",
+                  "nombre": "DM 169"
+                }
+              }
+            },
+            "0100": {
+              "codigo": "0100",
+              "nombre": "EL VALLE",
+              "distritos_municipales": {
+                "100": {
+                  "codigo": "100",
+                  "nombre": "DM 100"
+                }
+              }
+            }
+          }
+        },
+        "02": {
+          "codigo": "02",
+          "nombre": "LA ALTAGRACIA",
+          "municipios": {
+            "0028": {
+              "codigo": "0028",
+              "nombre": "HIGUEY",
+              "distritos_municipales": {
+                "028": {
+                  "codigo": "028",
+                  "nombre": "DM 028"
+                },
+                "141": {
+                  "codigo": "141",
+                  "nombre": "DM 141"
+                },
+                "145": {
+                  "codigo": "145",
+                  "nombre": "DM 145"
+                },
+                "385": {
+                  "codigo": "385",
+                  "nombre": "DM 385"
+                }
+              }
+            },
+            "0085": {
+              "codigo": "0085",
+              "nombre": "SAN RAFAEL DEL YUMA",
+              "distritos_municipales": {
+                "085": {
+                  "codigo": "085",
+                  "nombre": "DM 085"
+                },
+                "211": {
+                  "codigo": "211",
+                  "nombre": "DM 211"
+                },
+                "249": {
+                  "codigo": "249",
+                  "nombre": "DM 249"
+                }
+              }
+            }
+          }
+        },
+        "28": {
+          "codigo": "28",
+          "nombre": "SANTIAGO",
+          "municipios": {
+            "0031": {
+              "codigo": "0031",
+              "nombre": "SANTIAGO DE LOS CABALLEROS",
+              "distritos_municipales": {
+                "031": {
+                  "codigo": "031",
+                  "nombre": "DM 031"
+                },
+                "142": {
+                  "codigo": "142",
+                  "nombre": "DM 142"
+                },
+                "239": {
+                  "codigo": "239",
+                  "nombre": "DM 239"
+                },
+                "172": {
+                  "codigo": "172",
+                  "nombre": "DM 172"
+                },
+                "399": {
+                  "codigo": "399",
+                  "nombre": "DM 399"
+                },
+                "258": {
+                  "codigo": "258",
+                  "nombre": "DM 258"
+                }
+              }
+            },
+            "0032": {
+              "codigo": "0032",
+              "nombre": "TAMBORIL",
+              "distritos_municipales": {
+                "032": {
+                  "codigo": "032",
+                  "nombre": "DM 032"
+                },
+                "374": {
+                  "codigo": "374",
+                  "nombre": "DM 374"
+                }
+              }
+            },
+            "0035": {
+              "codigo": "0035",
+              "nombre": "JANICO",
+              "distritos_municipales": {
+                "035": {
+                  "codigo": "035",
+                  "nombre": "DM 035"
+                },
+                "308": {
+                  "codigo": "308",
+                  "nombre": "DM 308"
+                },
+                "192": {
+                  "codigo": "192",
+                  "nombre": "DM 192"
+                }
+              }
+            },
+            "0036": {
+              "codigo": "0036",
+              "nombre": "SAN JOSE DE LAS MATAS",
+              "distritos_municipales": {
+                "036": {
+                  "codigo": "036",
+                  "nombre": "DM 036"
+                },
+                "191": {
+                  "codigo": "191",
+                  "nombre": "DM 191"
+                },
+                "268": {
+                  "codigo": "268",
+                  "nombre": "DM 268"
+                },
+                "269": {
+                  "codigo": "269",
+                  "nombre": "DM 269"
+                }
+              }
+            },
+            "0094": {
+              "codigo": "0094",
+              "nombre": "VILLA GONZALEZ",
+              "distritos_municipales": {
+                "094": {
+                  "codigo": "094",
+                  "nombre": "DM 094"
+                },
+                "246": {
+                  "codigo": "246",
+                  "nombre": "DM 246"
+                },
+                "219": {
+                  "codigo": "219",
+                  "nombre": "DM 219"
+                }
+              }
+            },
+            "0095": {
+              "codigo": "0095",
+              "nombre": "LICEY AL MEDIO",
+              "distritos_municipales": {
+                "095": {
+                  "codigo": "095",
+                  "nombre": "DM 095"
+                },
+                "327": {
+                  "codigo": "327",
+                  "nombre": "DM 327"
+                }
+              }
+            },
+            "0096": {
+              "codigo": "0096",
+              "nombre": "VILLA BISONO -NAVARRETE-",
+              "distritos_municipales": {
+                "096": {
+                  "codigo": "096",
+                  "nombre": "DM 096"
+                }
+              }
+            },
+            "0148": {
+              "codigo": "0148",
+              "nombre": "SABANA IGLESIA",
+              "distritos_municipales": {
+                "148": {
+                  "codigo": "148",
+                  "nombre": "DM 148"
+                }
+              }
+            },
+            "0161": {
+              "codigo": "0161",
+              "nombre": "BAITOA",
+              "distritos_municipales": {
+                "161": {
+                  "codigo": "161",
+                  "nombre": "DM 161"
+                }
+              }
+            },
+            "0350": {
+              "codigo": "0350",
+              "nombre": "PUÑAL",
+              "distritos_municipales": {
+                "350": {
+                  "codigo": "350",
+                  "nombre": "DM 350"
+                },
+                "352": {
+                  "codigo": "352",
+                  "nombre": "DM 352"
+                },
+                "351": {
+                  "codigo": "351",
+                  "nombre": "DM 351"
+                }
+              }
+            }
+          }
+        },
+        "30": {
+          "codigo": "30",
+          "nombre": "VALVERDE",
+          "municipios": {
+            "0033": {
+              "codigo": "0033",
+              "nombre": "ESPERANZA",
+              "distritos_municipales": {
+                "033": {
+                  "codigo": "033",
+                  "nombre": "DM 033"
+                },
+                "328": {
+                  "codigo": "328",
+                  "nombre": "DM 328"
+                },
+                "197": {
+                  "codigo": "197",
+                  "nombre": "DM 197"
+                },
+                "343": {
+                  "codigo": "343",
+                  "nombre": "DM 343"
+                },
+                "204": {
+                  "codigo": "204",
+                  "nombre": "DM 204"
+                }
+              }
+            },
+            "0034": {
+              "codigo": "0034",
+              "nombre": "MAO",
+              "distritos_municipales": {
+                "034": {
+                  "codigo": "034",
+                  "nombre": "DM 034"
+                },
+                "195": {
+                  "codigo": "195",
+                  "nombre": "DM 195"
+                },
+                "194": {
+                  "codigo": "194",
+                  "nombre": "DM 194"
+                },
+                "196": {
+                  "codigo": "196",
+                  "nombre": "DM 196"
+                }
+              }
+            },
+            "0092": {
+              "codigo": "0092",
+              "nombre": "LAGUNA SALADA",
+              "distritos_municipales": {
+                "092": {
+                  "codigo": "092",
+                  "nombre": "DM 092"
+                },
+                "232": {
+                  "codigo": "232",
+                  "nombre": "DM 232"
+                },
+                "217": {
+                  "codigo": "217",
+                  "nombre": "DM 217"
+                },
+                "248": {
+                  "codigo": "248",
+                  "nombre": "DM 248"
+                }
+              }
+            }
+          }
+        },
+        "21": {
+          "codigo": "21",
+          "nombre": "PUERTO PLATA",
+          "municipios": {
+            "0037": {
+              "codigo": "0037",
+              "nombre": "PUERTO PLATA",
+              "distritos_municipales": {
+                "037": {
+                  "codigo": "037",
+                  "nombre": "DM 037"
+                },
+                "372": {
+                  "codigo": "372",
+                  "nombre": "DM 372"
+                },
+                "332": {
+                  "codigo": "332",
+                  "nombre": "DM 332"
+                }
+              }
+            },
+            "0038": {
+              "codigo": "0038",
+              "nombre": "IMBERT",
+              "distritos_municipales": {
+                "038": {
+                  "codigo": "038",
+                  "nombre": "DM 038"
+                }
+              }
+            },
+            "0039": {
+              "codigo": "0039",
+              "nombre": "ALTAMIRA",
+              "distritos_municipales": {
+                "039": {
+                  "codigo": "039",
+                  "nombre": "DM 039"
+                },
+                "346": {
+                  "codigo": "346",
+                  "nombre": "DM 346"
+                }
+              }
+            },
+            "0040": {
+              "codigo": "0040",
+              "nombre": "LUPERON",
+              "distritos_municipales": {
+                "040": {
+                  "codigo": "040",
+                  "nombre": "DM 040"
+                },
+                "188": {
+                  "codigo": "188",
+                  "nombre": "DM 188"
+                },
+                "375": {
+                  "codigo": "375",
+                  "nombre": "DM 375"
+                },
+                "243": {
+                  "codigo": "243",
+                  "nombre": "DM 243"
+                }
+              }
+            },
+            "0097": {
+              "codigo": "0097",
+              "nombre": "SOSUA",
+              "distritos_municipales": {
+                "097": {
+                  "codigo": "097",
+                  "nombre": "DM 097"
+                },
+                "244": {
+                  "codigo": "244",
+                  "nombre": "DM 244"
+                },
+                "245": {
+                  "codigo": "245",
+                  "nombre": "DM 245"
+                }
+              }
+            },
+            "0102": {
+              "codigo": "0102",
+              "nombre": "LOS HIDALGOS",
+              "distritos_municipales": {
+                "102": {
+                  "codigo": "102",
+                  "nombre": "DM 102"
+                },
+                "305": {
+                  "codigo": "305",
+                  "nombre": "DM 305"
+                }
+              }
+            },
+            "0120": {
+              "codigo": "0120",
+              "nombre": "GUANANICO",
+              "distritos_municipales": {
+                "120": {
+                  "codigo": "120",
+                  "nombre": "DM 120"
+                }
+              }
+            },
+            "0121": {
+              "codigo": "0121",
+              "nombre": "VILLA ISABELA",
+              "distritos_municipales": {
+                "121": {
+                  "codigo": "121",
+                  "nombre": "DM 121"
+                },
+                "177": {
+                  "codigo": "177",
+                  "nombre": "DM 177"
+                },
+                "263": {
+                  "codigo": "263",
+                  "nombre": "DM 263"
+                },
+                "388": {
+                  "codigo": "388",
+                  "nombre": "DM 388"
+                }
+              }
+            },
+            "0175": {
+              "codigo": "0175",
+              "nombre": "VILLA MONTELLANO",
+              "distritos_municipales": {
+                "175": {
+                  "codigo": "175",
+                  "nombre": "DM 175"
+                }
+              }
+            }
+          }
+        },
+        "17": {
+          "codigo": "17",
+          "nombre": "MONTE CRISTI",
+          "municipios": {
+            "0041": {
+              "codigo": "0041",
+              "nombre": "MONTECRISTI",
+              "distritos_municipales": {
+                "041": {
+                  "codigo": "041",
+                  "nombre": "DM 041"
+                }
+              }
+            },
+            "0045": {
+              "codigo": "0045",
+              "nombre": "GUAYUBIN",
+              "distritos_municipales": {
+                "045": {
+                  "codigo": "045",
+                  "nombre": "DM 045"
+                },
+                "171": {
+                  "codigo": "171",
+                  "nombre": "DM 171"
+                },
+                "173": {
+                  "codigo": "173",
+                  "nombre": "DM 173"
+                },
+                "241": {
+                  "codigo": "241",
+                  "nombre": "DM 241"
+                }
+              }
+            },
+            "0072": {
+              "codigo": "0072",
+              "nombre": "VILLA VASQUEZ",
+              "distritos_municipales": {
+                "072": {
+                  "codigo": "072",
+                  "nombre": "DM 072"
+                }
+              }
+            },
+            "0086": {
+              "codigo": "0086",
+              "nombre": "PEPILLO SALCEDO",
+              "distritos_municipales": {
+                "086": {
+                  "codigo": "086",
+                  "nombre": "DM 086"
+                },
+                "395": {
+                  "codigo": "395",
+                  "nombre": "DM 395"
+                }
+              }
+            },
+            "0101": {
+              "codigo": "0101",
+              "nombre": "CASTAÑUELAS",
+              "distritos_municipales": {
+                "253": {
+                  "codigo": "253",
+                  "nombre": "DM 253"
+                },
+                "101": {
+                  "codigo": "101",
+                  "nombre": "DM 101"
+                }
+              }
+            },
+            "0117": {
+              "codigo": "0117",
+              "nombre": "LAS MATAS DE SANTA CRUZ",
+              "distritos_municipales": {
+                "117": {
+                  "codigo": "117",
+                  "nombre": "DM 117"
+                }
+              }
+            }
+          }
+        },
+        "29": {
+          "codigo": "29",
+          "nombre": "SANTIAGO RODRIGUEZ",
+          "municipios": {
+            "0042": {
+              "codigo": "0042",
+              "nombre": "MONCION",
+              "distritos_municipales": {
+                "042": {
+                  "codigo": "042",
+                  "nombre": "DM 042"
+                }
+              }
+            },
+            "0046": {
+              "codigo": "0046",
+              "nombre": "SAN IGNACIO DE SABANETA",
+              "distritos_municipales": {
+                "046": {
+                  "codigo": "046",
+                  "nombre": "DM 046"
+                }
+              }
+            },
+            "0116": {
+              "codigo": "0116",
+              "nombre": "VILLA LOS ALMACIGOS",
+              "distritos_municipales": {
+                "116": {
+                  "codigo": "116",
+                  "nombre": "DM 116"
+                }
+              }
+            }
+          }
+        },
+        "06": {
+          "codigo": "06",
+          "nombre": "DAJABON",
+          "municipios": {
+            "0043": {
+              "codigo": "0043",
+              "nombre": "RESTAURACION",
+              "distritos_municipales": {
+                "043": {
+                  "codigo": "043",
+                  "nombre": "DM 043"
+                }
+              }
+            },
+            "0044": {
+              "codigo": "0044",
+              "nombre": "DAJABON",
+              "distritos_municipales": {
+                "044": {
+                  "codigo": "044",
+                  "nombre": "DM 044"
+                },
+                "321": {
+                  "codigo": "321",
+                  "nombre": "DM 321"
+                }
+              }
+            },
+            "0073": {
+              "codigo": "0073",
+              "nombre": "LOMA DE CABRERA",
+              "distritos_municipales": {
+                "073": {
+                  "codigo": "073",
+                  "nombre": "DM 073"
+                },
+                "365": {
+                  "codigo": "365",
+                  "nombre": "DM 365"
+                },
+                "318": {
+                  "codigo": "318",
+                  "nombre": "DM 318"
+                }
+              }
+            },
+            "0115": {
+              "codigo": "0115",
+              "nombre": "PARTIDO",
+              "distritos_municipales": {
+                "115": {
+                  "codigo": "115",
+                  "nombre": "DM 115"
+                }
+              }
+            },
+            "0151": {
+              "codigo": "0151",
+              "nombre": "EL PINO",
+              "distritos_municipales": {
+                "151": {
+                  "codigo": "151",
+                  "nombre": "DM 151"
+                },
+                "242": {
+                  "codigo": "242",
+                  "nombre": "DM 242"
+                }
+              }
+            }
+          }
+        },
+        "14": {
+          "codigo": "14",
+          "nombre": "LA VEGA",
+          "municipios": {
+            "0047": {
+              "codigo": "0047",
+              "nombre": "LA VEGA",
+              "distritos_municipales": {
+                "047": {
+                  "codigo": "047",
+                  "nombre": "DM 047"
+                },
+                "392": {
+                  "codigo": "392",
+                  "nombre": "DM 392"
+                },
+                "181": {
+                  "codigo": "181",
+                  "nombre": "DM 181"
+                },
+                "394": {
+                  "codigo": "394",
+                  "nombre": "DM 394"
+                },
+                "251": {
+                  "codigo": "251",
+                  "nombre": "DM 251"
+                }
+              }
+            },
+            "0050": {
+              "codigo": "0050",
+              "nombre": "JARABACOA",
+              "distritos_municipales": {
+                "050": {
+                  "codigo": "050",
+                  "nombre": "DM 050"
+                },
+                "300": {
+                  "codigo": "300",
+                  "nombre": "DM 300"
+                },
+                "349": {
+                  "codigo": "349",
+                  "nombre": "DM 349"
+                }
+              }
+            },
+            "0053": {
+              "codigo": "0053",
+              "nombre": "CONSTANZA",
+              "distritos_municipales": {
+                "053": {
+                  "codigo": "053",
+                  "nombre": "DM 053"
+                },
+                "163": {
+                  "codigo": "163",
+                  "nombre": "DM 163"
+                },
+                "250": {
+                  "codigo": "250",
+                  "nombre": "DM 250"
+                }
+              }
+            },
+            "0122": {
+              "codigo": "0122",
+              "nombre": "JIMA ABAJO",
+              "distritos_municipales": {
+                "122": {
+                  "codigo": "122",
+                  "nombre": "DM 122"
+                },
+                "187": {
+                  "codigo": "187",
+                  "nombre": "DM 187"
+                }
+              }
+            }
+          }
+        },
+        "16": {
+          "codigo": "16",
+          "nombre": "MONSEÑOR NOUEL",
+          "municipios": {
+            "0048": {
+              "codigo": "0048",
+              "nombre": "BONAO",
+              "distritos_municipales": {
+                "048": {
+                  "codigo": "048",
+                  "nombre": "DM 048"
+                },
+                "201": {
+                  "codigo": "201",
+                  "nombre": "DM 201"
+                },
+                "362": {
+                  "codigo": "362",
+                  "nombre": "DM 362"
+                },
+                "354": {
+                  "codigo": "354",
+                  "nombre": "DM 354"
+                },
+                "383": {
+                  "codigo": "383",
+                  "nombre": "DM 383"
+                },
+                "281": {
+                  "codigo": "281",
+                  "nombre": "DM 281"
+                }
+              }
+            },
+            "0118": {
+              "codigo": "0118",
+              "nombre": "MAIMON",
+              "distritos_municipales": {
+                "118": {
+                  "codigo": "118",
+                  "nombre": "DM 118"
+                }
+              }
+            },
+            "0123": {
+              "codigo": "0123",
+              "nombre": "PIEDRA BLANCA",
+              "distritos_municipales": {
+                "123": {
+                  "codigo": "123",
+                  "nombre": "DM 123"
+                },
+                "199": {
+                  "codigo": "199",
+                  "nombre": "DM 199"
+                },
+                "210": {
+                  "codigo": "210",
+                  "nombre": "DM 210"
+                }
+              }
+            }
+          }
+        },
+        "27": {
+          "codigo": "27",
+          "nombre": "SANCHEZ RAMIREZ",
+          "municipios": {
+            "0049": {
+              "codigo": "0049",
+              "nombre": "COTUI",
+              "distritos_municipales": {
+                "049": {
+                  "codigo": "049",
+                  "nombre": "DM 049"
+                },
+                "309": {
+                  "codigo": "309",
+                  "nombre": "DM 309"
+                },
+                "373": {
+                  "codigo": "373",
+                  "nombre": "DM 373"
+                },
+                "393": {
+                  "codigo": "393",
+                  "nombre": "DM 393"
+                },
+                "369": {
+                  "codigo": "369",
+                  "nombre": "DM 369"
+                },
+                "320": {
+                  "codigo": "320",
+                  "nombre": "DM 320"
+                }
+              }
+            },
+            "0052": {
+              "codigo": "0052",
+              "nombre": "CEVICOS",
+              "distritos_municipales": {
+                "052": {
+                  "codigo": "052",
+                  "nombre": "DM 052"
+                },
+                "124": {
+                  "codigo": "124",
+                  "nombre": "DM 124"
+                }
+              }
+            },
+            "0087": {
+              "codigo": "0087",
+              "nombre": "FANTINO",
+              "distritos_municipales": {
+                "087": {
+                  "codigo": "087",
+                  "nombre": "DM 087"
+                }
+              }
+            },
+            "0155": {
+              "codigo": "0155",
+              "nombre": "VILLA LA MATA",
+              "distritos_municipales": {
+                "155": {
+                  "codigo": "155",
+                  "nombre": "DM 155"
+                },
+                "233": {
+                  "codigo": "233",
+                  "nombre": "DM 233"
+                },
+                "220": {
+                  "codigo": "220",
+                  "nombre": "DM 220"
+                },
+                "384": {
+                  "codigo": "384",
+                  "nombre": "DM 384"
+                }
+              }
+            }
+          }
+        },
+        "22": {
+          "codigo": "22",
+          "nombre": "HERMANAS MIRABAL",
+          "municipios": {
+            "0051": {
+              "codigo": "0051",
+              "nombre": "VILLA TAPIA",
+              "distritos_municipales": {
+                "051": {
+                  "codigo": "051",
+                  "nombre": "DM 051"
+                }
+              }
+            },
+            "0055": {
+              "codigo": "0055",
+              "nombre": "SALCEDO",
+              "distritos_municipales": {
+                "055": {
+                  "codigo": "055",
+                  "nombre": "DM 055"
+                },
+                "270": {
+                  "codigo": "270",
+                  "nombre": "DM 270"
+                }
+              }
+            },
+            "0064": {
+              "codigo": "0064",
+              "nombre": "TENARES",
+              "distritos_municipales": {
+                "064": {
+                  "codigo": "064",
+                  "nombre": "DM 064"
+                },
+                "193": {
+                  "codigo": "193",
+                  "nombre": "DM 193"
+                }
+              }
+            }
+          }
+        },
+        "10": {
+          "codigo": "10",
+          "nombre": "ESPAILLAT",
+          "municipios": {
+            "0054": {
+              "codigo": "0054",
+              "nombre": "MOCA",
+              "distritos_municipales": {
+                "054": {
+                  "codigo": "054",
+                  "nombre": "DM 054"
+                },
+                "089": {
+                  "codigo": "089",
+                  "nombre": "DM 089"
+                },
+                "285": {
+                  "codigo": "285",
+                  "nombre": "DM 285"
+                },
+                "236": {
+                  "codigo": "236",
+                  "nombre": "DM 236"
+                },
+                "208": {
+                  "codigo": "208",
+                  "nombre": "DM 208"
+                },
+                "274": {
+                  "codigo": "274",
+                  "nombre": "DM 274"
+                },
+                "273": {
+                  "codigo": "273",
+                  "nombre": "DM 273"
+                },
+                "275": {
+                  "codigo": "275",
+                  "nombre": "DM 275"
+                }
+              }
+            },
+            "0061": {
+              "codigo": "0061",
+              "nombre": "GASPAR HERNANDEZ",
+              "distritos_municipales": {
+                "061": {
+                  "codigo": "061",
+                  "nombre": "DM 061"
+                },
+                "162": {
+                  "codigo": "162",
+                  "nombre": "DM 162"
+                },
+                "240": {
+                  "codigo": "240",
+                  "nombre": "DM 240"
+                },
+                "342": {
+                  "codigo": "342",
+                  "nombre": "DM 342"
+                }
+              }
+            },
+            "0088": {
+              "codigo": "0088",
+              "nombre": "CAYETANO GERMOSEN",
+              "distritos_municipales": {
+                "088": {
+                  "codigo": "088",
+                  "nombre": "DM 088"
+                }
+              }
+            },
+            "0133": {
+              "codigo": "0133",
+              "nombre": "JAMAO AL NORTE",
+              "distritos_municipales": {
+                "133": {
+                  "codigo": "133",
+                  "nombre": "DM 133"
+                }
+              }
+            },
+            "0149": {
+              "codigo": "0149",
+              "nombre": "SAN VICTOR",
+              "distritos_municipales": {
+                "149": {
+                  "codigo": "149",
+                  "nombre": "DM 149"
+                }
+              }
+            }
+          }
+        },
+        "07": {
+          "codigo": "07",
+          "nombre": "DUARTE",
+          "municipios": {
+            "0056": {
+              "codigo": "0056",
+              "nombre": "SAN FRANCISCO DE MACORIS",
+              "distritos_municipales": {
+                "056": {
+                  "codigo": "056",
+                  "nombre": "DM 056"
+                },
+                "363": {
+                  "codigo": "363",
+                  "nombre": "DM 363"
+                },
+                "189": {
+                  "codigo": "189",
+                  "nombre": "DM 189"
+                },
+                "376": {
+                  "codigo": "376",
+                  "nombre": "DM 376"
+                },
+                "205": {
+                  "codigo": "205",
+                  "nombre": "DM 205"
+                }
+              }
+            },
+            "0057": {
+              "codigo": "0057",
+              "nombre": "PIMENTEL",
+              "distritos_municipales": {
+                "057": {
+                  "codigo": "057",
+                  "nombre": "DM 057"
+                }
+              }
+            },
+            "0058": {
+              "codigo": "0058",
+              "nombre": "VILLA RIVA",
+              "distritos_municipales": {
+                "058": {
+                  "codigo": "058",
+                  "nombre": "DM 058"
+                },
+                "265": {
+                  "codigo": "265",
+                  "nombre": "DM 265"
+                },
+                "182": {
+                  "codigo": "182",
+                  "nombre": "DM 182"
+                },
+                "183": {
+                  "codigo": "183",
+                  "nombre": "DM 183"
+                },
+                "345": {
+                  "codigo": "345",
+                  "nombre": "DM 345"
+                }
+              }
+            },
+            "0059": {
+              "codigo": "0059",
+              "nombre": "CASTILLO",
+              "distritos_municipales": {
+                "059": {
+                  "codigo": "059",
+                  "nombre": "DM 059"
+                }
+              }
+            },
+            "0063": {
+              "codigo": "0063",
+              "nombre": "EUGENIO MARIA DE HOSTOS",
+              "distritos_municipales": {
+                "063": {
+                  "codigo": "063",
+                  "nombre": "DM 063"
+                },
+                "290": {
+                  "codigo": "290",
+                  "nombre": "DM 290"
+                }
+              }
+            },
+            "0119": {
+              "codigo": "0119",
+              "nombre": "ARENOSO",
+              "distritos_municipales": {
+                "119": {
+                  "codigo": "119",
+                  "nombre": "DM 119"
+                },
+                "344": {
+                  "codigo": "344",
+                  "nombre": "DM 344"
+                },
+                "266": {
+                  "codigo": "266",
+                  "nombre": "DM 266"
+                }
+              }
+            },
+            "0143": {
+              "codigo": "0143",
+              "nombre": "LAS GUARANAS",
+              "distritos_municipales": {
+                "143": {
+                  "codigo": "143",
+                  "nombre": "DM 143"
+                }
+              }
+            }
+          }
+        },
+        "15": {
+          "codigo": "15",
+          "nombre": "MARIA TRINIDAD SANCHEZ",
+          "municipios": {
+            "0060": {
+              "codigo": "0060",
+              "nombre": "CABRERA",
+              "distritos_municipales": {
+                "060": {
+                  "codigo": "060",
+                  "nombre": "DM 060"
+                },
+                "212": {
+                  "codigo": "212",
+                  "nombre": "DM 212"
+                },
+                "203": {
+                  "codigo": "203",
+                  "nombre": "DM 203"
+                }
+              }
+            },
+            "0071": {
+              "codigo": "0071",
+              "nombre": "NAGUA",
+              "distritos_municipales": {
+                "071": {
+                  "codigo": "071",
+                  "nombre": "DM 071"
+                },
+                "271": {
+                  "codigo": "271",
+                  "nombre": "DM 271"
+                },
+                "347": {
+                  "codigo": "347",
+                  "nombre": "DM 347"
+                },
+                "165": {
+                  "codigo": "165",
+                  "nombre": "DM 165"
+                }
+              }
+            },
+            "0081": {
+              "codigo": "0081",
+              "nombre": "RIO SAN JUAN",
+              "distritos_municipales": {
+                "081": {
+                  "codigo": "081",
+                  "nombre": "DM 081"
+                }
+              }
+            },
+            "0136": {
+              "codigo": "0136",
+              "nombre": "EL FACTOR",
+              "distritos_municipales": {
+                "136": {
+                  "codigo": "136",
+                  "nombre": "DM 136"
+                },
+                "213": {
+                  "codigo": "213",
+                  "nombre": "DM 213"
+                }
+              }
+            }
+          }
+        },
+        "23": {
+          "codigo": "23",
+          "nombre": "SAMANA",
+          "municipios": {
+            "0065": {
+              "codigo": "0065",
+              "nombre": "SAMANA",
+              "distritos_municipales": {
+                "065": {
+                  "codigo": "065",
+                  "nombre": "DM 065"
+                },
+                "322": {
+                  "codigo": "322",
+                  "nombre": "DM 322"
+                },
+                "218": {
+                  "codigo": "218",
+                  "nombre": "DM 218"
+                },
+                "262": {
+                  "codigo": "262",
+                  "nombre": "DM 262"
+                }
+              }
+            },
+            "0066": {
+              "codigo": "0066",
+              "nombre": "SANCHEZ",
+              "distritos_municipales": {
+                "066": {
+                  "codigo": "066",
+                  "nombre": "DM 066"
+                }
+              }
+            },
+            "0134": {
+              "codigo": "0134",
+              "nombre": "LAS TERRENAS",
+              "distritos_municipales": {
+                "134": {
+                  "codigo": "134",
+                  "nombre": "DM 134"
+                }
+              }
+            }
+          }
+        },
+        "19": {
+          "codigo": "19",
+          "nombre": "PEDERNALES",
+          "municipios": {
+            "0069": {
+              "codigo": "0069",
+              "nombre": "PEDERNALES",
+              "distritos_municipales": {
+                "069": {
+                  "codigo": "069",
+                  "nombre": "DM 069"
+                },
+                "325": {
+                  "codigo": "325",
+                  "nombre": "DM 325"
+                }
+              }
+            },
+            "0091": {
+              "codigo": "0091",
+              "nombre": "OVIEDO",
+              "distritos_municipales": {
+                "091": {
+                  "codigo": "091",
+                  "nombre": "DM 091"
+                },
+                "184": {
+                  "codigo": "184",
+                  "nombre": "DM 184"
+                }
+              }
+            }
+          }
+        },
+        "32": {
+          "codigo": "32",
+          "nombre": "SANTO DOMINGO",
+          "municipios": {
+            "0223": {
+              "codigo": "0223",
+              "nombre": "SANTO DOMINGO ESTE",
+              "distritos_municipales": {
+                "223": {
+                  "codigo": "223",
+                  "nombre": "DM 223"
+                },
+                "291": {
+                  "codigo": "291",
+                  "nombre": "DM 291"
+                }
+              }
+            },
+            "0224": {
+              "codigo": "0224",
+              "nombre": "SANTO DOMINGO OESTE",
+              "distritos_municipales": {
+                "224": {
+                  "codigo": "224",
+                  "nombre": "DM 224"
+                }
+              }
+            },
+            "0225": {
+              "codigo": "0225",
+              "nombre": "SANTO DOMINGO NORTE",
+              "distritos_municipales": {
+                "225": {
+                  "codigo": "225",
+                  "nombre": "DM 225"
+                },
+                "230": {
+                  "codigo": "230",
+                  "nombre": "DM 230"
+                }
+              }
+            },
+            "0226": {
+              "codigo": "0226",
+              "nombre": "BOCA CHICA",
+              "distritos_municipales": {
+                "226": {
+                  "codigo": "226",
+                  "nombre": "DM 226"
+                },
+                "286": {
+                  "codigo": "286",
+                  "nombre": "DM 286"
+                }
+              }
+            },
+            "0227": {
+              "codigo": "0227",
+              "nombre": "SAN ANTONIO DE GUERRA",
+              "distritos_municipales": {
+                "227": {
+                  "codigo": "227",
+                  "nombre": "DM 227"
+                },
+                "307": {
+                  "codigo": "307",
+                  "nombre": "DM 307"
+                }
+              }
+            },
+            "0228": {
+              "codigo": "0228",
+              "nombre": "PEDRO BRAND",
+              "distritos_municipales": {
+                "228": {
+                  "codigo": "228",
+                  "nombre": "DM 228"
+                },
+                "310": {
+                  "codigo": "310",
+                  "nombre": "DM 310"
+                },
+                "311": {
+                  "codigo": "311",
+                  "nombre": "DM 311"
+                }
+              }
+            },
+            "0229": {
+              "codigo": "0229",
+              "nombre": "LOS ALCARRIZOS",
+              "distritos_municipales": {
+                "229": {
+                  "codigo": "229",
+                  "nombre": "DM 229"
+                },
+                "312": {
+                  "codigo": "312",
+                  "nombre": "DM 312"
+                },
+                "313": {
+                  "codigo": "313",
+                  "nombre": "DM 313"
+                }
+              }
+            }
+          }
+        },
+        "61": {
+          "codigo": "61",
+          "nombre": "CANADA",
+          "municipios": {
+            "0601": {
+              "codigo": "0601",
+              "nombre": "OCLEE MONTREAL",
+              "distritos_municipales": {
+                "601": {
+                  "codigo": "601",
+                  "nombre": "DM 601"
+                }
+              }
+            },
+            "0602": {
+              "codigo": "0602",
+              "nombre": "OCLEE TORONTO",
+              "distritos_municipales": {
+                "602": {
+                  "codigo": "602",
+                  "nombre": "DM 602"
+                }
+              }
+            }
+          }
+        },
+        "62": {
+          "codigo": "62",
+          "nombre": "CHILE",
+          "municipios": {
+            "0603": {
+              "codigo": "0603",
+              "nombre": "OCLEE CHILE",
+              "distritos_municipales": {
+                "603": {
+                  "codigo": "603",
+                  "nombre": "DM 603"
+                }
+              }
+            }
+          }
+        },
+        "63": {
+          "codigo": "63",
+          "nombre": "CURAZAO",
+          "municipios": {
+            "0604": {
+              "codigo": "0604",
+              "nombre": "OCLEE CURAZAO",
+              "distritos_municipales": {
+                "604": {
+                  "codigo": "604",
+                  "nombre": "DM 604"
+                }
+              }
+            }
+          }
+        },
+        "64": {
+          "codigo": "64",
+          "nombre": "ESPAÑA",
+          "municipios": {
+            "0605": {
+              "codigo": "0605",
+              "nombre": "OCLEE BARCELONA",
+              "distritos_municipales": {
+                "605": {
+                  "codigo": "605",
+                  "nombre": "DM 605"
+                }
+              }
+            },
+            "0606": {
+              "codigo": "0606",
+              "nombre": "OCLEE MADRID",
+              "distritos_municipales": {
+                "606": {
+                  "codigo": "606",
+                  "nombre": "DM 606"
+                }
+              }
+            },
+            "0607": {
+              "codigo": "0607",
+              "nombre": "OCLEE VALENCIA",
+              "distritos_municipales": {
+                "607": {
+                  "codigo": "607",
+                  "nombre": "DM 607"
+                }
+              }
+            }
+          }
+        },
+        "65": {
+          "codigo": "65",
+          "nombre": "ESTADOS UNIDOS",
+          "municipios": {
+            "0608": {
+              "codigo": "0608",
+              "nombre": "OCLEE BOSTON",
+              "distritos_municipales": {
+                "608": {
+                  "codigo": "608",
+                  "nombre": "DM 608"
+                }
+              }
+            },
+            "0609": {
+              "codigo": "0609",
+              "nombre": "OCLEE CALIFORNIA",
+              "distritos_municipales": {
+                "609": {
+                  "codigo": "609",
+                  "nombre": "DM 609"
+                }
+              }
+            },
+            "0610": {
+              "codigo": "0610",
+              "nombre": "OCLEE MIAMI",
+              "distritos_municipales": {
+                "610": {
+                  "codigo": "610",
+                  "nombre": "DM 610"
+                }
+              }
+            },
+            "0611": {
+              "codigo": "0611",
+              "nombre": "OCLEE NEW JERSEY",
+              "distritos_municipales": {
+                "611": {
+                  "codigo": "611",
+                  "nombre": "DM 611"
+                }
+              }
+            },
+            "0612": {
+              "codigo": "0612",
+              "nombre": "OCLEE NEW YORK",
+              "distritos_municipales": {
+                "612": {
+                  "codigo": "612",
+                  "nombre": "DM 612"
+                }
+              }
+            },
+            "0613": {
+              "codigo": "0613",
+              "nombre": "OCLEE ORLANDO",
+              "distritos_municipales": {
+                "613": {
+                  "codigo": "613",
+                  "nombre": "DM 613"
+                }
+              }
+            },
+            "0614": {
+              "codigo": "0614",
+              "nombre": "OCLEE PHILADELPHIA",
+              "distritos_municipales": {
+                "614": {
+                  "codigo": "614",
+                  "nombre": "DM 614"
+                }
+              }
+            },
+            "0615": {
+              "codigo": "0615",
+              "nombre": "OCLEE PROVIDENCE",
+              "distritos_municipales": {
+                "615": {
+                  "codigo": "615",
+                  "nombre": "DM 615"
+                }
+              }
+            },
+            "0616": {
+              "codigo": "0616",
+              "nombre": "OCLEE WASHINGTON",
+              "distritos_municipales": {
+                "616": {
+                  "codigo": "616",
+                  "nombre": "DM 616"
+                }
+              }
+            }
+          }
+        },
+        "66": {
+          "codigo": "66",
+          "nombre": "ITALIA",
+          "municipios": {
+            "0617": {
+              "codigo": "0617",
+              "nombre": "OCLEE MILANO",
+              "distritos_municipales": {
+                "617": {
+                  "codigo": "617",
+                  "nombre": "DM 617"
+                }
+              }
+            }
+          }
+        },
+        "67": {
+          "codigo": "67",
+          "nombre": "PAISES BAJOS",
+          "municipios": {
+            "0618": {
+              "codigo": "0618",
+              "nombre": "OCLEE HOLANDA",
+              "distritos_municipales": {
+                "618": {
+                  "codigo": "618",
+                  "nombre": "DM 618"
+                }
+              }
+            }
+          }
+        },
+        "68": {
+          "codigo": "68",
+          "nombre": "PANAMA",
+          "municipios": {
+            "0619": {
+              "codigo": "0619",
+              "nombre": "OCLEE PANAMA",
+              "distritos_municipales": {
+                "619": {
+                  "codigo": "619",
+                  "nombre": "DM 619"
+                }
+              }
+            }
+          }
+        },
+        "69": {
+          "codigo": "69",
+          "nombre": "PUERTO RICO",
+          "municipios": {
+            "0620": {
+              "codigo": "0620",
+              "nombre": "OCLEE PUERTO RICO",
+              "distritos_municipales": {
+                "620": {
+                  "codigo": "620",
+                  "nombre": "DM 620"
+                }
+              }
+            }
+          }
+        },
+        "70": {
+          "codigo": "70",
+          "nombre": "SAN MARTIN",
+          "municipios": {
+            "0621": {
+              "codigo": "0621",
+              "nombre": "OCLEE SAN MARTIN",
+              "distritos_municipales": {
+                "621": {
+                  "codigo": "621",
+                  "nombre": "DM 621"
+                }
+              }
+            }
+          }
+        },
+        "71": {
+          "codigo": "71",
+          "nombre": "SUIZA",
+          "municipios": {
+            "0622": {
+              "codigo": "0622",
+              "nombre": "OCLEE ZURICH",
+              "distritos_municipales": {
+                "622": {
+                  "codigo": "622",
+                  "nombre": "DM 622"
+                }
+              }
+            }
+          }
+        },
+        "72": {
+          "codigo": "72",
+          "nombre": "VENEZUELA",
+          "municipios": {
+            "0623": {
+              "codigo": "0623",
+              "nombre": "OCLEE VENEZUELA",
+              "distritos_municipales": {
+                "623": {
+                  "codigo": "623",
+                  "nombre": "DM 623"
+                }
+              }
+            }
+          }
+        },
+        "33": {
+          "codigo": "33",
+          "nombre": "PENITENCIARIO",
+          "municipios": {
+            "0999": {
+              "codigo": "0999",
+              "nombre": "PENITENCIARIO",
+              "distritos_municipales": {
+                "999": {
+                  "codigo": "999",
+                  "nombre": "DM 999"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "exterior": {
+      "circunscripciones_diputados": {
+        "C1": {
+          "nombre": "Exterior Circunscripción 1"
+        },
+        "C2": {
+          "nombre": "Exterior Circunscripción 2"
+        },
+        "C3": {
+          "nombre": "Exterior Circunscripción 3"
+        }
+      }
+    },
+    "penitenciario": {
+      "nombre": "Voto Penitenciario"
+    }
+  }
+}
