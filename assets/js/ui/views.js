@@ -1,13 +1,20 @@
-
 import {toast} from "./toast.js";
-import {loadPolls} from "../core/polls.js";
-import {dhondt, nextSeatGap} from "../core/dhondt.js";
-import {loadDiputados2024, loadCurules2024, loadPadron2024Provincial, loadPadron2024Exterior, loadPadron2024Meta, loadPres2024VotosProv} from "../core/data.js";
-import {applyAlliance, mergeCoalition} from "../core/coalition.js";
-import {formatPct} from "../core/utils.js";
+import {loadResults2024, loadResults2020, loadPadron, loadGeography, loadCurules2024, loadPadron2024Meta, loadPolls} from "../core/data.js";
+import {dhondt} from "../core/dhondt.js";
+import {formatPct, clamp} from "../core/utils.js";
 
 const NIVEL_LABEL = {pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM"};
-const CORTE_OPTIONS = ["Febrero 2024","Mayo 2024","Base 2024","Proyección 2028"];
+const CORTE_OPTIONS = ["Mayo 2024","Base 2024","Proyección 2028","Febrero 2024"];
+
+let CTX = null;
+async function getCtx(){
+  if(CTX) return CTX;
+  const [r24,r20,pad,geo,cur,pmeta,polls] = await Promise.all([
+    loadResults2024(), loadResults2020(), loadPadron(), loadGeography(), loadCurules2024(), loadPadron2024Meta(), loadPolls()
+  ]);
+  CTX = {r24,r20,pad,geo,cur,pmeta,polls};
+  return CTX;
+}
 
 function moduleControlsHtml(state, moduleId){
   const eff = state.getEffective ? state.getEffective(moduleId) : {nivel:"dip", corte:"Base 2024", override:false};
@@ -17,843 +24,320 @@ function moduleControlsHtml(state, moduleId){
     <div class="card" style="padding:10px; margin-bottom:12px;">
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
         <span class="badge">Global: ${NIVEL_LABEL[state.global?.nivel||eff.nivel]||eff.nivel} · ${state.global?.corte||eff.corte}</span>
-        <label style="display:flex; align-items:center; gap:6px;">
-          <input type="checkbox" id="${moduleId}-override" ${checked}/>
-          Override
+        <label style="display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="override-${moduleId}" ${checked}/> Override
         </label>
-        <select id="${moduleId}-corte" class="select-sm" ${o.enabled?"":"disabled"}>
-          ${CORTE_OPTIONS.map(c=>`<option value="${c}" ${((o.corte||state.global?.corte||eff.corte)===c)?"selected":""}>${c}</option>`).join("")}
+        <span class="badge" id="override-label-${moduleId}" style="display:${checked?'inline-flex':'none'};">Override activo</span>
+        <select id="module-corte-${moduleId}" class="select-sm" ${checked?'' :'disabled'}>
+          ${CORTE_OPTIONS.map(c=>`<option value="${c}" ${((o.corte||eff.corte)===c)?'selected':''}>${c}</option>`).join("")}
         </select>
-        <select id="${moduleId}-nivel" class="select-sm" ${o.enabled?"":"disabled"}>
-          ${Object.keys(NIVEL_LABEL).map(k=>`<option value="${k}" ${((o.nivel||state.global?.nivel||eff.nivel)===k)?"selected":""}>${NIVEL_LABEL[k]}</option>`).join("")}
+        <select id="module-nivel-${moduleId}" class="select-sm" ${checked?'' :'disabled'}>
+          ${Object.keys(NIVEL_LABEL).map(n=>`<option value="${n}" ${((o.nivel||eff.nivel)===n)?'selected':''}>${NIVEL_LABEL[n]}</option>`).join("")}
         </select>
-        ${o.enabled ? `<span class="badge">Override activo</span>` : `<span class="badge">Siguiendo global</span>`}
+        <button class="btn-sm" id="module-follow-${moduleId}">Seguir global</button>
       </div>
     </div>
   `;
 }
 
-function attachModuleControls(state, moduleId){
-  const chk = document.getElementById(`${moduleId}-override`);
-  const selC = document.getElementById(`${moduleId}-corte`);
-  const selN = document.getElementById(`${moduleId}-nivel`);
-  if(!chk || !selC || !selN) return;
+function wireModuleControls(state, moduleId, rerender){
+  const chk = document.getElementById(`override-${moduleId}`);
+  const selC = document.getElementById(`module-corte-${moduleId}`);
+  const selN = document.getElementById(`module-nivel-${moduleId}`);
+  const lab = document.getElementById(`override-label-${moduleId}`);
+  const follow = document.getElementById(`module-follow-${moduleId}`);
+  if(!chk||!selC||!selN) return;
+
   chk.addEventListener("change", ()=>{
-    state.setOverride?.(moduleId, {enabled: chk.checked});
+    state.setOverride(moduleId, {enabled: chk.checked});
     selC.disabled = !chk.checked;
     selN.disabled = !chk.checked;
-    state.recomputeAndRender?.();
+    lab.style.display = chk.checked ? "inline-flex" : "none";
+    rerender();
   });
-  selC.addEventListener("change", ()=>{
-    state.setOverride?.(moduleId, {corte: selC.value});
-    state.recomputeAndRender?.();
-  });
-  selN.addEventListener("change", ()=>{
-    state.setOverride?.(moduleId, {nivel: selN.value});
-    state.recomputeAndRender?.();
-  });
+  selC.addEventListener("change", ()=>{ state.setOverride(moduleId, {corte: selC.value}); rerender(); });
+  selN.addEventListener("change", ()=>{ state.setOverride(moduleId, {nivel: selN.value}); rerender(); });
+  follow?.addEventListener("click", ()=>{ state.setOverride(moduleId, {enabled:false, corte:null, nivel:null}); rerender(); });
 }
 
-
-
-function provIdFromSvg(id){
-  // Expect DO-01..DO-32
-  const m = String(id||"").match(/DO-(\d{1,2})/);
-  if(!m) return null;
-  return Number(m[1]);
+function presToMetaVotes(obj){
+  const d = obj?.data || {};
+  const meta = { inscrito: obj?.meta?.inscritos ?? d.INSCRITOS ?? null, inscritos: obj?.meta?.inscritos ?? d.INSCRITOS ?? null, emitidos: d.EMITIDOS ?? 0, validos: d.VALIDOS ?? 0, nulos: d.NULOS ?? 0 };
+  const votes = {};
+  Object.keys(d).forEach(k=>{ if(["EMITIDOS","VALIDOS","NULOS","INSCRITOS"].includes(k)) return; votes[k] = Number(d[k]||0); });
+  return {meta, votes, nombre: obj?.nombre || ""};
 }
 
-function aggProvVotes(dipData, provincia_id){
-  const districts = dipData.districts.filter(d=>d.provincia_id===provincia_id);
-  const out = {};
-  for(const d of districts){
-    for(const [p,v] of Object.entries(d.votes||{})){
-      out[p] = (out[p]||0) + (Number(v)||0);
-    }
+function getLevelBundle(r, nivel){
+  const lvl = r?.[nivel] || {};
+  if(nivel==="pres"){
+    const nat = presToMetaVotes(lvl?.nacional||{});
+    const provincias = {}; Object.entries(lvl?.provincias||{}).forEach(([id,o])=> provincias[id]=presToMetaVotes(o));
+    const municipios = {}; Object.entries(lvl?.municipios||{}).forEach(([id,o])=> municipios[id]=presToMetaVotes(o));
+    const dm = {}; Object.entries(lvl?.dm||{}).forEach(([id,o])=> dm[id]=presToMetaVotes(o));
+    return {nacional:nat, provincias, municipios, dm};
   }
-  return out;
+  if(nivel==="sen") return {nacional:lvl?.nacional||{meta:{},votes:{}}, provincias:lvl?.provincias||{}};
+  if(nivel==="dip") return {nacional:lvl?.nacional||{meta:{},votes:{}}, provincias:lvl?.provincias||{}, circunscripciones:lvl?.circunscripciones||{}, exterior:lvl?.exterior||{}};
+  if(nivel==="mun") return {nacional:lvl?.nacional||{meta:{},votes:{}}, municipios:lvl?.municipios||{}};
+  if(nivel==="dm")  return {nacional:lvl?.nacional||{meta:{},votes:{}}, dm:lvl?.dm||{}};
+  return lvl;
 }
 
-function shares(votes){
-  const total = Object.values(votes).reduce((a,b)=>a+(Number(b)||0),0) || 1;
-  const out = {};
-  for(const [p,v] of Object.entries(votes)) out[p] = (Number(v)||0)/total*100;
-  return {total, share: out};
-}
+function partyList(votes){ return Object.keys(votes||{}).filter(k=>k && !["EMITIDOS","VALIDOS","NULOS","INSCRITOS"].includes(k)); }
+function fmtInt(n){ return (Number(n)||0).toLocaleString("en-US"); }
+function getMainContainer(){ return document.getElementById("view") || document.querySelector("#view") || document.body; }
+function cardKPI(title, value, sub=""){ return `<div class="kpi-card"><div class="kpi-title">${title}</div><div class="kpi-value">${value}</div>${sub?`<div class="kpi-sub">${sub}</div>`:""}</div>`; }
 
-function top2(shareObj){
-  const entries = Object.entries(shareObj).sort((a,b)=>b[1]-a[1]);
-  return entries.slice(0,2);
-}
-
-export async export function renderDashboard(state, moduleId="dashboard"){
-  const el = document.getElementById("view");
-  el.innerHTML = `
+export async function renderDashboard(state, moduleId="dashboard"){
+  const cont = getMainContainer();
+  const eff = state.getEffective(moduleId);
+  const ctx = await getCtx();
+  const nivel = eff.nivel;
+  const b = getLevelBundle(ctx.r24, nivel);
+  const pad = ctx.pad?.mayo2024?.nacional?.inscritos ?? null;
+  const meta = b?.nacional?.meta || {};
+  const inscritos = (nivel==="pres" && pad) ? pad : (meta.inscritos||0);
+  const emitidos = meta.emitidos||0;
+  const part = inscritos ? emitidos/inscritos : 0;
+  const votes = b?.nacional?.votes || {};
+  const plist = partyList(votes);
+  let top="—";
+  if(plist.length){
+    const sorted = plist.map(p=>[p,Number(votes[p]||0)]).sort((a,b)=>b[1]-a[1]);
+    top = `${sorted[0][0]} (${formatPct(sorted[0][1]/(emitidos||1))})`;
+  }
+  cont.innerHTML = `
     ${moduleControlsHtml(state, moduleId)}
-    <div class="grid">
-      <div class="card">
-        <h2>Dashboard Ejecutivo</h2>
-        <div class="kpis">
-          <div class="kpi"><div class="label">Meta Presidencial</div><div class="value" id="kpi-pres">—</div><div class="sub">Editable por escenario</div></div>
-          <div class="kpi"><div class="label">Meta Diputados</div><div class="value" id="kpi-dip">≥96</div><div class="sub">Mayoría simple</div></div>
-          <div class="kpi"><div class="label">Meta Alcaldías</div><div class="value" id="kpi-alc">—</div><div class="sub">Editable por escenario</div></div>
-        </div>
-        <hr/>
-        <div class="row">
-          <div class="pill warn">Base 2028 = 2024</div>
-          <div class="pill">Datos reales conectados: <b>Diputados 2024</b></div>
-        </div>
-        <p class="small">Esta versión ya corre con datos reales de Diputados 2024 por provincia/circ y curules oficiales 2024. Encuestas se cargan desde <code>data/polls.json</code>.</p>
-      </div>
-      <div class="card">
-        <h2>Estado de datos</h2>
-        <div id="data-status" class="small">Cargando…</div>
+    <div class="grid-kpi">
+      ${cardKPI("Padrón base", pad?fmtInt(pad):fmtInt(inscritos), "Mayo 2024")}
+      ${cardKPI("Participación base", formatPct(part))}
+      ${cardKPI("Abstención base", formatPct(1-part))}
+      ${cardKPI("Proyección actual", top, NIVEL_LABEL[nivel])}
+      ${cardKPI("Meta", "—")}
+      ${cardKPI("Gap vs meta", "—")}
+    </div>
+    <div class="card" style="padding:14px; margin-top:12px;">
+      <h3 style="margin:0 0 8px 0;">Resumen ejecutivo</h3>
+      <ul style="margin:0; padding-left:18px;">
+        <li>Territorios críticos: <b>pendiente</b></li>
+        <li>Riesgo presidencial: <b>${nivel==="pres" ? ( (1-part)<0.5 ? "Medio" : "—") : "—" }</b></li>
+        <li>Curules decisivos: <b>${nivel==="dip" ? "pendiente" : "—"}</b></li>
+      </ul>
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+        <a class="btn" href="#simulador">Ir a Simulador</a>
+        <a class="btn" href="#objetivo">Ir a Objetivo</a>
       </div>
     </div>
   `;
-  attachModuleControls(state, moduleId);
-
-  const status = document.getElementById("data-status");
-  const polls = await loadPolls();
-  const curules = await loadCurules2024().catch(()=>null);
-  const dip = await loadDiputados2024().catch(()=>null);
-
-  const lines = [];
-  lines.push(curules ? `<div class="pill good">Curules 2024 cargadas: ${curules.meta.total_diputados} (territorial ${curules.meta.territorial_total} + exterior ${curules.meta.exterior_total} + nacionales 5)</div>` :
-                       `<div class="pill bad">No se pudo cargar curules_2024.json</div>`);
-  lines.push(dip ? `<div class="pill good">Votos Diputados 2024: ${dip.meta.total_votes.toLocaleString()}</div>` :
-                   `<div class="pill bad">No se pudo cargar diputados_2024_votos.json</div>`);
-  lines.push(polls.ok ? `<div class="pill good">Encuestas cargadas: ${polls.polls.length}</div>` :
-                        `<div class="pill warn">Encuestas: ${polls.error} (fallback: base 2024)</div>`);
-  status.innerHTML = lines.join("<br/>");
+  wireModuleControls(state, moduleId, ()=>renderDashboard(state,moduleId));
 }
 
-export async export function renderMapa(state, mapApi, moduleId="mapa"){
-  const el = document.getElementById("view");
-  el.innerHTML = `
+export async function renderMapa(state, mapApi, moduleId="mapa"){
+  const cont = getMainContainer();
+  const eff = state.getEffective(moduleId);
+  const ctx = await getCtx();
+  const nivel = eff.nivel;
+  const b = getLevelBundle(ctx.r24, nivel);
+  cont.innerHTML = `
     ${moduleControlsHtml(state, moduleId)}
-    <div class="card">
-      <h2>Mapa Interactivo (Diputados 2024)</h2>
-      <div class="row">
-        <label>Modo</label>
-        <select id="map-mode">
-          <option value="prov" selected>Provincial</option>
-          <option value="reg">Regional</option>
-        </select>
-        <span class="small">Click en una provincia para ver % por partido y margen.</span>
+    <div class="layout-2col">
+      <div class="card" style="padding:10px;">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+          <button class="btn-sm" id="map-zoom-in">Zoom +</button>
+          <button class="btn-sm" id="map-zoom-out">Zoom -</button>
+          <button class="btn-sm" id="map-reset">Reset</button>
+          <span class="badge">Modo: Resultado</span>
+        </div>
+        <div id="map-container" style="height:560px;"></div>
       </div>
-      <div class="mapWrap" id="map-wrap">
-        <div class="mapTools">
-          <button id="btn-zoom-in">＋</button>
-          <button id="btn-zoom-out">－</button>
-          <button id="btn-reset">Reset</button>
-        </div>
-        <div id="map-container" style="width:100%;height:100%"></div>
-        <div class="mapLegend">
-          <div class="legendItem"><span class="dot"></span> Selección</div>
-          <div class="legendItem">Zoom/arrastre: rueda + arrastrar</div>
-        </div>
-      </div>
-      <hr/>
-      <div class="split">
-        <div>
-          <h2 style="margin-top:0">Panel demarcación</h2>
-          <div id="map-panel" class="small">Selecciona una provincia en el mapa.</div>
-        </div>
-        <div>
-          <h2 style="margin-top:0">Categoría estratégica (simple)</h2>
-          <div id="map-cat" class="small">—</div>
-        </div>
+      <div class="card" style="padding:12px;" id="map-panel">
+        <h3 style="margin:0 0 8px 0;">Seleccione un territorio</h3>
+        <div class="muted">Click en el mapa.</div>
       </div>
     </div>
   `;
-  attachModuleControls(state, moduleId);
+  document.getElementById("map-zoom-in")?.addEventListener("click", ()=>mapApi.zoomIn());
+  document.getElementById("map-zoom-out")?.addEventListener("click", ()=>mapApi.zoomOut());
+  document.getElementById("map-reset")?.addEventListener("click", ()=>mapApi.reset());
 
-  const dip = await loadDiputados2024();
-  const panel = document.getElementById("map-panel");
-  const cat = document.getElementById("map-cat");
-
-  function classify(fp, lead, margin){
-    if(fp < 10) return {label:"Baja prioridad", pill:"warn"};
-    if(lead==="FP" && margin>=8) return {label:"Fortaleza", pill:"good"};
-    if(lead==="FP") return {label:"Disputa ganada", pill:"good"};
-    if(margin<=5) return {label:"Oportunidad", pill:"warn"};
-    if(margin<=12) return {label:"Disputa", pill:"warn"};
-    return {label:"Adverso", pill:"bad"};
-  }
-
-  function loadMode(mode){
-    const url = mode==="reg" ? new URL("../../../assets/maps/regiones.svg", import.meta.url) : new URL("../../../assets/maps/provincias.svg", import.meta.url);
-    mapApi.load(url, (id)=>{
-      const pid = provIdFromSvg(id);
-      if(pid) state.lastProvId = pid;
-      if(!pid){
-        panel.innerHTML = `<div class="pill warn">Selección: ${id}</div><div class="small">Modo regional no tiene desglose por provincia en esta versión.</div>`;
-        cat.innerHTML = `<div class="pill warn">—</div>`;
-        return;
-      }
-      const votesProv = aggProvVotes(dip, pid);
-      const s = shares(votesProv);
-      const t2 = top2(s.share);
-      const lead = t2[0]?.[0]||"—";
-      const margin = (t2[0]?.[1]||0) - (t2[1]?.[1]||0);
-      const fp = s.share["FP"] || 0;
-
-      const rows = Object.entries(s.share).sort((a,b)=>b[1]-a[1]).slice(0,8)
-        .map(([p,v])=>`<tr><td>${p}</td><td>${formatPct(v)}</td></tr>`).join("");
-      panel.innerHTML = `
-        <div class="pill">Provincia ID: <b>${pid}</b></div>
-        <div class="pill">Líder: <b>${lead}</b> · Margen: <b>${formatPct(margin)}</b></div>
-        <div class="small">Total votos diputados (prov): <b>${s.total.toLocaleString()}</b></div>
-        <div style="overflow:auto;margin-top:8px">
-          <table class="table"><thead><tr><th>Partido</th><th>%</th></tr></thead><tbody>${rows}</tbody></table>
-        </div>
-      `;
-      const c = classify(fp, lead, margin);
-      cat.innerHTML = `<div class="pill ${c.pill}">${c.label}</div>`;
-    });
-  }
-
-  document.getElementById("btn-zoom-in").onclick = ()=>mapApi.zoomIn();
-  document.getElementById("btn-zoom-out").onclick = ()=>mapApi.zoomOut();
-  document.getElementById("btn-reset").onclick = ()=>mapApi.reset();
-
-  const modeSel = document.getElementById("map-mode");
-  modeSel.addEventListener("change", ()=>loadMode(modeSel.value));
-  loadMode("prov");
-}
-
-export async export function renderEncuestas(state, moduleId="encuestas"){
-  const el = document.getElementById("view");
-  el.innerHTML = `
-    ${moduleControlsHtml(state, moduleId)}
-    <div class="card">
-      <h2>Encuestas (carga por archivo)</h2>
-      <p class="small">Edita <b>data/encuestas_master.xlsx</b> y exporta a <b>data/polls.json</b>. La web siempre carga lo que haya en ese archivo.</p>
-      <div class="row">
-        <a class="pill" href="./data/encuestas_master.xlsx" download>Descargar plantilla Excel</a>
-        <a class="pill" href="./data/polls.json" download>Descargar polls.json actual</a>
-      </div>
-      <hr/>
-      <div id="polls-status" class="small">Cargando…</div>
-      <div style="overflow:auto; margin-top:10px">
-        <table class="table" id="polls-table"></table>
-      </div>
-    </div>
-  `;
-  attachModuleControls(state, moduleId);
-
-  const status = document.getElementById("polls-status");
-  const table = document.getElementById("polls-table");
-  const res = await loadPolls();
-  if(!res.ok){
-    status.innerHTML = `<div class="pill warn">${res.error}</div><br/>Fallback: base 2024 sin encuestas.`;
-    table.innerHTML = "";
-    return;
-  }
-  status.innerHTML = `<div class="pill good">Encuestas cargadas: ${res.polls.length}</div>`;
-  const rows = res.polls.slice().sort((a,b)=> String(b.fecha).localeCompare(String(a.fecha)));
-  table.innerHTML = `
-    <thead><tr>
-      <th>Fecha</th><th>Encuestadora</th><th>Nivel</th><th>Tipo</th><th>Cred.</th><th>Resultados</th>
-    </tr></thead>
-    <tbody>
-      ${rows.map(p=>{
-        const r = p.resultados || {};
-        const keys = Object.keys(r).slice(0,10);
-        const txt = keys.map(k=>`${k}:${r[k]}`).join(" | ") + (Object.keys(r).length>10?" …":"");
-        return `<tr>
-          <td>${p.fecha||""}</td>
-          <td>${p.encuestadora||""}</td>
-          <td>${p.nivel||""}</td>
-          <td>${p.tipo||""}</td>
-          <td>${p.credibilidad??""}</td>
-          <td style="font-family: var(--mono); font-size:12px">${txt}</td>
-        </tr>`;
-      }).join("")}
-    </tbody>
-  `;
-}
-
-export async export function renderSimulador(state, moduleId="simulador"){
-  const el = document.getElementById("view");
-  const curules = await loadCurules2024();
-  const dip = await loadDiputados2024();
-
-  const territorial = curules.territorial || [];
-  const provList = [...new Set(territorial.map(x=>x.provincia))].sort((a,b)=>a.localeCompare(b));
-
-  // party list from data
-  const parties = dip.meta.parties || [];
-
-  el.innerHTML = `
-    ${moduleControlsHtml(state, moduleId)}
-    <div class="card">
-      <h2>Simulador Diputados (Datos reales 2024 + D'Hondt)</h2>
-      <div class="row">
-        <label>Provincia</label>
-        <select id="sim-prov">${provList.map(p=>`<option value="${p}">${p}</option>`).join("")}</select>
-        <label>Circ</label>
-        <select id="sim-circ"></select>
-        <label>Modo</label>
-        <select id="sim-mode">
-          <option value="baseline" selected>Base 2024</option>
-          <option value="alliance">Alianza (transferencia parcial)</option>
-          <option value="unica">Boleta única (fusionar listas)</option>
-        </select>
-      </div>
-
-      <hr/>
-
-      <div class="split">
-        <div>
-          <h2 style="margin-top:0">Configuración de alianza</h2>
-          <div class="small">Solo aplica si el modo es <b>Alianza</b> o <b>Boleta única</b>.</div>
-          <div class="row" style="margin-top:10px">
-            <label>Partido líder</label>
-            <select id="lead-party">
-              ${parties.map(p=>`<option value="${p}" ${p==="FP"?"selected":""}>${p}</option>`).join("")}
-            </select>
-            <label>Aliados</label>
-            <select id="ally-parties" multiple size="6" style="min-width:160px">
-              ${parties.filter(p=>p!=="FP").map(p=>`<option value="${p}">${p}</option>`).join("")}
-            </select>
-          </div>
-          <div class="row" style="margin-top:10px">
-            <label>% a líder</label><input id="t-tolead" type="number" min="0" max="100" value="70" style="width:90px"/>
-            <label>% abstención</label><input id="t-abst" type="number" min="0" max="100" value="10" style="width:90px"/>
-            <span class="small">El resto queda en el aliado (compite solo) en modo Alianza.</span>
-          </div>
-          <div class="row" style="margin-top:12px">
-            <button id="sim-run" class="pill good">Simular distrito</button>
-            <button id="sim-prov-run" class="pill">Simular provincia completa</button>
-          </div>
-          <hr/>
-          <h2 style="margin-top:0">Optimización rápida (objetivo)</h2>
-          <div class="small">Calcula en este distrito cuántos votos aproximados necesita el líder para el próximo escaño (gap D'Hondt).</div>
-          <button id="sim-gap" class="pill warn" style="margin-top:8px">Calcular gap próximo escaño</button>
-          <div id="gap-out" class="small" style="margin-top:8px">—</div>
-        </div>
-
-        <div>
-          <h2 style="margin-top:0">Resultado</h2>
-          <div id="sim-out" class="small">—</div>
-          <div style="overflow:auto; margin-top:10px">
-            <table class="table" id="sim-table"></table>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  attachModuleControls(state, moduleId);
-
-  const provSel = document.getElementById("sim-prov");
-  const circSel = document.getElementById("sim-circ");
-  const modeSel = document.getElementById("sim-mode");
-  const leadSel = document.getElementById("lead-party");
-  const allySel = document.getElementById("ally-parties");
-  const toLead = document.getElementById("t-tolead");
-  const abst = document.getElementById("t-abst");
-
-  function loadCircs(){
-    const prov = provSel.value;
-    const rows = territorial.filter(x=>x.provincia===prov).sort((a,b)=>a.circ-b.circ);
-    circSel.innerHTML = rows.map(r=>`<option value="${r.circ}">Circ ${r.circ} (${r.seats})</option>`).join("");
-  }
-  provSel.addEventListener("change", loadCircs);
-  loadCircs();
-
-  function getDistrict(prov, circ){
-    return dip.districts.find(x=>x.provincia===prov && x.circ===Number(circ)) || null;
-  }
-  function getSeats(prov, circ){
-    const row = territorial.find(x=>x.provincia===prov && x.circ===Number(circ));
-    return row?.seats || 1;
-  }
-
-  function selectedAllies(){
-    return Array.from(allySel.selectedOptions).map(o=>o.value);
-  }
-
-  function applyMovilizacionVotes(votes, provId){
-    const m = state.movilizacion;
-    if(!m || !m.byProv) return votes;
-    const row = m.byProv[String(provId)] || m.byProv[provId];
-    if(!row) return votes;
-    const baseEm = Number(row.emitidos_pres)||0;
-    const escEm = Number(row.emitidos_esc)||0;
-    if(baseEm<=0 || escEm<=baseEm) return votes;
-    const factor = escEm / baseEm;
-    if(!isFinite(factor) || factor<=1) return votes;
-
-    const out = {...votes};
-    if(m.mode==="dirigida" && m.partyTarget){
-      const total = Object.values(out).reduce((a,b)=>a+(Number(b)||0),0);
-      const inc = Math.max(0, Math.round(total*(factor-1)));
-      out[m.partyTarget] = (out[m.partyTarget]||0) + inc;
-      return out;
+  const svgUrl = "./assets/maps/provincias.svg";
+  mapApi.load(svgUrl, (territoryId)=>{
+    const panel = document.getElementById("map-panel");
+    const provId = String(territoryId).replace(/\\D/g,"").padStart(2,"0");
+    let obj = null;
+    if(nivel==="pres" || nivel==="sen" || nivel==="dip") obj = b?.provincias?.[provId] || null;
+    if(!obj){
+      panel.innerHTML = `<h3 style="margin:0 0 8px 0;">${territoryId}</h3><div class="muted">No hay data.</div>`;
+      return;
     }
-    // proporcional
-    for(const k of Object.keys(out)){
-      out[k] = Math.round((Number(out[k])||0) * factor);
-    }
-    return out;
-  }
-
-  function simulateOne(){
-    const prov = provSel.value;
-    const circ = circSel.value;
-    const k = getSeats(prov, circ);
-    const district = getDistrict(prov, circ);
-    const baseVotes = district ? district.votes : null;
-    const provId = district ? district.provincia_id : null;
-    if(!baseVotes){
-      toast("No se encontró data de votos para este distrito.");
-      return null;
-    }
-    let votesAdj = {...baseVotes};
-    // Movilización (si está calculada en el motor Movilización)
-    if(provId!=null) votesAdj = applyMovilizacionVotes(votesAdj, provId);
-    const mode = modeSel.value;
-    const lead = leadSel.value;
-    const allies = selectedAllies();
-    if(mode==="alliance"){
-      votesAdj = applyAlliance(votesAdj, {lead, allies, toLead:Number(toLead.value)||0, abst:Number(abst.value)||0});
-    }else if(mode==="unica"){
-      votesAdj = mergeCoalition(votesAdj, {lead, allies});
-    }
-    const r = dhondt(votesAdj, k);
-    return {prov, circ:Number(circ), k, baseVotes, votesAdj, result:r, lead};
-  }
-
-  function renderResult(sim){
-    const out = document.getElementById("sim-out");
-    const table = document.getElementById("sim-table");
-    if(!sim){ out.innerHTML="—"; table.innerHTML=""; return; }
-    out.innerHTML = `<div class="pill good">D'Hondt (k=${sim.k}) · ${sim.prov} · Circ ${sim.circ}</div>`;
-    const seatRows = Object.entries(sim.result.seatsByParty).sort((a,b)=>b[1]-a[1]).filter(x=>x[1]>0);
-    table.innerHTML = `
-      <thead><tr><th>Partido</th><th>Curules</th><th>Votos (ajustado)</th></tr></thead>
-      <tbody>
-        ${seatRows.map(([p,s])=>`<tr><td>${p}</td><td><b>${s}</b></td><td>${(sim.votesAdj[p]||0).toLocaleString()}</td></tr>`).join("")}
-      </tbody>`;
-  }
-
-  document.getElementById("sim-run").addEventListener("click", ()=>{
-    const sim = simulateOne();
-    renderResult(sim);
-  });
-
-  document.getElementById("sim-prov-run").addEventListener("click", ()=>{
-    const prov = provSel.value;
-    const dist = dip.districts.filter(d=>d.provincia===prov);
-    const lead = leadSel.value;
-    const allies = selectedAllies();
-    const mode = modeSel.value;
-
-    const totals = {};
-    let seatsFP = 0;
-    let seatsTotal = 0;
-    for(const d of dist){
-      const k = getSeats(prov, d.circ);
-      let v = {...d.votes};
-      if(mode==="alliance") v = applyAlliance(v, {lead, allies, toLead:Number(toLead.value)||0, abst:Number(abst.value)||0});
-      if(mode==="unica") v = mergeCoalition(v, {lead, allies});
-      const r = dhondt(v, k);
-      for(const [p,s] of Object.entries(r.seatsByParty)){
-        totals[p] = (totals[p]||0) + s;
-      }
-      seatsTotal += k;
-    }
-    const out = document.getElementById("sim-out");
-    out.innerHTML = `<div class="pill good">Resultado provincia · ${prov}</div><div class="small">Curules totales (prov): ${seatsTotal}</div>`;
-    const table = document.getElementById("sim-table");
-    const rows = Object.entries(totals).sort((a,b)=>b[1]-a[1]).filter(x=>x[1]>0);
-    table.innerHTML = `
-      <thead><tr><th>Partido</th><th>Curules (suma)</th></tr></thead>
-      <tbody>${rows.map(([p,s])=>`<tr><td>${p}</td><td><b>${s}</b></td></tr>`).join("")}</tbody>`;
-  });
-
-  document.getElementById("sim-gap").addEventListener("click", ()=>{
-    const sim = simulateOne();
-    if(!sim) return;
-    const lead = sim.lead;
-    const g = nextSeatGap(sim.votesAdj, sim.k, lead);
-    document.getElementById("gap-out").innerHTML =
-      `<div class="pill warn">Gap próximo escaño (${lead})</div>
-       <div class="small">Curules actuales: <b>${g.currentSeats}</b> · Próximo divisor: <b>${g.nextDiv}</b></div>
-       <div class="small">Votos aprox necesarios: <b>${g.votesNeeded.toLocaleString()}</b> (en este distrito)</div>`;
-  });
-}
-
-export async export function renderPotencial(state, moduleId="potencial"){
-  const el = document.getElementById("view");
-  const dip = await loadDiputados2024();
-  // aggregate by province
-  const byProv = new Map();
-  for(const d of dip.districts){
-    const pid = d.provincia_id;
-    if(!byProv.has(pid)) byProv.set(pid, {provincia_id:pid, provincia:d.provincia, votes:{}});
-    const obj = byProv.get(pid);
-    for(const [p,v] of Object.entries(d.votes||{})){
-      obj.votes[p] = (obj.votes[p]||0) + (Number(v)||0);
-    }
-  }
-  const rows = [];
-  for(const obj of byProv.values()){
-    const s = shares(obj.votes);
-    const t2 = top2(s.share);
-    const lead = t2[0]?.[0]||"—";
-    const margin = (t2[0]?.[1]||0) - (t2[1]?.[1]||0);
-    const fp = s.share["FP"]||0;
-    let cat="Adverso", pill="bad";
-    if(fp<10){cat="Baja prioridad"; pill="warn";}
-    else if(lead==="FP" && margin>=8){cat="Fortaleza"; pill="good";}
-    else if(lead==="FP"){cat="Disputa ganada"; pill="good";}
-    else if(margin<=5){cat="Oportunidad"; pill="warn";}
-    else if(margin<=12){cat="Disputa"; pill="warn";}
-    rows.push({prov:obj.provincia, pid:obj.provincia_id, fp, lead, margin, cat, pill});
-  }
-  rows.sort((a,b)=>["Fortaleza","Disputa ganada","Oportunidad","Disputa","Adverso","Baja prioridad"].indexOf(a.cat) - ["Fortaleza","Disputa ganada","Oportunidad","Disputa","Adverso","Baja prioridad"].indexOf(b.cat));
-
-  el.innerHTML = `
-    ${moduleControlsHtml(state, moduleId)}
-    <div class="card">
-      <h2>Clasificador de Potencial (Basado en Diputados 2024)</h2>
-      <p class="small">Versión inicial: clasifica provincias usando % FP y margen vs líder en Diputados 2024. Luego se integran tendencia 2020–2024 y padrón/abstención para score completo.</p>
-      <div style="overflow:auto;margin-top:10px">
-        <table class="table">
-          <thead><tr><th>Provincia</th><th>FP %</th><th>Líder</th><th>Margen</th><th>Categoría</th></tr></thead>
-          <tbody>
-            ${rows.map(r=>`
-              <tr>
-                <td>${r.prov}</td>
-                <td>${formatPct(r.fp)}</td>
-                <td>${r.lead}</td>
-                <td>${formatPct(r.margin)}</td>
-                <td><span class="pill ${r.pill}">${r.cat}</span></td>
-              </tr>`).join("")}
-          </tbody>
-        </table>
+    const meta = obj.meta || {};
+    const votes = obj.votes || {};
+    const parties = partyList(votes);
+    const sorted = parties.map(p=>[p,Number(votes[p]||0)]).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const top1=sorted[0]?.[1]||0, top2=sorted[1]?.[1]||0;
+    const margen = (meta.validos||meta.emitidos) ? ((top1-top2)/((meta.validos||meta.emitidos)||1)) : 0;
+    panel.innerHTML = `
+      <h3 style="margin:0 0 8px 0;">${obj.nombre || ("Provincia "+provId)}</h3>
+      <div class="grid-2" style="margin-bottom:10px;">
+        <div><span class="muted">Inscritos</span><div><b>${fmtInt(meta.inscritos||0)}</b></div></div>
+        <div><span class="muted">Emitidos</span><div><b>${fmtInt(meta.emitidos||0)}</b></div></div>
+        <div><span class="muted">Participación</span><div><b>${formatPct((meta.inscritos? (meta.emitidos/meta.inscritos):0))}</b></div></div>
+        <div><span class="muted">Margen top1-top2</span><div><b>${formatPct(margen)}</b></div></div>
       </div>
-    </div>
-  `;
-}
-
-export function renderMovilizacion(state, moduleId="movilizacion"){
-  const el = document.getElementById("view");
-  el.innerHTML = `
-    ${moduleControlsHtml(state, moduleId)}
-    <div class="card">
-      <div class="row between">
-        <div>
-          <h2>Analizador de Abstención / Movilización (Base Presidencial 2024)</h2>
-          <div id="mov-status" class="pill warn">Cargando padrón y participación...</div>
-        </div>
-        <div class="small muted">Fuente padrón: Senadores 19 Mayo 2024 · Fuente participación: Presidencial por colegios 2024</div>
-      </div>
-
-      <div class="grid2" style="margin-top:12px;">
-        <div class="card-sub">
-          <h3>Escenario de movilización</h3>
-          <div class="small muted">Aumenta participación presidencial (puntos porcentuales) y distribuye el “extra” de votos.</div>
-
-          <div class="field">
-            <label>+ Participación (pp)</label>
-            <input id="mov-delta" type="range" min="0" max="12" step="0.5" value="3">
-            <div class="row between small">
-              <div>0</div><div id="mov-delta-val" class="pill">+3.0 pp</div><div>12</div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Distribución del extra</label>
-            <div class="row" style="gap:10px; flex-wrap:wrap;">
-              <label class="chip"><input type="radio" name="mov-mode" value="proporcional" checked> Proporcional a votos</label>
-              <label class="chip"><input type="radio" name="mov-mode" value="dirigida"> Dirigida a un partido</label>
-            </div>
-          </div>
-
-          <div class="field" id="mov-party-wrap" style="display:none;">
-            <label>Partido objetivo (recibe el extra)</label>
-            <select id="mov-party"></select>
-          </div>
-
-          <div class="field">
-            <label>Aplicar a</label>
-            <div class="row" style="gap:10px; flex-wrap:wrap;">
-              <label class="chip"><input type="radio" name="mov-scope" value="nacional" checked> Nacional</label>
-              <label class="chip"><input type="radio" name="mov-scope" value="provincia"> Provincia seleccionada en mapa</label>
-            </div>
-            <div class="small muted">Si eliges “provincia”, selecciona una provincia en el mapa primero.</div>
-          </div>
-
-          <button class="pill good" id="mov-run">Calcular</button>
-        </div>
-
-        <div class="card-sub">
-          <h3>Validación</h3>
-          <div id="mov-validate" class="small muted">—</div>
-          <div class="hr"></div>
-          <h3>Resultado nacional</h3>
-          <div id="mov-kpi" class="kpi-grid">
-            <div class="kpi"><div class="k">Inscritos</div><div class="v" id="k-ins">—</div></div>
-            <div class="kpi"><div class="k">Emitidos (base)</div><div class="v" id="k-em">—</div></div>
-            <div class="kpi"><div class="k">Participación (base)</div><div class="v" id="k-part">—</div></div>
-            <div class="kpi"><div class="k">Emitidos (escenario)</div><div class="v" id="k-em2">—</div></div>
-          </div>
-          <div class="small muted" style="margin-top:8px;">Nota: el escenario ajusta participación presidencial; el efecto multinivel se aplica en el simulador.</div>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <h3>Detalle por provincia</h3>
-      <div class="small muted">Participación presidencial real 2024 por provincia (inscritos del nivel senatorial).</div>
-      <div style="overflow:auto; margin-top:10px;">
-        <table class="tbl" id="mov-table">
-          <thead>
-            <tr>
-              <th>Provincia</th>
-              <th class="right">Inscritos</th>
-              <th class="right">Emitidos</th>
-              <th class="right">Participación</th>
-              <th class="right">Abstención</th>
-              <th class="right">Δ Emitidos (esc)</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  `;
-  attachModuleControls(state, moduleId);
-
-  const fmtInt = (n)=> (n==null? "—" : Number(n).toLocaleString("es-DO"));
-  const fmtPct = (x)=> (x==null? "—" : (Number(x)*100).toFixed(2) + "%");
-
-  let cache = state._movCache;
-  const status = document.getElementById("mov-status");
-  const validateEl = document.getElementById("mov-validate");
-
-  async function ensure(){
-    if(cache) return cache;
-    try{
-      const [padProv, meta, presVotes] = await Promise.all([
-        loadPadron2024Provincial(),
-        loadPadron2024Meta(),
-        loadPres2024VotosProv()
-      ]);
-      cache = {padProv, meta, presVotes};
-      state._movCache = cache;
-      status.className = "pill ok";
-      status.textContent = "Base cargada (padrón + participación)";
-      validateEl.innerHTML = `
-        <div><b>Inscritos total (validado):</b> ${fmtInt(meta.totales.inscritos_total)} · <b>Emitidos presidencial:</b> ${fmtInt(meta.totales.emitidos_pres_total)} · <b>Participación nacional:</b> ${fmtPct(meta.validaciones.participacion_nacional_pres)}</div>
-        <div class="small muted">Interior: ${fmtInt(meta.totales.inscritos_interior)} · Exterior: ${fmtInt(meta.totales.inscritos_exterior)} · Penitenciario (emitidos): ${fmtInt(meta.totales.emitidos_pres_penitenciario)}</div>
-      `;
-      // fill party select
-      const sel = document.getElementById("mov-party");
-      sel.innerHTML = presVotes.party_cols.map(p=>`<option value="${p}">${p}</option>`).join("");
-      return cache;
-    }catch(e){
-      status.className = "pill bad";
-      status.textContent = "Error cargando data";
-      validateEl.textContent = e.message;
-      throw e;
-    }
-  }
-
-  function getSelectedProvId(){
-    return state.lastProvId || null;
-  }
-
-  function computeScenario(deltaPP, mode, partyTarget, scope){
-    const rows = cache.padProv.rows.map(r=>({...r}));
-    // base totals interior
-    let totalIns = 0, totalEm = 0, totalEm2 = 0;
-    const selectedProv = (scope==="provincia") ? getSelectedProvId() : null;
-
-    // build base votes shares per province for proportional allocation
-    const votesIndex = new Map();
-    for(const vr of cache.presVotes.rows){
-      votesIndex.set(vr.provincia_id, vr);
-    }
-
-    for(const r of rows){
-      const apply = (scope==="nacional") || (selectedProv && r.provincia_id===selectedProv);
-      totalIns += r.inscritos;
-      totalEm += r.emitidos_pres;
-
-      let em2 = r.emitidos_pres;
-      if(apply){
-        const basePart = r.emitidos_pres / r.inscritos;
-        const newPart = Math.min(0.99, basePart + (deltaPP/100));
-        em2 = Math.round(r.inscritos * newPart);
-      }
-      r.emitidos_esc = em2;
-      r.delta_emitidos = em2 - r.emitidos_pres;
-      totalEm2 += em2;
-
-      // optional: compute party deltas (not displayed in table for now)
-      const vr = votesIndex.get(r.provincia_id);
-      if(vr && r.delta_emitidos>0){
-        if(mode==="dirigida" && partyTarget){
-          r.delta_partidos = {[partyTarget]: r.delta_emitidos};
-        }else{
-          // proportional to valid votes by party
-          const totalValid = vr.validos || 0;
-          const deltas = {};
-          if(totalValid>0){
-            for(const p of cache.presVotes.party_cols){
-              const share = (vr.partidos[p]||0)/totalValid;
-              deltas[p] = Math.round(r.delta_emitidos * share);
-            }
-            // fix rounding drift by adjusting the max party
-            const sumD = Object.values(deltas).reduce((a,b)=>a+b,0);
-            const drift = r.delta_emitidos - sumD;
-            if(drift!==0){
-              let bestP=null, bestV=-1;
-              for(const p of Object.keys(deltas)){
-                const v = vr.partidos[p]||0;
-                if(v>bestV){bestV=v; bestP=p;}
-              }
-              if(bestP) deltas[bestP]+=drift;
-            }
-          }
-          r.delta_partidos = deltas;
-        }
-      }else{
-        r.delta_partidos = {};
-      }
-    }
-
-    return {rows, totalIns, totalEm, totalEm2};
-  }
-
-  function renderTable(scn){
-    const tbody = document.querySelector("#mov-table tbody");
-    tbody.innerHTML = scn.rows.map(r=>`
-      <tr ${state.lastProvId===r.provincia_id ? 'class="hl"' : ''}>
-        <td>${r.provincia}</td>
-        <td class="right">${fmtInt(r.inscritos)}</td>
-        <td class="right">${fmtInt(r.emitidos_pres)}</td>
-        <td class="right">${fmtPct(r.participacion_pres)}</td>
-        <td class="right">${fmtInt(r.abstencion_pres)}</td>
-        <td class="right">${r.delta_emitidos>=0? "+" : ""}${fmtInt(r.delta_emitidos)}</td>
-      </tr>
-    `).join("");
-  }
-
-  function renderKpi(scn){
-    document.getElementById("k-ins").textContent = fmtInt(scn.totalIns);
-    document.getElementById("k-em").textContent = fmtInt(scn.totalEm);
-    document.getElementById("k-part").textContent = fmtPct(scn.totalEm/scn.totalIns);
-    document.getElementById("k-em2").textContent = fmtInt(scn.totalEm2);
-  }
-
-  function wire(){
-    const delta = document.getElementById("mov-delta");
-    const deltaVal = document.getElementById("mov-delta-val");
-    const partyWrap = document.getElementById("mov-party-wrap");
-
-    delta.addEventListener("input", ()=>{
-      deltaVal.textContent = `+${Number(delta.value).toFixed(1)} pp`;
-    });
-    document.querySelectorAll('input[name="mov-mode"]').forEach(r=>{
-      r.addEventListener("change", ()=>{
-        const v = document.querySelector('input[name="mov-mode"]:checked').value;
-        partyWrap.style.display = (v==="dirigida") ? "" : "none";
-      });
-    });
-
-    document.getElementById("mov-run").addEventListener("click", ()=>{
-      const deltaPP = Number(document.getElementById("mov-delta").value);
-      const mode = document.querySelector('input[name="mov-mode"]:checked').value;
-      const scope = document.querySelector('input[name="mov-scope"]:checked').value;
-      const partyTarget = (mode==="dirigida") ? document.getElementById("mov-party").value : null;
-      if(scope==="provincia" && !getSelectedProvId()){
-        toast("Selecciona una provincia en el mapa para usar 'Provincia'.");
-        return;
-      }
-      const scn = computeScenario(deltaPP, mode, partyTarget, scope);
-      renderKpi(scn);
-      renderTable(scn);
-      // store into state so simulador can reuse
-      state.movilizacion = {deltaPP, mode, partyTarget, scope, byProv: Object.fromEntries(scn.rows.map(r=>[r.provincia_id, r]))};
-      toast("Escenario calculado. Si vas al simulador, puedes aplicarlo al reparto de curules.");
-    });
-  }
-
-  ensure().then(()=>{
-    // initial render baseline
-    const scn = computeScenario(0, "proporcional", null, "nacional");
-    renderKpi(scn);
-    renderTable(scn);
-    wire();
-  });
-}
-
-
-export async export function renderObjetivo(state, moduleId="objetivo"){
-  const el = document.getElementById("view");
-  const curules = await loadCurules2024();
-  const dip = await loadDiputados2024();
-  const territorial = curules.territorial || [];
-  const provList = [...new Set(territorial.map(x=>x.provincia))].sort((a,b)=>a.localeCompare(b));
-  const parties = dip.meta.parties || [];
-  el.innerHTML = `
-    ${moduleControlsHtml(state, moduleId)}
-    <div class="card">
-      <h2>Módulo Objetivo (Diputados · datos reales 2024)</h2>
-      <p class="small">Este módulo identifica dónde es más eficiente ganar el próximo escaño usando gap D'Hondt por distrito (curules reales 2024 + votos reales 2024).</p>
-      <div class="row">
-        <label>Partido objetivo</label>
-        <select id="obj-party">${parties.map(p=>`<option value="${p}" ${p==="FP"?"selected":""}>${p}</option>`).join("")}</select>
-        <label>Top N distritos</label>
-        <input id="obj-top" type="number" min="5" value="15" style="width:90px"/>
-        <button id="obj-run" class="pill good">Calcular</button>
-      </div>
-      <div id="obj-out" class="small" style="margin-top:10px">—</div>
-      <div style="overflow:auto;margin-top:10px">
-        <table class="table" id="obj-table"></table>
-      </div>
-    </div>
-  `;
-  attachModuleControls(state, moduleId);
-
-  function getSeats(prov, circ){
-    const row = territorial.find(x=>x.provincia===prov && x.circ===Number(circ));
-    return row?.seats || 1;
-  }
-
-  document.getElementById("obj-run").addEventListener("click", ()=>{
-    const target = document.getElementById("obj-party").value;
-    const topN = Number(document.getElementById("obj-top").value)||15;
-    const gaps = [];
-    for(const d of dip.districts){
-      const k = getSeats(d.provincia, d.circ);
-      const v = d.votes || {};
-      if(!v[target]) continue;
-      const g = nextSeatGap(v, k, target);
-      gaps.push({
-        provincia: d.provincia,
-        circ: d.circ,
-        seats: k,
-        votesNeeded: g.votesNeeded,
-        currentSeats: g.currentSeats
-      });
-    }
-    gaps.sort((a,b)=>a.votesNeeded-b.votesNeeded);
-    const best = gaps.slice(0, topN);
-    document.getElementById("obj-out").innerHTML = `<div class="pill good">Top ${best.length} distritos más “baratos” para el próximo escaño de ${target}</div>`;
-    const table = document.getElementById("obj-table");
-    table.innerHTML = `
-      <thead><tr><th>Provincia</th><th>Circ</th><th>k</th><th>Curules actuales</th><th>Votos aprox para próximo escaño</th></tr></thead>
-      <tbody>
-        ${best.map(r=>`<tr><td>${r.provincia}</td><td>${r.circ}</td><td>${r.seats}</td><td>${r.currentSeats}</td><td><b>${r.votesNeeded.toLocaleString()}</b></td></tr>`).join("")}
-      </tbody>
+      <div class="muted" style="margin-bottom:6px;">Top partidos</div>
+      <table class="table">
+        <thead><tr><th>Partido</th><th style="text-align:right;">Votos</th></tr></thead>
+        <tbody>${sorted.map(([p,v])=>`<tr><td>${p}</td><td style="text-align:right;">${fmtInt(v)}</td></tr>`).join("")}</tbody>
+      </table>
     `;
   });
+  wireModuleControls(state, moduleId, ()=>renderMapa(state,mapApi,moduleId));
 }
 
+export async function renderSimulador(state, moduleId="simulador"){
+  const cont = getMainContainer();
+  const eff = state.getEffective(moduleId);
+  const ctx = await getCtx();
+  const nivel = eff.nivel;
+  const b = getLevelBundle(ctx.r24, nivel);
+  const base = b.nacional || {meta:{}, votes:{}};
+  const votes = {...(base.votes||{})};
+  const parties = partyList(votes).sort();
+  cont.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
+    <div class="card" style="padding:14px;">
+      <h3 style="margin:0 0 10px 0;">Simulador (${NIVEL_LABEL[nivel]})</h3>
+      <div class="muted" style="margin-bottom:10px;">Ajustes simples por partido (Δ puntos porcentuales de share). Alianzas/movilización se habilitan en siguiente iteración.</div>
+      <div style="overflow:auto; max-height:520px;">
+        <table class="table" id="sim-table">
+          <thead><tr><th>Partido</th><th style="text-align:right;">Votos base</th><th style="text-align:right;">Δ%</th><th style="text-align:right;">Votos sim</th></tr></thead>
+          <tbody>${parties.map(p=>`<tr data-p="${p}"><td>${p}</td><td style="text-align:right;">${fmtInt(votes[p])}</td><td style="text-align:right;"><input class="input-sm" type="number" step="0.1" value="0" style="width:80px;" /></td><td style="text-align:right;" class="sim-v">${fmtInt(votes[p])}</td></tr>`).join("")}</tbody>
+        </table>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+        <button class="btn" id="btn-simular">Simular</button>
+        <span class="badge" id="sim-note">—</span>
+      </div>
+    </div>
+  `;
+  document.getElementById("btn-simular")?.addEventListener("click", ()=>{
+    const rows = Array.from(document.querySelectorAll("#sim-table tbody tr"));
+    const total = Object.values(votes).reduce((a,b)=>a+Number(b||0),0) || 1;
+    const shares = {};
+    rows.forEach(tr=>{
+      const p=tr.getAttribute("data-p");
+      const delta=Number(tr.querySelector("input")?.value||0);
+      const baseShare=(votes[p]||0)/total;
+      shares[p]=clamp(baseShare + (delta/100), 0, 1);
+    });
+    const sum = Object.values(shares).reduce((a,b)=>a+b,0)||1;
+    let simTotal=0;
+    rows.forEach(tr=>{
+      const p=tr.getAttribute("data-p");
+      const v=Math.round((shares[p]/sum)*total);
+      tr.querySelector(".sim-v").textContent=fmtInt(v);
+      simTotal+=v;
+    });
+    document.getElementById("sim-note").textContent=`Total sim: ${fmtInt(simTotal)} (base ${fmtInt(total)})`;
+  });
+  wireModuleControls(state, moduleId, ()=>renderSimulador(state,moduleId));
+}
+
+export async function renderPotencial(state, moduleId="potencial"){
+  const cont = getMainContainer();
+  const eff = state.getEffective(moduleId);
+  const ctx = await getCtx();
+  const nivel = eff.nivel;
+  const b24 = getLevelBundle(ctx.r24, nivel);
+  const scope = (nivel==="mun") ? "municipios" : (nivel==="dm" ? "dm" : "provincias");
+  const t24 = b24[scope] || {};
+  const rows = Object.entries(t24).map(([id,obj])=>{
+    const meta=obj.meta||{};
+    const abst = meta.inscritos ? (1-(meta.emitidos/meta.inscritos)) : 0;
+    const score = Math.round(abst*100);
+    return {id, nombre: obj.nombre||id, score, abst};
+  }).sort((a,b)=>b.score-a.score).slice(0,200);
+  cont.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
+    <div class="card" style="padding:14px;">
+      <h3 style="margin:0 0 10px 0;">Potencial (${NIVEL_LABEL[nivel]})</h3>
+      <div class="muted" style="margin-bottom:10px;">Ranking preliminar por abstención (proxy). Motor completo se activa luego.</div>
+      <div style="overflow:auto; max-height:620px;">
+        <table class="table"><thead><tr><th>Territorio</th><th style="text-align:right;">Score</th><th style="text-align:right;">Abst.</th></tr></thead>
+          <tbody>${rows.map(r=>`<tr><td>${r.nombre}</td><td style="text-align:right;"><b>${r.score}</b></td><td style="text-align:right;">${formatPct(r.abst)}</td></tr>`).join("")}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  wireModuleControls(state, moduleId, ()=>renderPotencial(state,moduleId));
+}
+
+export async function renderMovilizacion(state, moduleId="movilizacion"){
+  const cont = getMainContainer();
+  const eff = state.getEffective(moduleId);
+  const ctx = await getCtx();
+  const nivel = eff.nivel;
+  const b = getLevelBundle(ctx.r24, nivel);
+  const meta = b.nacional.meta||{};
+  const abstVotes = Math.round((meta.inscritos||0)-(meta.emitidos||0));
+  cont.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
+    <div class="card" style="padding:14px;">
+      <h3 style="margin:0 0 10px 0;">Movilización (${NIVEL_LABEL[nivel]})</h3>
+      <div class="grid-2">
+        <div><div class="muted">Inscritos</div><div><b>${fmtInt(meta.inscritos||0)}</b></div></div>
+        <div><div class="muted">Emitidos</div><div><b>${fmtInt(meta.emitidos||0)}</b></div></div>
+        <div><div class="muted">Abstención (votos)</div><div><b>${fmtInt(abstVotes)}</b></div></div>
+        <div><div class="muted">Techo (60% abstención)</div><div><b>${fmtInt(Math.round(abstVotes*0.6))}</b></div></div>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-sm" data-pp="3">+3pp</button>
+        <button class="btn-sm" data-pp="5">+5pp</button>
+        <button class="btn-sm" data-pp="7">+7pp</button>
+        <input id="mov-pp" class="input-sm" type="number" step="0.1" placeholder="+pp" style="width:100px;" />
+        <button class="btn" id="mov-apply">Aplicar</button>
+        <span class="badge" id="mov-note">—</span>
+      </div>
+    </div>
+  `;
+  const apply = (pp)=>{
+    pp=Number(pp||0);
+    const delta=Math.round((meta.inscritos||0)*(pp/100));
+    const cap=Math.round(((meta.inscritos||0)-(meta.emitidos||0))*0.6);
+    const used=Math.min(Math.max(delta,0),cap);
+    document.getElementById("mov-note").textContent=`Movilización: ${fmtInt(used)} votos (cap ${fmtInt(cap)})`;
+  };
+  document.querySelectorAll("[data-pp]").forEach(b=>b.addEventListener("click", ()=>apply(b.getAttribute("data-pp"))));
+  document.getElementById("mov-apply")?.addEventListener("click", ()=>apply(document.getElementById("mov-pp")?.value));
+  wireModuleControls(state, moduleId, ()=>renderMovilizacion(state,moduleId));
+}
+
+export async function renderObjetivo(state, moduleId="objetivo"){
+  const cont=getMainContainer();
+  const eff=state.getEffective(moduleId);
+  const nivel=eff.nivel;
+  cont.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
+    <div class="card" style="padding:14px;">
+      <h3 style="margin:0 0 10px 0;">Objetivo (${NIVEL_LABEL[nivel]})</h3>
+      <div class="muted">Optimizador se habilita en iteración siguiente.</div>
+    </div>
+  `;
+  wireModuleControls(state, moduleId, ()=>renderObjetivo(state,moduleId));
+}
+
+export async function renderEncuestas(state, moduleId="encuestas"){
+  const cont=getMainContainer();
+  const ctx=await getCtx();
+  const polls=ctx.polls||{};
+  const series=polls.series||polls.data||polls||[];
+  cont.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
+    <div class="card" style="padding:14px;">
+      <h3 style="margin:0 0 10px 0;">Encuestas</h3>
+      <pre style="white-space:pre-wrap; overflow:auto; max-height:520px;">${JSON.stringify(series,null,2).slice(0,4000)}</pre>
+    </div>
+  `;
+  wireModuleControls(state, moduleId, ()=>renderEncuestas(state,moduleId));
+}
