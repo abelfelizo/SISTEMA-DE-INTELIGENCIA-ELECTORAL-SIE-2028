@@ -1,14 +1,12 @@
 {
-  "meta": {
-    "version": "1.0",
-    "fuente": "JCE Padrón Mayo 2024"
-  },
   "mayo2024": {
     "nacional": {
-      "inscritos": null
-    },
-    "provincias": {},
-    "exterior": {},
-    "penitenciario": {}
+      "inscritos": 8145548
+    }
+  },
+  "feb2024": {
+    "nacional": {
+      "inscritos": 8145548
+    }
   }
 }

@@ -498,3 +498,20 @@ body, .topbar, .card, .card-sub, select, input, button,
   padding:4px 8px;
   border-radius:999px;
 }
+
+
+/* ---- Stability CSS Patch ---- */
+.grid-kpi { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+.kpi-card { background:#111; padding:12px; border-radius:8px; }
+.kpi-title { font-size:12px; opacity:.7; }
+.kpi-value { font-size:20px; font-weight:bold; }
+.kpi-sub { font-size:11px; opacity:.6; }
+.layout-2col { display:grid; grid-template-columns:2fr 1fr; gap:14px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.card { background:#111; border-radius:8px; padding:10px; }
+.btn, .btn-sm { background:#222; border:none; padding:6px 10px; cursor:pointer; }
+.badge { background:#333; padding:4px 8px; border-radius:4px; }
+.table { width:100%; border-collapse:collapse; }
+.table th, .table td { border-bottom:1px solid #333; padding:6px; }
+.muted { opacity:.6; font-size:12px; }
+.input, .input-sm, .select, .select-sm { background:#222; color:#fff; border:1px solid #444; padding:4px; }
