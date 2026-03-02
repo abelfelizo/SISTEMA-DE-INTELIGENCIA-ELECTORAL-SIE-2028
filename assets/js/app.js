@@ -1,6 +1,8 @@
 /**
- * SIE 2028 - app.js
+ * SIE 2028 v4.1
  */
+var VERSION = "4.1";
+
 import { loadCTX }         from "./core/data.js";
 import { state }           from "./core/state.js";
 import { toast }           from "./ui/toast.js";
@@ -83,6 +85,8 @@ function initTheme() {
 
 function boot() {
   initTheme();
+  var vBadge = document.querySelector(".brand .badge");
+  if (vBadge) vBadge.textContent = "v4.1";
   var nav = document.getElementById("nav");
   var navHtml = "";
   for (var i = 0; i < ROUTES.length; i++) {

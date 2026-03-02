@@ -67,7 +67,7 @@ export function calcularDipMeta(ctx, params) {
       nivel: "dip",
       deltasPP: { ...(params.deltasPP || {}), [lider]: mid },
     });
-    const curules = res.curules?.totalByParty?.[lider] || 0;
+    const curules = (res && res.curules && res.curules.totalByParty && res.curules.totalByParty[lider]) || 0;
 
     if (curules >= metaCurules) {
       hi = mid;
@@ -85,7 +85,7 @@ export function calcularDipMeta(ctx, params) {
     nivel: "dip",
     deltasPP: { ...(params.deltasPP || {}), [lider]: maxDelta },
   });
-  const maxCurules = resMax.curules?.totalByParty?.[lider] || 0;
+  const maxCurules = (resMax && resMax.curules && resMax.curules.totalByParty && resMax.curules.totalByParty[lider]) || 0;
 
   if (maxCurules < metaCurules) {
     return { imposible: true, maximo: maxCurules, resultado: resMax };

@@ -19,14 +19,15 @@ import { rankVotes }      from "./utils.js";
 export function simBoleta(ctx, params) {
   const { partidos = [], year = 2024 } = params;
   const cur = ctx.curules;
-  if (!cur?.territorial) return null;
+  if (!(cur && cur.territorial)) return null;
 
   const lv  = getLevel(ctx, year, "dip");
-  const nat = lv.nacional?.votes || {};
+  const nat = lv.(nacional && nacional.votes) || {};
 
   // Determinar lder (partido que encabeza)
-  const lider = partidos.find(p => p.encabeza && p.incluir)?.partido
-    || partidos.find(p => p.incluir)?.partido;
+  var _lidList = partidos.filter(function(p){return p.encabeza && p.incluir;});
+  if (!_lidList.length) _lidList = partidos.filter(function(p){return p.incluir;});
+  var lider = _lidList.length ? _lidList[0].partido : null;
   if (!lider) return null;
 
   const incluidos = partidos.filter(p => p.incluir && p.partido !== lider);
@@ -35,9 +36,9 @@ export function simBoleta(ctx, params) {
   function getVotes(key, c) {
     const isMulti = c.circ > 0;
     const data    = isMulti
-      ? lv.circ?.[key]
-      : lv.prov?.[key];
-    return data?.votes || {};
+      ? (lv.circ && lv.circ[key] ? lv.circ[key] : null)
+      : (lv.prov && lv.prov[key] ? lv.prov[key] : null);
+    return (data && data.votes) || {};
   }
 
   function applyBoleta(votes) {

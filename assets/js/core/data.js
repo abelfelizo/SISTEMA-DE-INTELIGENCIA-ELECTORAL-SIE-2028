@@ -52,7 +52,7 @@ const INTERIOR_MAX_PROV = 32; // codigos 01-32 son interior
 async function fetchJSON(url) {
   try {
     const r = await fetch(url);
-    if (!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
+    if (!r.ok) throw new Error("HTTP " + r.status + ": " + url);
     return await r.json();
   } catch (e) {
     console.error("[SIE data] Error cargando", url, e.message);
@@ -70,10 +70,10 @@ function normUnit(raw) {
   if (raw.data) {
     const d = raw.data;
     return {
-      inscritos: intOrNull(d.INSCRITOS ?? d.inscritos),
-      emitidos:  int(d.EMITIDOS  ?? d.emitidos),
-      validos:   int(d.VALIDOS   ?? d.validos),
-      nulos:     int(d.NULOS     ?? d.nulos),
+      inscritos: intOrNull(d.INSCRITOS || d.inscritos),
+      emitidos:  int(d.EMITIDOS  || d.emitidos),
+      validos:   int(d.VALIDOS   || d.validos),
+      nulos:     int(d.NULOS     || d.nulos),
       votes:     extractVotes(d, ["INSCRITOS","EMITIDOS","VALIDOS","NULOS"]),
     };
   }
@@ -93,10 +93,10 @@ function normUnit(raw) {
   // Formato C: plano {EMITIDOS,...}  pres nacional 2024 / 2020
   if ("EMITIDOS" in raw || "emitidos" in raw || "tot_inscritos" in raw) {
     return {
-      inscritos: intOrNull(raw.INSCRITOS ?? raw.inscritos ?? raw.tot_inscritos),
-      emitidos:  int(raw.EMITIDOS  ?? raw.emitidos),
-      validos:   int(raw.VALIDOS   ?? raw.validos),
-      nulos:     int(raw.NULOS     ?? raw.nulos),
+      inscritos: intOrNull(raw.INSCRITOS || raw.inscritos || raw.tot_inscritos),
+      emitidos:  int(raw.EMITIDOS  || raw.emitidos),
+      validos:   int(raw.VALIDOS   || raw.validos),
+      nulos:     int(raw.NULOS     || raw.nulos),
       votes:     extractVotes(raw, ["INSCRITOS","EMITIDOS","VALIDOS","NULOS",
                                     "tot_inscritos","inscritos","emitidos","validos","nulos"]),
     };
@@ -134,7 +134,7 @@ function normLevel(raw, nivel) {
   for (const [id, obj] of Object.entries(raw.provincias || {})) {
     const n = int(id);
     const unit = normUnit(obj);
-    unit.nombre = obj?.nombre || id;
+    unit.nombre = (obj && obj.nombre) || id;
     if (n >= 1 && n <= INTERIOR_MAX_PROV) {
       out.prov[id.padStart(2, "0")] = unit;
     }
@@ -144,7 +144,7 @@ function normLevel(raw, nivel) {
   // Municipios
   for (const [id, obj] of Object.entries(raw.municipios || {})) {
     const unit = normUnit(obj);
-    unit.nombre = obj?.nombre || id;
+    unit.nombre = (obj && obj.nombre) || id;
     out.mun[id] = unit;
   }
 
@@ -152,21 +152,21 @@ function normLevel(raw, nivel) {
   for (const [id, obj] of Object.entries(raw.dm || {})) {
     if (!/^\d{4}-\d{3}$/.test(id)) continue; // ignora float-keys
     const unit = normUnit(obj);
-    unit.nombre = obj?.nombre || id;
+    unit.nombre = (obj && obj.nombre) || id;
     out.dm[id] = unit;
   }
 
   // Circunscripciones (dip)
   for (const [id, obj] of Object.entries(raw.circunscripciones || {})) {
     const unit = normUnit(obj);
-    unit.nombre = obj?.nombre || id;
+    unit.nombre = (obj && obj.nombre) || id;
     out.circ[id] = unit;
   }
 
   // Exterior diputados (C1, C2, C3)
   for (const [id, obj] of Object.entries(raw.exterior || {})) {
     const unit = normUnit(obj);
-    unit.nombre = obj?.nombre || id;
+    unit.nombre = (obj && obj.nombre) || id;
     out.extDip[id] = unit;
   }
 
@@ -219,11 +219,11 @@ export async function loadCTX() {
 
 /** Devuelve el nivel normalizado para un ao y nivel dados */
 export function getLevel(ctx, year, nivel) {
-  return ctx?.r?.[year]?.[nivel] ?? { nacional: empty(), prov: {}, mun: {}, dm: {}, circ: {}, extDip: {} };
+  return (ctx && ctx.r && ctx.r[year] && ctx.r[year][nivel]) || { nacional: empty(), prov: {}, mun: {}, dm: {}, circ: {}, extDip: {} };
 }
 
 /** Inscritos nacionales segn corte */
 export function getInscritos(ctx, corte) {
   const key = corte === "feb2024" ? "feb2024" : "mayo2024";
-  return int(ctx?.padron?.[key]?.nacional?.inscritos) || 0;
+  return int((ctx && ctx.padron && ctx.padron[key] && ctx.padron[key].nacional && ctx.padron[key].nacional.inscritos)) || 0;
 }

@@ -120,7 +120,7 @@ export function applyArrastre(votes, presResult, lider, k = null) {
  */
 export function simDip(ctx, simVotesByCirc) {
   const cur = ctx.curules;
-  if (!cur?.territorial) return { totalByParty: {}, byCirc: {}, totalSeats: 0 };
+  if (!(cur && cur.territorial)) return { totalByParty: {}, byCirc: {}, totalSeats: 0 };
 
   const totalByParty = {};
   const byCirc = {};
@@ -141,10 +141,10 @@ export function simDip(ctx, simVotesByCirc) {
 
   // Exterior  si no hay votos por circunscripcin, usar distribucin nacional dip como proxy
   const lv     = getLevel(ctx, 2024, "dip");
-  const natDip = lv.nacional?.votes || {};
+  const natDip = lv.(nacional && nacional.votes) || {};
   for (const ext of (cur.exterior || [])) {
     const ckey = `C${ext.circ_exterior}`;
-    const base = lv.extDip?.[ckey]?.votes || {};
+    const base = lv.extDip && lv.extDip[ckey] && lv.extDip[ckey].votes || {};
     // Fallback: si no hay data propia, usar votos nacionales (mejor aproximacin disponible)
     const votes = Object.keys(base).length ? base : natDip;
     if (!Object.keys(votes).length) continue;
@@ -156,7 +156,7 @@ export function simDip(ctx, simVotesByCirc) {
   }
 
   // Nacionales (proporcional al total territorial)
-  const nacSeats = cur.nacionales?.seats || 0;
+  const nacSeats = cur.(nacionales && nacionales.seats) || 0;
   if (nacSeats > 0) {
     const nacRes = dhondt(totalByParty, nacSeats);
     byCirc["_nacionales"] = { ...nacRes, seats: nacSeats, key: "_nacionales" };
@@ -274,7 +274,7 @@ export function simular(ctx, params) {
     inscritos,
     participacion: part,
     ranked,
-    margenTop: ranked.length >= 2 ? ranked[0].pct - ranked[1].pct : (ranked[0]?.pct || 0),
+    margenTop: ranked.length >= 2 ? ranked[0].pct - ranked[1].pct : (ranked[0] && ranked[0].pct || 0),
   };
 
   // 7. Legislativo D'Hondt (dip)

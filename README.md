@@ -1,6 +1,6 @@
 # SIE 2028 · Sistema Inteligente Electoral
 
-## Versión final (H1→H4)
+## Version 4.1 (H4 - Correccion sintaxis + mejoras)
 
 ### Cómo probar local
 ```bash

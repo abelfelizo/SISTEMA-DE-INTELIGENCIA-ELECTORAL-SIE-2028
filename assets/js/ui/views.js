@@ -179,6 +179,21 @@ export function renderDashboard(state, ctx) {
       kpi("Abstencion", fmtPct(1-part), fmtInt(Math.round(ins*(1-part)))+" votos") +
       kpiTop +
       kpi("Margen 1-2", margen > 0 ? fmtPct(margen) : "-") +
+    // KPI encuesta si hay datos
+    (function() {
+      var polls = ctx.polls || [];
+      if (!polls.length) return "";
+      var last = polls[polls.length-1];
+      var res  = last.resultados || {};
+      var top  = ranked[0];
+      if (!top || !res[top.p]) return "";
+      var encPct = res[top.p] / 100;
+      var delta  = encPct - top.pct;
+      var cls    = delta > 0 ? "text-ok" : delta < 0 ? "text-warn" : "";
+      var sign   = delta > 0 ? "+" : "";
+      return kpi("Encuesta " + last.encuestadora, "<span class=\"" + cls + "\">" + (res[top.p]) + "%</span>",
+        sign + (delta*100).toFixed(1) + "pp vs 2024");
+    })() +
     "</div>" +
     "<div class=\"row-2col\" style=\"margin-top:16px;gap:16px;\">" +
       "<div class=\"card\"><h3>Distribucion - " + NIVEL_LABEL[nivel] + "</h3>" + barChart(ranked, 7) + dipSection + "</div>" +
@@ -291,6 +306,11 @@ export function renderSimulador(state, ctx) {
   var ranked = rankVotes(nat.votes, nat.emitidos);
   var savedMov = localStorage.getItem("sie28-sim-mov") || "0";
   localStorage.removeItem("sie28-sim-mov");
+  var savedDeltas = {};
+  try {
+    var raw = localStorage.getItem("sie28-sim-deltas");
+    if (raw) { savedDeltas = JSON.parse(raw); localStorage.removeItem("sie28-sim-deltas"); }
+  } catch(e) {}
 
   // Partidos: usar ctx.partidos si existe, si no usar ranked (todos sin filtro de %)
   var allParties = (ctx.partidos && ctx.partidos.length)
@@ -304,13 +324,15 @@ export function renderSimulador(state, ctx) {
   });
 
   var tblRowsBasic = partyData.slice(0, 8).map(function(r) {
+    var dv = savedDeltas[r.p] ? String(savedDeltas[r.p]) : "0";
     return "<tr data-p=\"" + r.p + "\"><td>" + dot(r.p) + r.p + "</td><td class=\"r\">" + fmtPct(r.pct) + "</td>" +
-      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"0\" style=\"width:68px;text-align:right;\" data-party=\"" + r.p + "\"></td></tr>";
+      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"" + dv + "\" style=\"width:68px;text-align:right;" + (dv !== "0" ? "color:var(--accent);" : "") + "\" data-party=\"" + r.p + "\"></td></tr>";
   }).join("");
 
   var tblRowsAll = partyData.map(function(r) {
+    var dv = savedDeltas[r.p] ? String(savedDeltas[r.p]) : "0";
     return "<tr data-p=\"" + r.p + "\"><td>" + dot(r.p) + r.p + "</td><td class=\"r\">" + fmtPct(r.pct) + "</td>" +
-      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"0\" style=\"width:68px;text-align:right;\" data-party=\"" + r.p + "\"></td></tr>";
+      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"" + dv + "\" style=\"width:68px;text-align:right;" + (dv !== "0" ? "color:var(--accent);" : "") + "\" data-party=\"" + r.p + "\"></td></tr>";
   }).join("");
 
   var movBtns = [-5,-3,3,5,7].map(function(pp) {
@@ -686,10 +708,14 @@ function renderObjResult(container, esc, nivel, lider) {
     var valor = nivel==="dip"
       ? (res && res.curules ? (res.curules.totalByParty[lider]||0) + " curules" : "-")
       : (found ? fmtPct(found.pct) : "-");
+    // Votos absolutos: delta_pp * inscritos
+    var ins = nat.inscritos || 0;
+    var votosAbs = ins && e.deltaPP ? Math.round(ins * e.deltaPP / 100) : null;
+    var votosStr = votosAbs !== null ? (votosAbs >= 0 ? "+" : "") + fmtInt(votosAbs) + " votos" : "";
     var delta = e.deltaPP !== null && e.deltaPP !== undefined ? (e.deltaPP>=0?"+":"") + e.deltaPP.toFixed(1) + " pp" : "-";
     return "<div class=\"card\">" +
       "<div style=\"display:flex;align-items:center;gap:8px;margin-bottom:8px;\">" + catBadge(info.label, info.cls) + "<span class=\"muted\">" + info.desc + "</span></div>" +
-      statGrid([["Delta pp",delta],["Resultado "+lider,valor],["Participacion",fmtPct(res?res.participacion:0)]]) +
+      statGrid([["Delta pp",delta],["Votos adicionales",votosStr || "-"],["Resultado "+lider,valor],["Participacion",fmtPct(res?res.participacion:0)]]) +
       "<p class=\"muted\" style=\"margin-top:8px;\">" + narrs[key] + "</p>" +
       "</div>";
   }).join("");
@@ -816,14 +842,14 @@ function recalcModoA(ctx, parties, lv) {
   });
   if (!circs.length) { resDiv.innerHTML = "<p class=\"muted\">Sin circunscripciones para provincia " + provId + ".</p>"; return; }
 
-  // Obtener alianzas seleccionadas
-  var liderEl = document.querySelector(".mA-chk:checked");
-  var lider   = liderEl ? null : null; // sin lider obligatorio en modo A
+  // Obtener partidos seleccionados como aliados
   var aliados = [];
   document.querySelectorAll(".mA-chk:checked").forEach(function(chk) {
     var pct = document.querySelector(".mA-pct[data-party=\"" + chk.value + "\"]");
     aliados.push({ partido: chk.value, transferPct: pct ? Number(pct.value) : 80 });
   });
+  // El primero seleccionado es el lider de la alianza
+  var lider = aliados.length ? aliados[0].partido : null;
 
   // D'Hondt por circ, base vs boleta
   var html = "<h3>" + (prov.nombre || provId) + " - " + circs.length + " circunscripcion(es)</h3>";
@@ -907,7 +933,8 @@ function recalcModoB(ctx, parties, lv) {
   var base  = res.baseTotal[partido] || 0;
   var con   = res.boletaTotal[partido] || 0;
 
-  var topImpact = res.territorios.slice(0, 10).map(function(t) {
+  var allTerr = (res.ganados || []).concat(res.perdidos || []).sort(function(a,b){return Math.abs(b.delta)-Math.abs(a.delta);});
+  var topImpact = allTerr.slice(0, 10).map(function(t) {
     var circ = t.circ > 0 ? " C" + t.circ : "";
     var cls  = t.delta > 0 ? "text-ok" : "text-warn";
     return "<tr><td>" + t.provincia + circ + "</td><td class=\"r\">" + t.seats +
@@ -1061,6 +1088,16 @@ export function renderEncuestas(state, ctx) {
         try {
           var data = JSON.parse(ev.target.result);
           var arr  = Array.isArray(data) ? data : [data];
+          // Normalizar cada encuesta a 100%
+          arr.forEach(function(enc) {
+            var res = enc.resultados || {};
+            var total = Object.values(res).reduce(function(a,v){return a+v;},0);
+            if (total > 0 && Math.abs(total - 100) > 0.5) {
+              var factor = 100 / total;
+              Object.keys(res).forEach(function(p){ res[p] = Math.round(res[p]*factor*10)/10; });
+              enc._normalizado = true;
+            }
+          });
           ctx.polls = (ctx.polls || []).concat(arr);
           toast("Encuesta cargada: " + arr.length + " registro(s)");
           renderEncuestas(state, ctx);

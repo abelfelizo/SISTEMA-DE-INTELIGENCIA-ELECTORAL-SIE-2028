@@ -23,7 +23,7 @@ export function exportarPDF(ctx, state, simResult = null) {
   const now    = new Date().toLocaleDateString("es-DO", { year:"numeric", month:"long", day:"numeric" });
 
   const dipCurRow = (p) => nivel === "dip"
-    ? `<td>${dipBase?.curules?.totalByParty?.[p] || 0}</td>` : "";
+    ? `<td>${(dipBase && dipBase.curules && dipBase.curules.totalByParty && dipBase.curules.totalByParty[p]) || 0}</td>` : "";
   const dipCurTh  = nivel === "dip" ? "<th>Cur. 2024</th>" : "";
 
   let simSection = "";
@@ -39,7 +39,7 @@ export function exportarPDF(ctx, state, simResult = null) {
         <tr><th>Partido</th><th>Votos sim</th><th>%</th>${nivel==="dip"?"<th>Curules</th>":""}</tr>
         ${sr.ranked.slice(0,12).map(({p,v,pct})=>`
           <tr><td>${p}</td><td>${fmtInt(v)}</td><td>${fmtPct(pct)}</td>
-          ${nivel==="dip"?`<td>${sr.curules?.totalByParty?.[p]||0}</td>`:""}</tr>`).join("")}
+          ${nivel==="dip"?`<td>${(sr && sr.curules && sr.curules.totalByParty && sr.curules.totalByParty[p]) || 0}</td>`:""}</tr>`).join("")}
       </table>
       ${nivel==="dip"&&sr.curules ? `
         <p><b>Total curules: ${sr.curules.totalSeats}/190</b> . ${
