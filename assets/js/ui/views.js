@@ -770,7 +770,7 @@ function buildModoA(parties, provs, lv, partyOpts, provOpts) {
       "<div id=\"modoA-parties\">" +
         parties.map(function(p) {
           return "<div style=\"display:flex;gap:8px;align-items:center;margin-bottom:4px;\">" +
-            "<input type=\"checkbox\" class=\"mA-chk\" value=\"" + p + "" id=\"mA-" + p + "\">" +
+            "<input type=\"checkbox\" class=\"mA-chk\" value=\"" + p + "\" id=\"mA-" + p + "\">" +
             "<label for=\"mA-" + p + "\" style=\"min-width:55px;\">" + dot(p) + p + "</label>" +
             "<input class=\"inp-sm mA-pct\" type=\"number\" min=\"0\" max=\"100\" step=\"5\" value=\"80\" style=\"width:58px;\" data-party=\"" + p + "\" disabled>" +
             "<span class=\"muted\" style=\"font-size:11px;\">% transf.</span>" +
@@ -791,7 +791,7 @@ function buildModoB(parties, lv, partyOpts) {
       "<div id=\"modoB-aliados\">" +
         parties.slice(1).map(function(p) {
           return "<div style=\"display:flex;gap:8px;align-items:center;margin-bottom:4px;\">" +
-            "<input type=\"checkbox\" class=\"mB-chk\" value=\"" + p + "" id=\"mB-" + p + "\">" +
+            "<input type=\"checkbox\" class=\"mB-chk\" value=\"" + p + "\" id=\"mB-" + p + "\">" +
             "<label for=\"mB-" + p + "\">" + dot(p) + p + "</label>" +
           "</div>";
         }).join("") +
