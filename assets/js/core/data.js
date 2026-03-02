@@ -327,6 +327,22 @@ export async function buildCTX(){
     polls: polls || {}
   };
 
+  // Padron fallback: if padron vacío o sin inscritos, usa inscritos del nivel con datos (2024 pres/dip/sen)
+  try{
+    const p = CTX_CACHE.padron || {};
+    const cur = (p.mayo2024 && p.mayo2024.nacional) ? Number(p.mayo2024.nacional.inscritos||0) : 0;
+    if(!p.mayo2024) p.mayo2024 = {nacional:{}};
+    if(!p.feb2024) p.feb2024 = {nacional:{}};
+    if(cur<=0){
+      const iPres = Number(CTX_CACHE.normalized?.[2024]?.pres?.nacional?.meta?.inscritos||0);
+      const iDip  = Number(CTX_CACHE.normalized?.[2024]?.dip?.nacional?.meta?.inscritos||0);
+      const iSen  = Number(CTX_CACHE.normalized?.[2024]?.sen?.nacional?.meta?.inscritos||0);
+      const best = Math.max(iPres,iDip,iSen,0);
+      p.mayo2024.nacional.inscritos = best;
+      p.feb2024.nacional.inscritos = best;
+      CTX_CACHE.padron = p;
+    }
+  }catch(e){}
   return CTX_CACHE;
 }
 
