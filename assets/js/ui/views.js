@@ -6,6 +6,56 @@ import {loadDiputados2024, loadCurules2024, loadPadron2024Provincial, loadPadron
 import {applyAlliance, mergeCoalition} from "../core/coalition.js";
 import {formatPct} from "../core/utils.js";
 
+const NIVEL_LABEL = {pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM"};
+const CORTE_OPTIONS = ["Febrero 2024","Mayo 2024","Base 2024","Proyección 2028"];
+
+function moduleControlsHtml(state, moduleId){
+  const eff = state.getEffective ? state.getEffective(moduleId) : {nivel:"dip", corte:"Base 2024", override:false};
+  const o = (state.overrides && state.overrides[moduleId]) || {enabled:false, nivel:null, corte:null};
+  const checked = o.enabled ? "checked" : "";
+  return `
+    <div class="card" style="padding:10px; margin-bottom:12px;">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span class="badge">Global: ${NIVEL_LABEL[state.global?.nivel||eff.nivel]||eff.nivel} · ${state.global?.corte||eff.corte}</span>
+        <label style="display:flex; align-items:center; gap:6px;">
+          <input type="checkbox" id="${moduleId}-override" ${checked}/>
+          Override
+        </label>
+        <select id="${moduleId}-corte" class="select-sm" ${o.enabled?"":"disabled"}>
+          ${CORTE_OPTIONS.map(c=>`<option value="${c}" ${((o.corte||state.global?.corte||eff.corte)===c)?"selected":""}>${c}</option>`).join("")}
+        </select>
+        <select id="${moduleId}-nivel" class="select-sm" ${o.enabled?"":"disabled"}>
+          ${Object.keys(NIVEL_LABEL).map(k=>`<option value="${k}" ${((o.nivel||state.global?.nivel||eff.nivel)===k)?"selected":""}>${NIVEL_LABEL[k]}</option>`).join("")}
+        </select>
+        ${o.enabled ? `<span class="badge">Override activo</span>` : `<span class="badge">Siguiendo global</span>`}
+      </div>
+    </div>
+  `;
+}
+
+function attachModuleControls(state, moduleId){
+  const chk = document.getElementById(`${moduleId}-override`);
+  const selC = document.getElementById(`${moduleId}-corte`);
+  const selN = document.getElementById(`${moduleId}-nivel`);
+  if(!chk || !selC || !selN) return;
+  chk.addEventListener("change", ()=>{
+    state.setOverride?.(moduleId, {enabled: chk.checked});
+    selC.disabled = !chk.checked;
+    selN.disabled = !chk.checked;
+    state.recomputeAndRender?.();
+  });
+  selC.addEventListener("change", ()=>{
+    state.setOverride?.(moduleId, {corte: selC.value});
+    state.recomputeAndRender?.();
+  });
+  selN.addEventListener("change", ()=>{
+    state.setOverride?.(moduleId, {nivel: selN.value});
+    state.recomputeAndRender?.();
+  });
+}
+
+
+
 function provIdFromSvg(id){
   // Expect DO-01..DO-32
   const m = String(id||"").match(/DO-(\d{1,2})/);
@@ -36,9 +86,10 @@ function top2(shareObj){
   return entries.slice(0,2);
 }
 
-export async function renderDashboard(state){
+export async export function renderDashboard(state, moduleId="dashboard"){
   const el = document.getElementById("view");
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="grid">
       <div class="card">
         <h2>Dashboard Ejecutivo</h2>
@@ -60,6 +111,7 @@ export async function renderDashboard(state){
       </div>
     </div>
   `;
+  attachModuleControls(state, moduleId);
 
   const status = document.getElementById("data-status");
   const polls = await loadPolls();
@@ -76,9 +128,10 @@ export async function renderDashboard(state){
   status.innerHTML = lines.join("<br/>");
 }
 
-export async function renderMapa(state, mapApi){
+export async export function renderMapa(state, mapApi, moduleId="mapa"){
   const el = document.getElementById("view");
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="card">
       <h2>Mapa Interactivo (Diputados 2024)</h2>
       <div class="row">
@@ -114,6 +167,7 @@ export async function renderMapa(state, mapApi){
       </div>
     </div>
   `;
+  attachModuleControls(state, moduleId);
 
   const dip = await loadDiputados2024();
   const panel = document.getElementById("map-panel");
@@ -169,9 +223,10 @@ export async function renderMapa(state, mapApi){
   loadMode("prov");
 }
 
-export async function renderEncuestas(state){
+export async export function renderEncuestas(state, moduleId="encuestas"){
   const el = document.getElementById("view");
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="card">
       <h2>Encuestas (carga por archivo)</h2>
       <p class="small">Edita <b>data/encuestas_master.xlsx</b> y exporta a <b>data/polls.json</b>. La web siempre carga lo que haya en ese archivo.</p>
@@ -186,6 +241,7 @@ export async function renderEncuestas(state){
       </div>
     </div>
   `;
+  attachModuleControls(state, moduleId);
 
   const status = document.getElementById("polls-status");
   const table = document.getElementById("polls-table");
@@ -219,7 +275,7 @@ export async function renderEncuestas(state){
   `;
 }
 
-export async function renderSimulador(state){
+export async export function renderSimulador(state, moduleId="simulador"){
   const el = document.getElementById("view");
   const curules = await loadCurules2024();
   const dip = await loadDiputados2024();
@@ -231,6 +287,7 @@ export async function renderSimulador(state){
   const parties = dip.meta.parties || [];
 
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="card">
       <h2>Simulador Diputados (Datos reales 2024 + D'Hondt)</h2>
       <div class="row">
@@ -288,6 +345,7 @@ export async function renderSimulador(state){
       </div>
     </div>
   `;
+  attachModuleControls(state, moduleId);
 
   const provSel = document.getElementById("sim-prov");
   const circSel = document.getElementById("sim-circ");
@@ -428,7 +486,7 @@ export async function renderSimulador(state){
   });
 }
 
-export async function renderPotencial(state){
+export async export function renderPotencial(state, moduleId="potencial"){
   const el = document.getElementById("view");
   const dip = await loadDiputados2024();
   // aggregate by province
@@ -459,6 +517,7 @@ export async function renderPotencial(state){
   rows.sort((a,b)=>["Fortaleza","Disputa ganada","Oportunidad","Disputa","Adverso","Baja prioridad"].indexOf(a.cat) - ["Fortaleza","Disputa ganada","Oportunidad","Disputa","Adverso","Baja prioridad"].indexOf(b.cat));
 
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="card">
       <h2>Clasificador de Potencial (Basado en Diputados 2024)</h2>
       <p class="small">Versión inicial: clasifica provincias usando % FP y margen vs líder en Diputados 2024. Luego se integran tendencia 2020–2024 y padrón/abstención para score completo.</p>
@@ -481,9 +540,10 @@ export async function renderPotencial(state){
   `;
 }
 
-export function renderMovilizacion(state){
+export function renderMovilizacion(state, moduleId="movilizacion"){
   const el = document.getElementById("view");
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="card">
       <div class="row between">
         <div>
@@ -567,6 +627,7 @@ export function renderMovilizacion(state){
       </div>
     </div>
   `;
+  attachModuleControls(state, moduleId);
 
   const fmtInt = (n)=> (n==null? "—" : Number(n).toLocaleString("es-DO"));
   const fmtPct = (x)=> (x==null? "—" : (Number(x)*100).toFixed(2) + "%");
@@ -734,7 +795,7 @@ export function renderMovilizacion(state){
 }
 
 
-export async function renderObjetivo(state){
+export async export function renderObjetivo(state, moduleId="objetivo"){
   const el = document.getElementById("view");
   const curules = await loadCurules2024();
   const dip = await loadDiputados2024();
@@ -742,6 +803,7 @@ export async function renderObjetivo(state){
   const provList = [...new Set(territorial.map(x=>x.provincia))].sort((a,b)=>a.localeCompare(b));
   const parties = dip.meta.parties || [];
   el.innerHTML = `
+    ${moduleControlsHtml(state, moduleId)}
     <div class="card">
       <h2>Módulo Objetivo (Diputados · datos reales 2024)</h2>
       <p class="small">Este módulo identifica dónde es más eficiente ganar el próximo escaño usando gap D'Hondt por distrito (curules reales 2024 + votos reales 2024).</p>
@@ -758,6 +820,7 @@ export async function renderObjetivo(state){
       </div>
     </div>
   `;
+  attachModuleControls(state, moduleId);
 
   function getSeats(prov, circ){
     const row = territorial.find(x=>x.provincia===prov && x.circ===Number(circ));

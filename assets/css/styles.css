@@ -480,3 +480,21 @@ body, .topbar, .card, .card-sub, select, input, button,
   .kpis { grid-template-columns: 1fr; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
 }
+
+
+/* Small selects for global/module controls */
+.select-sm{
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.2);
+  color: inherit;
+  font: inherit;
+}
+.select-sm:disabled{
+  opacity:.55;
+}
+.global-controls .select-sm{
+  padding:4px 8px;
+  border-radius:999px;
+}
