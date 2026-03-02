@@ -333,3 +333,13 @@ export async function buildCTX(){
 export async function getCTX(){
   return buildCTX();
 }
+
+
+// ===== STUB EXPORTS FOR LEGACY IMPORTS (BLOCK 1 STABILITY) =====
+export async function loadCurules2024(){ return {}; }
+export async function loadResults2024(){ return {}; }
+export async function loadResults2020(){ return {}; }
+export async function loadPadron2024Meta(){ return {}; }
+export async function loadPadron(){ return {}; }
+export async function loadGeography(){ return {}; }
+export async function loadPolls(){ return {}; }
