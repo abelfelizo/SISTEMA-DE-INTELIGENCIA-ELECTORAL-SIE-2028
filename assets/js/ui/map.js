@@ -33,17 +33,8 @@ export function initMap({containerId, svgUrl, onSelect}){
       // group all paths for easy hit
       const shapes = svg.querySelectorAll("[id^='DO-'],[id^='DO']");
       shapes.forEach(el=>{
-        // default style (SVG default fill is black; we need contrast)
-        try{
-          el.style.fill = "rgba(255,255,255,.10)";
-          el.style.stroke = "rgba(255,255,255,.28)";
-          el.style.strokeWidth = "1";
-        }catch(e){}
-
         el.style.cursor="pointer";
         el.style.transition="filter .15s, opacity .15s";
-        el.addEventListener("mouseenter",()=>{ el.style.opacity="0.85"; });
-        el.addEventListener("mouseleave",()=>{ el.style.opacity="1"; });
         el.addEventListener("click",(e)=>{
           e.stopPropagation();
           shapes.forEach(s=>s.style.filter="");
