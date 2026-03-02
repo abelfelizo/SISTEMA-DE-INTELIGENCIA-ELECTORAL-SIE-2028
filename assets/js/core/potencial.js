@@ -1,19 +1,15 @@
 /**
- * SIE 2028  core/potencial.js
- * Motor de score de potencial electoral 0100.
- *
- * Pesos (configurables):
- *   tendencia   25   cambio pp 20202024
- *   margen      20   margen top1-top2 (invertido: menor margen = ms potencial)
- *   abstencion  15   % abstencin (ms abstencin = ms potencial)
- *   padron      15   tamao relativo del padrn
- *   elasticidad 15   sensibilidad al swing nacional
- *   estabilidad 10   inverso de desviacin histrica
+ * SIE 2028 -- core/potencial.js  (H4)
+ * Score 0-100 por territorio.
+ * FIXES H4:
+ *   - Formula corregida: round(raw/maxRaw*100) no round(raw/100)
+ *   - Margen DIRECTO: alto margen del lider = alta fortaleza
+ *   - Inscritos pres usa sen como proxy (pres.prov no tiene INSCRITOS)
+ *   - Dropdown de partido dinamico en UI
  */
-
 import { rankVotes } from "./utils.js";
 
-const DEFAULT_WEIGHTS = {
+export var WEIGHTS_DEFAULT = {
   tendencia:   25,
   margen:      20,
   abstencion:  15,
@@ -22,109 +18,127 @@ const DEFAULT_WEIGHTS = {
   estabilidad: 10,
 };
 
-const CATEGORIAS = [
-  { min: 75, label: "Fortaleza",    cls: "cat-green"  },
-  { min: 60, label: "Oportunidad",  cls: "cat-blue"   },
-  { min: 50, label: "Disputa",      cls: "cat-yellow" },
-  { min: 40, label: "Crecimiento",  cls: "cat-orange" },
-  { min: 25, label: "Adverso",      cls: "cat-red"    },
-  { min:  0, label: "Baja prioridad", cls: "cat-gray" },
+export var CATEGORIAS = [
+  { min: 70, label: "Fortaleza",      cls: "cat-green"  },
+  { min: 55, label: "Oportunidad",    cls: "cat-lgreen" },
+  { min: 45, label: "Disputa",        cls: "cat-yellow" },
+  { min: 35, label: "Crecimiento",    cls: "cat-blue"   },
+  { min: 20, label: "Adverso",        cls: "cat-red"    },
+  { min:  0, label: "Baja prioridad", cls: "cat-gray"   },
 ];
 
 export function getCategoria(score) {
-  return CATEGORIAS.find(c => score >= c.min) || CATEGORIAS[CATEGORIAS.length - 1];
-}
-
-/**
- * Calcula score para un territorio dado datos de 2024 y 2020.
- */
-function scoreTerritory({ t24, t20, lider, maxPadron, weights = DEFAULT_WEIGHTS }) {
-  const ins24  = t24.inscritos || 0;
-  const em24   = t24.emitidos  || 0;
-  const ins20  = t20?.inscritos || 0;
-  const em20   = t20?.emitidos  || 0;
-  const votes24 = t24.votes   || {};
-  const votes20 = t20?.votes  || {};
-
-  // Abstencin 2024
-  const abst24 = ins24 > 0 ? 1 - (em24 / ins24) : 0;
-
-  // Tendencia lider: pp24 - pp20
-  const ranked24 = rankVotes(votes24, em24 || 1);
-  const ranked20 = rankVotes(votes20, em20 || 1);
-  const pct24    = ranked24.find(r => r.p === lider)?.pct || 0;
-  const pct20    = ranked20.find(r => r.p === lider)?.pct || 0;
-  const tend     = ins20 > 0 ? pct24 - pct20 : 0; // positivo = sube
-
-  // Margen: inverso del margen top1-top2 (margen pequeo = zona disputada = ms potencial para ganar)
-  const margen = ranked24.length >= 2 ? ranked24[0].pct - ranked24[1].pct : 1;
-  const margenScore = Math.max(0, 1 - Math.min(margen * 5, 1)); // margen 0 -> score 1, margen 0.2 -> score 0
-
-  // Padrn relativo
-  const padronScore = maxPadron > 0 ? ins24 / maxPadron : 0;
-
-  // Elasticidad: cunto vari el partido lider entre 2020 y 2024 relativo a la media
-  const elasticidad = Math.abs(tend) * 2; // normalizado 0-1 aprox
-
-  // Estabilidad: inverso de variacin (alta variacin = baja estabilidad pero alta elasticidad)
-  const estabilidad = 1 - Math.min(Math.abs(tend) * 3, 1);
-
-  // Abstencin normalizada (00.6  01)
-  const abstScore = Math.min(abst24 / 0.6, 1);
-
-  // Tendencia normalizada: tend positivo (gana)  score alto
-  const tendScore = clampN(0.5 + tend * 3, 0, 1);
-
-  const raw =
-    tendScore    * weights.tendencia  +
-    margenScore  * weights.margen     +
-    abstScore    * weights.abstencion +
-    padronScore  * weights.padron     +
-    Math.min(elasticidad, 1) * weights.elasticidad +
-    estabilidad  * weights.estabilidad;
-
-  const maxRaw = Object.values(weights).reduce((a, v) => a + v, 0);
-  const score  = Math.round((raw / maxRaw) * 100);
-
-  return {
-    score:       clampN(score, 0, 100),
-    tendencia:   tend,
-    abst:        abst24,
-    margen,
-    padron:      ins24,
-    pct24,
-    pct20:       ins20 > 0 ? pct20 : null,
-    categoria:   getCategoria(clampN(score, 0, 100)),
-  };
+  for (var i = 0; i < CATEGORIAS.length; i++) {
+    if (score >= CATEGORIAS[i].min) return CATEGORIAS[i];
+  }
+  return CATEGORIAS[CATEGORIAS.length - 1];
 }
 
 function clampN(x, a, b) { return Math.max(a, Math.min(b, x)); }
 
-/**
- * Genera ranking completo de territorios para un nivel.
- * lider: partido de referencia (para calcular tendencia/margen)
- * nivel: pres|sen|dip|mun|dm
- */
+function scoreOne(t24, t20, lider, maxPadron, weights) {
+  var ins24  = t24.inscritos || 0;
+  var em24   = t24.emitidos  || 0;
+  var votes24 = t24.votes    || {};
+  var votes20 = t20 ? (t20.votes    || {}) : {};
+  var em20    = t20 ? (t20.emitidos || 0)  : 0;
+  var ins20   = t20 ? (t20.inscritos|| 0)  : 0;
+
+  var ranked24 = rankVotes(votes24, em24 || 1);
+  var ranked20 = rankVotes(votes20, em20 || 1);
+  var e24  = ranked24.filter(function(r) { return r.p === lider; })[0];
+  var e20  = ranked20.filter(function(r) { return r.p === lider; })[0];
+  var pct24 = e24 ? e24.pct : 0;
+  var pct20 = (e20 && ins20 > 0) ? e20.pct : null;
+
+  var tend = (pct20 !== null) ? pct24 - pct20 : 0;
+
+  // Margen directo del lider (positivo si gana, negativo si pierde)
+  var margen = 0;
+  if (ranked24.length >= 2) {
+    var lEntry = ranked24.filter(function(r){ return r.p === lider; })[0];
+    var top1   = ranked24[0];
+    if (lEntry) {
+      var opponentPct = (lider === top1.p) ? ranked24[1].pct : top1.pct;
+      margen = lEntry.pct - opponentPct;
+    } else {
+      margen = -top1.pct;
+    }
+  } else if (ranked24.length === 1) {
+    margen = ranked24[0].p === lider ? 1 : -1;
+  }
+
+  var abst24 = ins24 > 0 ? 1 - em24 / ins24 : 0;
+
+  // Factor scores (0-1)
+  var tendScore   = clampN(0.5 + tend * 3,      0, 1);
+  var margenScore = clampN(0.5 + margen * 2,    0, 1); // directo
+  var abstScore   = clampN(abst24 / 0.6,        0, 1);
+  var padronScore = maxPadron > 0 ? ins24 / maxPadron : 0;
+  var elastScore  = clampN(Math.abs(tend) * 2,  0, 1);
+  var establScore = clampN(1 - Math.abs(tend)*3,0, 1);
+
+  var w      = weights || WEIGHTS_DEFAULT;
+  var maxRaw = w.tendencia + w.margen + w.abstencion + w.padron + w.elasticidad + w.estabilidad;
+  var raw = tendScore  * w.tendencia   +
+            margenScore* w.margen      +
+            abstScore  * w.abstencion  +
+            padronScore* w.padron      +
+            elastScore * w.elasticidad +
+            establScore* w.estabilidad;
+
+  var score = Math.round((raw / maxRaw) * 100);
+  score = clampN(score, 0, 100);
+
+  return {
+    score:     score,
+    tendencia: tend,
+    abst:      abst24,
+    margen:    margen,
+    padron:    ins24,
+    pct24:     pct24,
+    pct20:     pct20,
+    categoria: getCategoria(score),
+  };
+}
+
 export function calcPotencial(ctx, nivel, lider, weights) {
-  const lv24   = ctx.r[2024]?.[nivel] || {};
-  const lv20   = ctx.r[2020]?.[nivel] || {};
-  const terr24 = nivel === "mun" ? lv24.mun : nivel === "dm" ? lv24.dm : lv24.prov;
-  const terr20 = nivel === "mun" ? lv20.mun : nivel === "dm" ? lv20.dm : lv20.prov;
+  var lv24 = (ctx.r[2024] && ctx.r[2024][nivel]) ? ctx.r[2024][nivel] : {};
+  var lv20 = (ctx.r[2020] && ctx.r[2020][nivel]) ? ctx.r[2020][nivel] : {};
 
-  if (!terr24) return [];
-
-  const maxPadron = Math.max(...Object.values(terr24).map(t => t.inscritos || 0), 1);
-
-  return Object.entries(terr24)
-    .map(([id, t24]) => {
-      const s = scoreTerritory({
-        t24,
-        t20: terr20?.[id] || null,
-        lider,
-        maxPadron,
-        weights: weights || DEFAULT_WEIGHTS,
+  var terr24, terr20;
+  if (nivel === "mun") {
+    terr24 = lv24.mun || {};
+    terr20 = lv20.mun || {};
+  } else if (nivel === "dm") {
+    terr24 = lv24.dm  || {};
+    terr20 = lv20.dm  || {};
+  } else {
+    terr24 = lv24.prov || {};
+    terr20 = lv20.prov || {};
+    // pres.prov no tiene inscritos -- usar sen como proxy de padron
+    if (nivel === "pres") {
+      var sen24prov = (ctx.r[2024] && ctx.r[2024].sen) ? (ctx.r[2024].sen.prov || {}) : {};
+      var enriched  = {};
+      Object.keys(terr24).forEach(function(id) {
+        var t = Object.assign({}, terr24[id]);
+        if (!t.inscritos && sen24prov[id]) t.inscritos = sen24prov[id].inscritos;
+        enriched[id] = t;
       });
-      return { id, nombre: t24.nombre || id, ...s };
-    })
-    .sort((a, b) => b.score - a.score);
+      terr24 = enriched;
+    }
+  }
+
+  if (!Object.keys(terr24).length) return [];
+
+  var maxPadron = Math.max.apply(null,
+    Object.values(terr24).map(function(t){ return t.inscritos || 0; }).concat([1])
+  );
+
+  return Object.keys(terr24).map(function(id) {
+    var t24 = terr24[id];
+    var t20 = terr20 ? terr20[id] : null;
+    var s   = scoreOne(t24, t20, lider, maxPadron, weights);
+    return Object.assign({ id: id, nombre: t24.nombre || id }, s);
+  }).sort(function(a, b) { return b.score - a.score; });
 }

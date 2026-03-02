@@ -1,0 +1,472 @@
+{
+  "meta": {
+    "fuente": "JCE Resultados 2024",
+    "total": 41
+  },
+  "partidos": [
+    {
+      "codigo": "PRM",
+      "nombre": "PRM",
+      "pct_pres_2024": 48.41,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "FP",
+      "nombre": "FP",
+      "pct_pres_2024": 26.67,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PLD",
+      "nombre": "PLD",
+      "pct_pres_2024": 10.39,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "BIS",
+      "nombre": "BIS",
+      "pct_pres_2024": 1.38,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PED",
+      "nombre": "PED",
+      "pct_pres_2024": 1.36,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "DXC",
+      "nombre": "DXC",
+      "pct_pres_2024": 1.13,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "JS",
+      "nombre": "JS",
+      "pct_pres_2024": 1.13,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PP",
+      "nombre": "PP",
+      "pct_pres_2024": 0.97,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PRSC",
+      "nombre": "PRSC",
+      "pct_pres_2024": 0.87,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "GENS",
+      "nombre": "GENS",
+      "pct_pres_2024": 0.72,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PRSD",
+      "nombre": "PRSD",
+      "pct_pres_2024": 0.64,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "OD",
+      "nombre": "OD",
+      "pct_pres_2024": 0.58,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PCR",
+      "nombre": "PCR",
+      "pct_pres_2024": 0.57,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PUN",
+      "nombre": "PUN",
+      "pct_pres_2024": 0.55,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PQDC",
+      "nombre": "PQDC",
+      "pct_pres_2024": 0.51,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PRD",
+      "nombre": "PRD",
+      "pct_pres_2024": 0.45,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "MODA",
+      "nombre": "MODA",
+      "pct_pres_2024": 0.42,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "APD",
+      "nombre": "APD",
+      "pct_pres_2024": 0.4,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "ALPAIS",
+      "nombre": "ALPAIS",
+      "pct_pres_2024": 0.36,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PPG",
+      "nombre": "PPG",
+      "pct_pres_2024": 0.34,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PHD",
+      "nombre": "PHD",
+      "pct_pres_2024": 0.32,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PLR",
+      "nombre": "PLR",
+      "pct_pres_2024": 0.27,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PAL",
+      "nombre": "PAL",
+      "pct_pres_2024": 0.21,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PPC",
+      "nombre": "PPC",
+      "pct_pres_2024": 0.21,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PDP",
+      "nombre": "PDP",
+      "pct_pres_2024": 0.16,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PASOVE",
+      "nombre": "PASOVE",
+      "pct_pres_2024": 0.15,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PDI",
+      "nombre": "PDI",
+      "pct_pres_2024": 0.15,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PSC",
+      "nombre": "PSC",
+      "pct_pres_2024": 0.15,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "F.AMPLIO",
+      "nombre": "F.AMPLIO",
+      "pct_pres_2024": 0.14,
+      "en_niveles": [
+        "pres"
+      ]
+    },
+    {
+      "codigo": "UDC",
+      "nombre": "UDC",
+      "pct_pres_2024": 0.13,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PRI",
+      "nombre": "PRI",
+      "pct_pres_2024": 0.12,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PNVC",
+      "nombre": "PNVC",
+      "pct_pres_2024": 0.06,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "PPT",
+      "nombre": "PPT",
+      "pct_pres_2024": 0.06,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "FAMP",
+      "nombre": "FAMP",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "FAMPLIO",
+      "nombre": "FAMPLIO",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "sen",
+        "dip"
+      ]
+    },
+    {
+      "codigo": "FNP",
+      "nombre": "FNP",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "pres",
+        "sen",
+        "dip",
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "MA",
+      "nombre": "MA",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "MCC",
+      "nombre": "MCC",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "mun"
+      ]
+    },
+    {
+      "codigo": "MCNPC",
+      "nombre": "MCNPC",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "mun",
+        "dm"
+      ]
+    },
+    {
+      "codigo": "MHI",
+      "nombre": "MHI",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "mun"
+      ]
+    },
+    {
+      "codigo": "MIUP",
+      "nombre": "MIUP",
+      "pct_pres_2024": 0.0,
+      "en_niveles": [
+        "mun"
+      ]
+    }
+  ]
+}

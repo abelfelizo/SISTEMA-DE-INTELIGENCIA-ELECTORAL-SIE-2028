@@ -565,3 +565,103 @@ body {
 
 /* Objective result */
 [data-theme="light"] .kpi-accent { background: var(--blue-bg); }
+
+/* H4 -- category badge colors */
+.cat-lgreen { background: #d4edda; color: #1a7a3c; }
+[data-theme="dark"] .cat-lgreen { background: #1a4a2a; color: #5fda8a; }
+.cat-orange { background: #fde8d8; color: #c0581a; }
+[data-theme="dark"] .cat-orange { background: #4a2810; color: #f0944a; }
+
+/* H4 -- methodology tooltip */
+.method-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+.method-box table { width: 100%; font-size: 12px; }
+.method-box th { background: var(--bg4, var(--bg2)); padding: 4px 6px; }
+.method-box td { padding: 3px 6px; border-bottom: 1px solid var(--border); }
+
+/* H4 -- collapsible advanced panel */
+.adv-panel { display: none; margin-top: 12px; }
+.adv-panel.open { display: block; }
+.adv-toggle { cursor: pointer; font-size: 12px; color: var(--text2); text-decoration: underline; margin-top: 8px; display: inline-block; }
+
+/* H4 -- boleta mode tabs */
+.mode-tabs { display: flex; gap: 4px; margin-bottom: 14px; }
+.mode-tab { flex: 1; padding: 8px; border: 1px solid var(--border); background: var(--bg3); border-radius: 6px; cursor: pointer; font-size: 13px; text-align: center; }
+.mode-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* H4 -- encuestas chart */
+.enc-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; padding: 10px 0; overflow-x: auto; }
+.enc-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 50px; }
+.enc-bar { width: 36px; border-radius: 3px 3px 0 0; transition: height 0.3s; }
+.enc-label { font-size: 11px; color: var(--text2); text-align: center; }
+
+/* H4 additions */
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+.ctrl-label {
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+  cursor: help;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-btn:hover { color: var(--text); }
+
+/* Categoria badges H4 - colores correctos */
+.cat-green  { background: #14532d; color: #86efac; }
+.cat-lgreen { background: #166534; color: #bbf7d0; }
+.cat-yellow { background: #713f12; color: #fde68a; }
+.cat-blue   { background: #1e3a5f; color: #93c5fd; }
+.cat-red    { background: #7f1d1d; color: #fca5a5; }
+.cat-gray   { background: #374151; color: #9ca3af; }
+.cat-orange { background: #7c2d12; color: #fdba74; }
+[data-theme="light"] .cat-green  { background: #dcfce7; color: #15803d; }
+[data-theme="light"] .cat-lgreen { background: #f0fdf4; color: #16a34a; }
+[data-theme="light"] .cat-yellow { background: #fef9c3; color: #a16207; }
+[data-theme="light"] .cat-blue   { background: #eff6ff; color: #1d4ed8; }
+[data-theme="light"] .cat-red    { background: #fee2e2; color: #b91c1c; }
+[data-theme="light"] .cat-gray   { background: #f3f4f6; color: #6b7280; }
+[data-theme="light"] .cat-orange { background: #fff7ed; color: #c2410c; }
+
+/* Map selected */
+.map-selected { outline: 2px solid #fff; }
+
+/* btn neg (movilizacion) */
+.btn-sm.neg { color: var(--red); border-color: var(--red); }
+
+/* details/summary panel */
+details.card > summary {
+  list-style: none;
+  user-select: none;
+}
+details.card > summary::before {
+  content: "▶ ";
+  font-size: 11px;
+}
+details[open].card > summary::before {
+  content: "▼ ";
+}

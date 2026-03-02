@@ -1,121 +1,146 @@
 /**
- * SIE 2028  ui/map.js
- * Carga SVG, gestiona zoom/pan, dispara onSelect(provId:"01") al click.
- * SVG IDs esperados: "DO-01"  "DO-32"
- * provId extrado: los dos dgitos del ID ("DO-01"  "01")
+ * SIE 2028 -- ui/map.js  (H4)
+ * SVG interactivo. Zoom/pan. Seleccion multiple (click-through).
+ * onSelect(provId: "01".."32") se dispara en cada click.
+ * Log en consola si SVG ID no tiene match en datos.
  */
-import { clamp } from "../core/utils.js";
-import { toast } from "./toast.js";
 
-export function initMap({ containerId, svgUrl, onSelect, onReady }) {
-  const wrap = document.getElementById(containerId);
-  if (!wrap) return null;
+export function initMap(opts) {
+  var containerId = opts.containerId;
+  var svgUrl      = opts.svgUrl;
+  var onSelect    = opts.onSelect;
+  var onReady     = opts.onReady;
 
-  wrap.innerHTML = `<div class="map-loading">Cargando mapa...</div>`;
+  var container = document.getElementById(containerId);
+  if (!container) return null;
 
-  let svg = null;
-  let shapes = [];
-  let selected = null;
-  let s = { scale: 1, tx: 0, ty: 0, vb: null, dragging: false, px: 0, py: 0 };
+  var svg    = null;
+  var shapes = [];
+  var selected = null;
+  var scale  = 1;
+  var tx = 0, ty = 0;
+  var dragging = false;
+  var dragStart = { x:0, y:0, tx:0, ty:0 };
 
-  function applyTransform() {
-    if (!svg || !s.vb) return;
-    const w = s.vb.w / s.scale;
-    const h = s.vb.h / s.scale;
-    svg.setAttribute("viewBox", `${s.vb.x + s.tx} ${s.vb.y + s.ty} ${w} ${h}`);
-  }
-
-  function zoom(delta) {
-    if (!s.vb) return;
-    const prev = s.scale;
-    s.scale = clamp(s.scale * (delta > 0 ? 1.15 : 0.87), 1, 8);
-    const dw = (s.vb.w / prev) - (s.vb.w / s.scale);
-    const dh = (s.vb.h / prev) - (s.vb.h / s.scale);
-    s.tx += dw / 2;
-    s.ty += dh / 2;
-    applyTransform();
-  }
-
-  function reset() {
-    s.scale = 1; s.tx = 0; s.ty = 0;
-    applyTransform();
-  }
-
-  /** Resalta una provincia por ID ("01") */
-  function highlight(provId) {
-    shapes.forEach(el => el.classList.remove("map-selected"));
-    if (!provId) { selected = null; return; }
-    const el = svg?.querySelector(`[id="DO-${provId}"]`);
-    if (el) { el.classList.add("map-selected"); selected = provId; }
-  }
-
+  // Cargar SVG via fetch e insertarlo inline
   fetch(svgUrl)
-    .then(r => { if (!r.ok) throw new Error(`SVG ${r.status}`); return r.text(); })
-    .then(svgText => {
-      wrap.innerHTML = svgText;
-      svg = wrap.querySelector("svg");
-      if (!svg) throw new Error("SVG invalido");
+    .then(function(r) { return r.text(); })
+    .then(function(text) {
+      container.innerHTML = text;
+      svg = container.querySelector("svg");
+      if (!svg) { console.error("[Mapa] SVG no encontrado en", svgUrl); return; }
 
-      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
       svg.style.width  = "100%";
       svg.style.height = "100%";
+      svg.style.cursor = "grab";
+      applyTransform();
 
-      if (!svg.getAttribute("viewBox")) {
-        const w = svg.getAttribute("width")  || 800;
-        const h = svg.getAttribute("height") || 600;
-        svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      }
-      const vb = svg.getAttribute("viewBox").split(/\s+/).map(Number);
-      s.vb = { x: vb[0], y: vb[1], w: vb[2], h: vb[3] };
+      // Recoger shapes con ID "DO-NN"
+      shapes = Array.from(svg.querySelectorAll("[id^='DO-']"));
+      console.log("[Mapa] " + shapes.length + " provincias en SVG");
 
-      // Shapes con ID "DO-NN"
-      shapes = [...svg.querySelectorAll("[id^='DO-']")];
-      shapes.forEach(el => {
-        el.classList.add("map-shape");
-        el.addEventListener("click", e => {
-          e.stopPropagation();
-          const raw = el.getAttribute("id") || "";        // "DO-01"
-          const provId = raw.replace(/^DO-/, "");         // "01"
-          highlight(provId);
-          onSelect?.(provId);
+      // Aplicar estilos base
+      shapes.forEach(function(sh) {
+        sh.style.cursor = "pointer";
+        sh.style.transition = "opacity 0.15s, stroke-width 0.15s";
+        sh.style.stroke = "var(--bg)";
+        sh.style.strokeWidth = "1";
+      });
+
+      // Click handler -- NO bloquea tras primer click
+      svg.addEventListener("click", function(e) {
+        var target = e.target.closest("[id^='DO-']");
+        if (!target) return;
+
+        var raw    = target.getAttribute("id") || "";
+        var provId = raw.replace(/^DO-/, "");
+
+        // Remover active anterior
+        shapes.forEach(function(sh) {
+          sh.classList.remove("map-selected");
+          sh.style.strokeWidth = "1";
         });
+
+        // Activar nuevo
+        target.classList.add("map-selected");
+        target.style.strokeWidth = "2.5";
+        target.style.stroke = "#fff";
+        selected = provId;
+
+        if (typeof onSelect === "function") onSelect(provId);
       });
 
       // Zoom con rueda
-      wrap.addEventListener("wheel", e => {
+      svg.addEventListener("wheel", function(e) {
         e.preventDefault();
-        zoom(-e.deltaY);
+        var factor = e.deltaY < 0 ? 1.15 : 0.87;
+        scale = Math.min(8, Math.max(0.5, scale * factor));
+        applyTransform();
       }, { passive: false });
 
       // Pan
-      wrap.addEventListener("pointerdown", e => {
-        s.dragging = true; s.px = e.clientX; s.py = e.clientY;
-        wrap.setPointerCapture(e.pointerId);
+      container.addEventListener("pointerdown", function(e) {
+        if (e.target.closest("[id^='DO-']")) return; // clicks en provincias no inician pan
+        dragging = true;
+        dragStart = { x: e.clientX, y: e.clientY, tx: tx, ty: ty };
+        svg.style.cursor = "grabbing";
+        container.setPointerCapture(e.pointerId);
       });
-      wrap.addEventListener("pointermove", e => {
-        if (!s.dragging || !s.vb) return;
-        const w = s.vb.w / s.scale;
-        const h = s.vb.h / s.scale;
-        s.tx -= (e.clientX - s.px) * (w / wrap.clientWidth);
-        s.ty -= (e.clientY - s.py) * (h / wrap.clientHeight);
-        s.px = e.clientX; s.py = e.clientY;
+      container.addEventListener("pointermove", function(e) {
+        if (!dragging) return;
+        tx = dragStart.tx + (e.clientX - dragStart.x);
+        ty = dragStart.ty + (e.clientY - dragStart.y);
         applyTransform();
       });
-      wrap.addEventListener("pointerup",     () => { s.dragging = false; });
-      wrap.addEventListener("pointercancel", () => { s.dragging = false; });
+      container.addEventListener("pointerup", function() {
+        dragging = false;
+        svg.style.cursor = "grab";
+      });
 
-      onReady?.({ highlight });
+      if (typeof onReady === "function") onReady();
     })
-    .catch(err => {
-      wrap.innerHTML = `<div class="map-error">Error cargando mapa: ${err.message}</div>`;
-      toast("Error cargando mapa: " + err.message);
-    });
+    .catch(function(e) { console.error("[Mapa] Error cargando SVG:", e); });
 
-  // API pblica  funciona aunque SVG an no haya cargado
+  function applyTransform() {
+    if (!svg) return;
+    svg.style.transform = "translate(" + tx + "px, " + ty + "px) scale(" + scale + ")";
+    svg.style.transformOrigin = "center center";
+  }
+
+  function highlight(provId) {
+    shapes.forEach(function(sh) {
+      sh.classList.remove("map-selected");
+      sh.style.strokeWidth = "1";
+    });
+    if (!provId) { selected = null; return; }
+    var target = svg ? svg.querySelector("[id='DO-" + provId + "']") : null;
+    if (target) {
+      target.classList.add("map-selected");
+      target.style.strokeWidth = "2.5";
+      target.style.stroke = "#fff";
+      selected = provId;
+    } else {
+      console.warn("[Mapa] Sin match SVG para provId:", provId);
+    }
+  }
+
+  // Validar que los IDs del SVG tienen match con datos (llamar tras onReady)
+  function validateMatches(dataKeys) {
+    if (!svg) return;
+    var svgIds = shapes.map(function(sh) { return sh.getAttribute("id").replace(/^DO-/, ""); });
+    var missing = svgIds.filter(function(id) { return dataKeys.indexOf(id) === -1; });
+    var extra   = dataKeys.filter(function(id) { return svgIds.indexOf(id) === -1; });
+    if (missing.length) console.warn("[Mapa] SVG sin datos:", missing);
+    if (extra.length)   console.warn("[Mapa] Datos sin SVG:", extra);
+    if (!missing.length && !extra.length) console.log("[Mapa] SVG<->datos: todos los IDs coinciden OK");
+  }
+
   return {
-    zoomIn:    () => zoom(1),
-    zoomOut:   () => zoom(-1),
-    reset,
-    highlight,
+    zoomIn:    function() { scale = Math.min(8, scale * 1.2); applyTransform(); },
+    zoomOut:   function() { scale = Math.max(0.5, scale * 0.83); applyTransform(); },
+    reset:     function() { scale = 1; tx = 0; ty = 0; applyTransform(); highlight(null); },
+    highlight: highlight,
+    validate:  validateMatches,
+    getSelected: function() { return selected; },
   };
 }

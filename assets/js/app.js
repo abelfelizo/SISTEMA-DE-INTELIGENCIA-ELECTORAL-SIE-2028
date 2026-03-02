@@ -13,6 +13,7 @@ import { mountGlobalControls,
          renderObjetivo,
          renderAuditoria,
          renderBoleta,
+         renderEncuestas,
          exportarPDF }     from "./ui/views.js";
 
 var ROUTES = [
@@ -23,6 +24,7 @@ var ROUTES = [
   { id:"movilizacion", label:"Movilizacion", fn: renderMovilizacion },
   { id:"objetivo",     label:"Objetivo",     fn: renderObjetivo     },
   { id:"boleta",       label:"Boleta unica", fn: renderBoleta       },
+  { id:"encuestas",    label:"Encuestas",    fn: renderEncuestas    },
   { id:"auditoria",    label:"Auditoria",    fn: renderAuditoria    },
 ];
 

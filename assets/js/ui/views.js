@@ -110,8 +110,15 @@ export function mountGlobalControls(state) {
   if (!slot) return;
   var nOpts = Object.entries(NIVEL_LABEL).map(function(kv) { return opt(kv[0], kv[1], kv[0]===state.nivel); }).join("");
   var cOpts = Object.entries(CORTE_LABEL).map(function(kv) { return opt(kv[0], kv[1], kv[0]===state.corte); }).join("");
-  slot.innerHTML = "<select id=\"g-nivel\" class=\"sel-sm\" title=\"Nivel\">" + nOpts + "</select>" +
-    "<select id=\"g-corte\" class=\"sel-sm\" title=\"Corte\">" + cOpts + "</select>";
+  slot.innerHTML =
+    "<div class=\"ctrl-group\">" +
+      "<label class=\"ctrl-label\" title=\"Afecta todos los modulos: Dashboard, Mapa, Simulador, Potencial y Movilizacion\">Nivel de Eleccion Activo</label>" +
+      "<select id=\"g-nivel\" class=\"sel-sm\" title=\"Afecta todos los modulos\">" + nOpts + "</select>" +
+    "</div>" +
+    "<div class=\"ctrl-group\">" +
+      "<label class=\"ctrl-label\" title=\"Determina el padron base para calcular participacion y abstencion proyectada\">Corte (Padron y Participacion)</label>" +
+      "<select id=\"g-corte\" class=\"sel-sm\" title=\"Afecta padron, participacion y proyeccion base\">" + cOpts + "</select>" +
+    "</div>";
   el("g-nivel").addEventListener("change", function(e) { state.setNivel(e.target.value); state.recomputeAndRender(); });
   el("g-corte").addEventListener("change", function(e) { state.setCorte(e.target.value); state.recomputeAndRender(); });
 }
@@ -229,6 +236,10 @@ export function renderMapa(state, ctx) {
           }
         });
       }
+      // Validar match SVG <-> datos en consola
+      if (_mapApi && _mapApi.validate) {
+        _mapApi.validate(Object.keys(lv.prov));
+      }
     },
   });
 }
@@ -281,68 +292,95 @@ export function renderSimulador(state, ctx) {
   var savedMov = localStorage.getItem("sie28-sim-mov") || "0";
   localStorage.removeItem("sie28-sim-mov");
 
-  var tblRows = ranked.slice(0,15).map(function(r) {
+  // Partidos: usar ctx.partidos si existe, si no usar ranked (todos sin filtro de %)
+  var allParties = (ctx.partidos && ctx.partidos.length)
+    ? ctx.partidos.map(function(p) { return p.codigo; })
+    : ranked.map(function(r) { return r.p; });
+
+  // Enriquecer con votos actuales
+  var partyData = allParties.map(function(p) {
+    var entry = ranked.filter(function(r) { return r.p === p; })[0];
+    return { p: p, pct: entry ? entry.pct : 0, v: entry ? entry.v : 0 };
+  });
+
+  var tblRowsBasic = partyData.slice(0, 8).map(function(r) {
     return "<tr data-p=\"" + r.p + "\"><td>" + dot(r.p) + r.p + "</td><td class=\"r\">" + fmtPct(r.pct) + "</td>" +
-      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"0\" style=\"width:70px;text-align:right;\" data-party=\"" + r.p + "\"></td></tr>";
+      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"0\" style=\"width:68px;text-align:right;\" data-party=\"" + r.p + "\"></td></tr>";
+  }).join("");
+
+  var tblRowsAll = partyData.map(function(r) {
+    return "<tr data-p=\"" + r.p + "\"><td>" + dot(r.p) + r.p + "</td><td class=\"r\">" + fmtPct(r.pct) + "</td>" +
+      "<td class=\"r\"><input class=\"inp-sm delta-in\" type=\"number\" step=\"0.1\" value=\"0\" style=\"width:68px;text-align:right;\" data-party=\"" + r.p + "\"></td></tr>";
   }).join("");
 
   var movBtns = [-5,-3,3,5,7].map(function(pp) {
     var cls = pp < 0 ? "btn-sm neg" : "btn-sm";
-    var lbl = pp > 0 ? "+" + pp : String(pp);
-    return "<button class=\"" + cls + "\" data-mov=\"" + pp + "\">" + lbl + "</button>";
+    return "<button class=\"" + cls + "\" data-mov=\"" + pp + "\">" + (pp > 0 ? "+" : "") + pp + "</button>";
   }).join("");
 
-  var liderOpts = ranked.slice(0,10).map(function(r) { return opt(r.p, r.p, false); }).join("");
-
-  var alidaosRows = ranked.slice(1,10).map(function(r) {
+  var liderOpts  = partyData.map(function(r) { return opt(r.p, r.p, false); }).join("");
+  var aliadoRows = partyData.slice(1).map(function(r) {
     return "<div class=\"alianza-row\" style=\"display:flex;gap:8px;align-items:center;margin-bottom:4px;\" data-p=\"" + r.p + "\">" +
       "<input type=\"checkbox\" class=\"alz-chk\" value=\"" + r.p + "\" id=\"alz-" + r.p + "\">" +
       "<label for=\"alz-" + r.p + "\" style=\"min-width:50px;\">" + r.p + "</label>" +
-      "<label class=\"muted\">%:</label>" +
       "<input class=\"inp-sm alz-pct\" type=\"number\" min=\"0\" max=\"100\" step=\"5\" value=\"80\" style=\"width:60px;\" data-party=\"" + r.p + "\" disabled>" +
-      "</div>";
+    "</div>";
   }).join("");
 
-  var arrOpts = ranked.slice(0,5).map(function(r) { return opt(r.p, r.p, false); }).join("");
-  var arrastreBlock = nivel !== "pres" ?
-    "<div class=\"card\" style=\"margin-bottom:14px;\"><h3>Arrastre presidencial</h3>" +
-      "<div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;\">" +
-        "<label><input type=\"checkbox\" id=\"sim-arrastre\"> Activar</label>" +
-        "<select id=\"sim-arr-lider\" class=\"sel-sm\">" + arrOpts + "</select>" +
-        "<select id=\"sim-arr-k\" class=\"sel-sm\">" +
-          "<option value=\"auto\">Auto</option>" +
-          "<option value=\"0.60\">k=0.60</option>" +
-          "<option value=\"0.40\">k=0.40</option>" +
-          "<option value=\"0.25\">k=0.25</option>" +
-        "</select>" +
-      "</div></div>" : "";
+  var arrOpts = partyData.slice(0, 8).map(function(r) { return opt(r.p, r.p, false); }).join("");
+  var arrastreBlock = nivel !== "pres"
+    ? "<div class=\"card\" style=\"margin-bottom:12px;\">" +
+        "<h3>Arrastre presidencial</h3>" +
+        "<div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;\">" +
+          "<label><input type=\"checkbox\" id=\"sim-arrastre\"> Activar</label>" +
+          "<select id=\"sim-arr-lider\" class=\"sel-sm\">" + arrOpts + "</select>" +
+          "<select id=\"sim-arr-k\" class=\"sel-sm\">" +
+            "<option value=\"auto\">Auto</option>" +
+            "<option value=\"0.60\">k=0.60 (>10pp)</option>" +
+            "<option value=\"0.40\">k=0.40 (5-10pp)</option>" +
+            "<option value=\"0.25\">k=0.25 (<5pp)</option>" +
+          "</select>" +
+        "</div>" +
+      "</div>"
+    : "";
 
   view().innerHTML =
     "<div class=\"page-header\"><h2>Simulador - " + NIVEL_LABEL[nivel] + "</h2></div>" +
     "<div class=\"sim-layout\">" +
       "<div>" +
-        "<div class=\"card\" style=\"margin-bottom:14px;\">" +
-          "<h3>Ajuste por partido (delta pp)</h3>" +
-          "<p class=\"muted\" style=\"margin-bottom:8px;\">Variacion en puntos porcentuales. Se renormaliza.</p>" +
-          "<div style=\"overflow:auto;max-height:300px;\"><table class=\"tbl\" id=\"sim-tbl\">" +
-            "<thead><tr><th>Partido</th><th class=\"r\">% base</th><th class=\"r\">delta pp</th></tr></thead>" +
-            "<tbody>" + tblRows + "</tbody></table></div>" +
+        // MODO BASICO (visible por defecto)
+        "<div class=\"card\" style=\"margin-bottom:12px;\">" +
+          "<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;\">" +
+            "<h3>Ajuste por partido (delta pp)</h3>" +
+            "<button class=\"btn-sm\" id=\"btn-show-all\" title=\"Mostrar todos los partidos\">+ Todos</button>" +
+          "</div>" +
+          "<p class=\"muted\" style=\"font-size:12px;margin-bottom:8px;\">Variacion en puntos porcentuales. Se renormaliza automaticamente.</p>" +
+          "<div style=\"overflow:auto;max-height:280px;\">" +
+            "<table class=\"tbl\" id=\"sim-tbl\">" +
+              "<thead><tr><th>Partido</th><th class=\"r\">% base</th><th class=\"r\">delta pp</th></tr></thead>" +
+              "<tbody id=\"sim-tbody\">" + tblRowsBasic + "</tbody>" +
+            "</table>" +
+          "</div>" +
         "</div>" +
-        "<div class=\"card\" style=\"margin-bottom:14px;\">" +
+        "<div class=\"card\" style=\"margin-bottom:12px;\">" +
           "<h3>Movilizacion</h3>" +
           "<div style=\"display:flex;gap:6px;flex-wrap:wrap;align-items:center;\">" + movBtns +
-            "<input id=\"sim-mov\" class=\"inp-sm\" type=\"number\" step=\"0.1\" value=\"" + savedMov + "\" style=\"width:70px;\">" +
+            "<input id=\"sim-mov\" class=\"inp-sm\" type=\"number\" step=\"0.1\" value=\"" + savedMov + "\" style=\"width:68px;\">" +
           "</div>" +
         "</div>" +
-        "<div class=\"card\" style=\"margin-bottom:14px;\">" +
-          "<h3>Alianzas</h3>" +
-          "<div style=\"display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;\">" +
-            "<label class=\"muted\">Lider:</label>" +
-            "<select id=\"sim-lider\" class=\"sel-sm\">" + liderOpts + "</select>" +
+        // PANEL AVANZADO (colapsado por defecto)
+        "<details class=\"card\" style=\"margin-bottom:12px;\">" +
+          "<summary style=\"cursor:pointer;font-weight:600;padding:2px 0;\">Avanzado: Alianzas y Arrastre</summary>" +
+          "<div style=\"margin-top:12px;\">" +
+            "<h4 style=\"margin-bottom:8px;\">Alianzas</h4>" +
+            "<div style=\"display:flex;gap:8px;align-items:center;margin-bottom:8px;\">" +
+              "<label class=\"muted\">Lider:</label>" +
+              "<select id=\"sim-lider\" class=\"sel-sm\">" + liderOpts + "</select>" +
+            "</div>" +
+            "<div id=\"sim-aliados\" style=\"max-height:180px;overflow-y:auto;font-size:13px;\">" + aliadoRows + "</div>" +
           "</div>" +
-          "<div id=\"sim-aliados\" style=\"max-height:180px;overflow-y:auto;\">" + alidaosRows + "</div>" +
-        "</div>" +
-        arrastreBlock +
+          "<div style=\"margin-top:12px;\">" + arrastreBlock + "</div>" +
+        "</details>" +
         "<div style=\"display:flex;gap:10px;flex-wrap:wrap;\">" +
           "<button class=\"btn\" id=\"btn-sim\">Simular</button>" +
           "<button class=\"btn-sm\" id=\"btn-sim-reset\">Reset</button>" +
@@ -351,6 +389,16 @@ export function renderSimulador(state, ctx) {
       "<div><div class=\"card\" id=\"sim-result\"><p class=\"muted\">Configura y presiona Simular.</p></div></div>" +
     "</div>";
 
+  // Wire: show all parties toggle
+  el("btn-show-all").addEventListener("click", function() {
+    var tbody = el("sim-tbody");
+    if (!tbody) return;
+    var btn = el("btn-show-all");
+    var showing = btn.textContent === "- Menos";
+    tbody.innerHTML = showing ? tblRowsBasic : tblRowsAll;
+    btn.textContent = showing ? "+ Todos" : "- Menos";
+  });
+
   document.querySelectorAll(".alz-chk").forEach(function(chk) {
     chk.addEventListener("change", function() {
       var inp = document.querySelector(".alz-pct[data-party=\"" + chk.value + "\"]");
@@ -358,7 +406,7 @@ export function renderSimulador(state, ctx) {
     });
   });
   document.querySelectorAll("[data-mov]").forEach(function(b) {
-    b.addEventListener("click", function() { el("sim-mov").value = b.dataset.mov; });
+    b.addEventListener("click", function() { var m = el("sim-mov"); if(m) m.value = b.dataset.mov; });
   });
   el("sim-lider").addEventListener("change", function() {
     var lider = el("sim-lider").value;
@@ -369,106 +417,121 @@ export function renderSimulador(state, ctx) {
   el("btn-sim").addEventListener("click", function() { runSim(ctx, state, nivel, nat); });
   el("btn-sim-reset").addEventListener("click", function() {
     document.querySelectorAll(".delta-in").forEach(function(i) { i.value = "0"; });
-    el("sim-mov").value = "0";
+    var m = el("sim-mov"); if(m) m.value = "0";
     document.querySelectorAll(".alz-chk").forEach(function(c) { c.checked = false; });
     document.querySelectorAll(".alz-pct").forEach(function(p) { p.disabled = true; });
-    el("sim-result").innerHTML = "<p class=\"muted\">Reset.</p>";
+    var res = el("sim-result"); if(res) res.innerHTML = "<p class=\"muted\">Reset.</p>";
   });
 }
 
-function runSim(ctx, state, nivel, nat) {
-  var deltasPP = {};
-  document.querySelectorAll(".delta-in").forEach(function(inp) {
-    var v = Number(inp.value) || 0;
-    if (v) deltasPP[inp.dataset.party] = v;
-  });
-  var movPP   = Number(el("sim-mov") ? el("sim-mov").value : 0) || 0;
-  var lider   = el("sim-lider") ? el("sim-lider").value : "";
-  var aliados = [];
-  document.querySelectorAll(".alz-chk:checked").forEach(function(chk) {
-    var pctEl = document.querySelector(".alz-pct[data-party=\"" + chk.value + "\"]");
-    var pct = pctEl ? Number(pctEl.value) : 80;
-    aliados.push({ partido: chk.value, transferPct: pct });
-  });
-  var alianzas = lider && aliados.length ? [{ lider:lider, aliados:aliados }] : [];
-  var arrastre = el("sim-arrastre") ? el("sim-arrastre").checked : false;
-  var arrastreLider = el("sim-arr-lider") ? el("sim-arr-lider").value : null;
-  var kRaw    = el("sim-arr-k") ? el("sim-arr-k").value : "auto";
-  var arrastreK = kRaw === "auto" ? null : Number(kRaw);
-
-  var res = simular(ctx, { nivel:nivel, year:2024, corte:state.corte, deltasPP:deltasPP, alianzas:alianzas, movPP:movPP, arrastre:arrastre, arrastreLider:arrastreLider, arrastreK:arrastreK });
-  renderSimResult(el("sim-result"), res, nivel, nat);
-}
-
-function renderSimResult(container, res, nivel, nat) {
-  var emBase = nat.emitidos || 1;
-  var deltaEm = res.emitidos - emBase;
-  var deltaStr = (deltaEm >= 0 ? "+" : "") + fmtInt(deltaEm);
-
-  var extraHtml = "";
-  if (nivel === "dip" && res.curules) {
-    var liderEntry = Object.entries(res.curules.totalByParty).sort(function(a,b){return b[1]-a[1];})[0];
-    var liderCur = liderEntry ? liderEntry[1] : 0;
-    var majBadge = liderCur >= 96 ? badge("Mayoria absoluta (" + liderCur + ")", "badge-good") : badge("Sin mayoria (" + liderCur + "/96)", "badge-warn");
-    extraHtml = sep() + "<h4>Curules D'Hondt (" + res.curules.totalSeats + "/190)</h4>" + curulesGrid(res.curules.totalByParty) + "<div style=\"margin-top:8px;\">" + majBadge + "</div>";
-  } else if (nivel === "sen" && res.senadores) {
-    extraHtml = sep() + "<h4>Senadores (32)</h4>" + curulesGrid(res.senadores.totalByParty);
-  } else if ((nivel === "mun" || nivel === "dm") && res.ganadores) {
-    var tot = Object.keys(res.ganadores.byTerritory).length;
-    extraHtml = sep() + "<h4>" + NIVEL_LABEL[nivel] + " - " + tot + " territorios</h4>" + curulesGrid(res.ganadores.totalByParty);
-  }
-
-  container.innerHTML =
-    "<h3>Resultado simulado</h3>" +
-    statGrid([["Emitidos sim", fmtInt(res.emitidos)], ["vs base", deltaStr], ["Participacion", fmtPct(res.participacion)]]) +
-    "<div style=\"margin-top:10px;\">" + barChart(res.ranked, 8) + "</div>" +
-    "<div style=\"margin-top:8px;\">" + votesTableHtml(res.ranked.slice(0,10), nivel==="dip" ? (res.curules ? res.curules.totalByParty : {}) : null) + "</div>" +
-    extraHtml;
-}
-
-//  4. POTENCIAL 
 export function renderPotencial(state, ctx) {
   var nivel  = state.nivel;
   var nat24  = getLevel(ctx, 2024, nivel).nacional;
-  var lider  = rankVotes(nat24.votes, nat24.emitidos)[0];
-  lider = lider ? lider.p : "PRM";
-  var data   = calcPotencial(ctx, nivel, lider);
-  var cats   = ["Fortaleza","Oportunidad","Disputa","Crecimiento","Adverso","Baja prioridad"];
+  var ranked = rankVotes(nat24.votes, nat24.emitidos);
+  // Partido inicial: el lider del nivel activo
+  var liderDefault = ranked[0] ? ranked[0].p : "PRM";
 
-  var kpiCats = cats.map(function(cat) {
-    var count = data.filter(function(r) { return r.categoria.label === cat; }).length;
-    return kpi(cat, String(count));
-  }).join("");
-
-  var rows = data.map(function(r, i) {
-    var tendStr = r.pct20 !== null ? (r.tendencia > 0 ? "+" : "") + fmtPct(r.tendencia) : "-";
-    var tendCls = r.tendencia > 0 ? "text-ok" : r.tendencia < 0 ? "text-warn" : "";
-    return "<tr>" +
-      "<td class=\"muted\">" + (i+1) + "</td>" +
-      "<td><b>" + r.nombre + "</b></td>" +
-      "<td class=\"r\"><b>" + r.score + "</b></td>" +
-      "<td>" + catBadge(r.categoria.label, r.categoria.cls) + "</td>" +
-      "<td class=\"r\">" + fmtPct(r.pct24) + "</td>" +
-      "<td class=\"r " + tendCls + "\">" + tendStr + "</td>" +
-      "<td class=\"r\">" + fmtPct(r.abst) + "</td>" +
-      "<td class=\"r\">" + fmtPct(r.margen) + "</td>" +
-      "<td class=\"r\">" + fmtInt(r.padron) + "</td>" +
-      "</tr>";
+  // Opciones de partido
+  var pOpts = ranked.map(function(r) {
+    return opt(r.p, r.p + " (" + fmtPct(r.pct) + ")", r.p === liderDefault);
   }).join("");
 
   view().innerHTML =
-    "<div class=\"page-header\"><h2>Potencial - " + NIVEL_LABEL[nivel] + "</h2><span class=\"muted\">Ref: <b>" + lider + "</b> Score 0-100</span></div>" +
-    "<div class=\"kpi-grid\" style=\"margin-bottom:14px;\">" + kpiCats + "</div>" +
-    "<div class=\"card\" style=\"overflow:auto;max-height:65vh;\">" +
-      "<table class=\"tbl\"><thead><tr>" +
-        "<th>#</th><th>Territorio</th><th class=\"r\">Score</th><th>Categoria</th>" +
-        "<th class=\"r\">% " + lider + " 24</th><th class=\"r\">Tend.</th>" +
-        "<th class=\"r\">Abstencion</th><th class=\"r\">Margen</th><th class=\"r\">Inscritos</th>" +
-      "</tr></thead><tbody>" + rows + "</tbody></table>" +
-    "</div>";
+    "<div class=\"page-header\">" +
+      "<h2>Potencial - " + NIVEL_LABEL[nivel] + "</h2>" +
+      "<div style=\"display:flex;gap:8px;align-items:center;\">" +
+        "<label class=\"muted\">Partido:</label>" +
+        "<select id=\"pot-partido\" class=\"sel-sm\">" + pOpts + "</select>" +
+        "<button class=\"btn-sm\" id=\"btn-pot-met\">Ver metodologia</button>" +
+      "</div>" +
+    "</div>" +
+    "<div id=\"pot-met\" style=\"display:none;\" class=\"card\" style=\"margin-bottom:12px;\">" +
+    "</div>" +
+    "<div id=\"pot-body\"><p class=\"muted\">Calculando...</p></div>";
+
+  function renderPotTable(lider) {
+    var data = calcPotencial(ctx, nivel, lider);
+    var cats = ["Fortaleza","Oportunidad","Disputa","Crecimiento","Adverso","Baja prioridad"];
+
+    var kpiCats = cats.map(function(cat) {
+      var count = data.filter(function(r) { return r.categoria.label === cat; }).length;
+      return kpi(cat, String(count));
+    }).join("");
+
+    var rows = data.map(function(r, i) {
+      var tendStr = (r.pct20 !== null && r.pct20 !== undefined)
+        ? (r.tendencia > 0 ? "+" : "") + fmtPct(r.tendencia) : "-";
+      var tendCls = r.tendencia > 0 ? "text-ok" : r.tendencia < 0 ? "text-warn" : "";
+      var margenStr = r.margen >= 0
+        ? "<span class=\"text-ok\">" + fmtPct(r.margen) + "</span>"
+        : "<span class=\"text-warn\">" + fmtPct(r.margen) + "</span>";
+      return "<tr>" +
+        "<td class=\"muted\">" + (i+1) + "</td>" +
+        "<td><b>" + r.nombre + "</b></td>" +
+        "<td class=\"r\"><b>" + r.score + "</b></td>" +
+        "<td>" + catBadge(r.categoria.label, r.categoria.cls) + "</td>" +
+        "<td class=\"r\">" + fmtPct(r.pct24) + "</td>" +
+        "<td class=\"r " + tendCls + "\">" + tendStr + "</td>" +
+        "<td class=\"r\">" + margenStr + "</td>" +
+        "<td class=\"r\">" + fmtPct(r.abst) + "</td>" +
+        "<td class=\"r\">" + fmtInt(r.padron) + "</td>" +
+        "</tr>";
+    }).join("");
+
+    el("pot-body").innerHTML =
+      "<div class=\"kpi-grid\" style=\"margin-bottom:14px;\">" + kpiCats + "</div>" +
+      "<div class=\"card\" style=\"overflow:auto;max-height:60vh;\">" +
+        "<table class=\"tbl\"><thead><tr>" +
+          "<th>#</th><th>Territorio</th><th class=\"r\">Score</th><th>Categoria</th>" +
+          "<th class=\"r\">% " + lider + " 24</th><th class=\"r\">Tend.</th>" +
+          "<th class=\"r\">Margen</th><th class=\"r\">Abstencion</th><th class=\"r\">Inscritos</th>" +
+        "</tr></thead><tbody>" + rows + "</tbody></table>" +
+      "</div>";
+  }
+
+  renderPotTable(liderDefault);
+
+  el("pot-partido").addEventListener("change", function(e) {
+    renderPotTable(e.target.value);
+  });
+
+  el("btn-pot-met").addEventListener("click", function() {
+    var div = el("pot-met");
+    if (div.style.display === "none") {
+      div.style.display = "";
+      div.innerHTML =
+        "<h4 style=\"margin-bottom:8px;\">Metodologia de Score (0-100)</h4>" +
+        "<table class=\"tbl\">" +
+          "<thead><tr><th>Factor</th><th class=\"r\">Peso</th><th>Descripcion</th><th>Rango</th></tr></thead>" +
+          "<tbody>" +
+            "<tr><td>Tendencia</td><td class=\"r\">25</td><td>Cambio pp lider 2020 -> 2024. Positivo = sube.</td><td>clamp(0.5 + tend*3, 0, 1)</td></tr>" +
+            "<tr><td>Margen</td><td class=\"r\">20</td><td>Margen del lider (directo). Mayor margen = mas fortaleza.</td><td>clamp(0.5 + margen*2, 0, 1)</td></tr>" +
+            "<tr><td>Abstencion</td><td class=\"r\">15</td><td>Alta abstencion = potencial de movilizacion.</td><td>abst / 0.6</td></tr>" +
+            "<tr><td>Padron</td><td class=\"r\">15</td><td>Tamano relativo del padron vs maximo.</td><td>ins / max(ins)</td></tr>" +
+            "<tr><td>Elasticidad</td><td class=\"r\">15</td><td>Volatilidad historica del territorio.</td><td>min(|tend|*2, 1)</td></tr>" +
+            "<tr><td>Estabilidad</td><td class=\"r\">10</td><td>Consistencia historica (inverso volatilidad).</td><td>1 - min(|tend|*3, 1)</td></tr>" +
+          "</tbody>" +
+        "</table>" +
+        "<h4 style=\"margin:10px 0 6px;\">Categorias</h4>" +
+        "<table class=\"tbl\">" +
+          "<thead><tr><th>Categoria</th><th class=\"r\">Score min</th><th>Interpretacion</th></tr></thead>" +
+          "<tbody>" +
+            "<tr><td>" + catBadge("Fortaleza","cat-green") + "</td><td class=\"r\">70</td><td>Lider domina, margen amplio.</td></tr>" +
+            "<tr><td>" + catBadge("Oportunidad","cat-lgreen") + "</td><td class=\"r\">55</td><td>Lider adelante con espacio de crecimiento.</td></tr>" +
+            "<tr><td>" + catBadge("Disputa","cat-yellow") + "</td><td class=\"r\">45</td><td>Zona competida, resultado incierto.</td></tr>" +
+            "<tr><td>" + catBadge("Crecimiento","cat-blue") + "</td><td class=\"r\">35</td><td>Lider debil pero tendencia positiva.</td></tr>" +
+            "<tr><td>" + catBadge("Adverso","cat-red") + "</td><td class=\"r\">20</td><td>Lider atras, territorio dificil.</td></tr>" +
+            "<tr><td>" + catBadge("Baja prioridad","cat-gray") + "</td><td class=\"r\">0</td><td>Sin perspectiva razonable.</td></tr>" +
+          "</tbody>" +
+        "</table>";
+      el("btn-pot-met").textContent = "Ocultar metodologia";
+    } else {
+      div.style.display = "none";
+      el("btn-pot-met").textContent = "Ver metodologia";
+    }
+  });
 }
 
-//  5. MOVILIZACION 
 export function renderMovilizacion(state, ctx) {
   var nivel  = state.nivel;
   var lv     = getLevel(ctx, 2024, nivel);
@@ -638,55 +701,232 @@ function renderObjResult(container, esc, nivel, lider) {
 export function renderBoleta(state, ctx) {
   var lv     = getLevel(ctx, 2024, "dip");
   var ranked = rankVotes(lv.nacional.votes, lv.nacional.emitidos);
-  var parties = ranked.slice(0,12).map(function(r){return r.p;});
-
-  var tblRows = parties.map(function(p) {
-    return "<tr data-p=\"" + p + "\">" +
-      "<td>" + dot(p) + p + "</td>" +
-      "<td><input type=\"checkbox\" class=\"bl-chk\" value=\"" + p + "\"></td>" +
-      "<td><input type=\"radio\" name=\"bl-lider\" class=\"bl-lid\" value=\"" + p + "\"></td>" +
-      "<td class=\"r\"><input class=\"inp-sm bl-pct\" type=\"number\" min=\"0\" max=\"100\" step=\"5\" value=\"85\" style=\"width:60px;\" data-party=\"" + p + "\" disabled></td>" +
-      "</tr>";
+  var parties = ranked.map(function(r) { return r.p; });
+  var provs   = Object.keys(lv.prov);
+  var provOpts = provs.map(function(id) {
+    return opt(id, (lv.prov[id].nombre || id), false);
   }).join("");
+  var partyOpts = parties.map(function(p) { return opt(p, p, false); }).join("");
 
   view().innerHTML =
     "<div class=\"page-header\"><h2>Boleta Unica Opositora</h2></div>" +
-    "<div class=\"row-2col\" style=\"gap:14px;\">" +
-      "<div class=\"card\">" +
-        "<h3>Configurar coalicion</h3>" +
-        "<p class=\"muted\" style=\"margin-bottom:10px;\">Selecciona partidos, quien encabeza y % de transferencia.</p>" +
-        "<table class=\"tbl\" id=\"boleta-tbl\"><thead><tr><th>Partido</th><th>Incluir</th><th>Encabeza</th><th class=\"r\">Transf. %</th></tr></thead>" +
-        "<tbody>" + tblRows + "</tbody></table>" +
-        "<div style=\"margin-top:12px;\"><button class=\"btn\" id=\"btn-boleta\">Simular boleta</button></div>" +
-      "</div>" +
-      "<div id=\"boleta-result\"><div class=\"card\"><p class=\"muted\">Selecciona partidos y presiona Simular.</p></div></div>" +
-    "</div>";
+    // Tabs modo A / modo B
+    "<div style=\"display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);\">" +
+      "<button class=\"tab-btn active\" id=\"tab-a\">Modo A: Territorio primero</button>" +
+      "<button class=\"tab-btn\" id=\"tab-b\">Modo B: Partido primero</button>" +
+    "</div>" +
+    "<div id=\"modo-a\">" + buildModoA(parties, provs, lv, partyOpts, provOpts) + "</div>" +
+    "<div id=\"modo-b\" style=\"display:none;\">" + buildModoB(parties, lv, partyOpts) + "</div>";
 
-  document.querySelectorAll(".bl-chk").forEach(function(chk) {
+  // Tab switching
+  el("tab-a").addEventListener("click", function() {
+    el("modo-a").style.display = "";
+    el("modo-b").style.display = "none";
+    el("tab-a").classList.add("active");
+    el("tab-b").classList.remove("active");
+  });
+  el("tab-b").addEventListener("click", function() {
+    el("modo-a").style.display = "none";
+    el("modo-b").style.display = "";
+    el("tab-b").classList.add("active");
+    el("tab-a").classList.remove("active");
+  });
+
+  // Modo A: seleccionar provincia -> ver partidos -> alianzas -> D'Hondt live
+  var modoASelect = el("modoA-prov");
+  var modoARes    = el("modoA-result");
+  if (modoASelect) {
+    modoASelect.addEventListener("change", function() {
+      recalcModoA(ctx, parties, lv);
+    });
+  }
+  document.querySelectorAll(".mA-chk").forEach(function(chk) {
     chk.addEventListener("change", function() {
-      var pct = document.querySelector(".bl-pct[data-party=\"" + chk.value + "\"]");
+      var pct = document.querySelector(".mA-pct[data-party=\"" + chk.value + "\"]");
       if (pct) pct.disabled = !chk.checked;
+      recalcModoA(ctx, parties, lv);
     });
+  });
+  document.querySelectorAll(".mA-pct").forEach(function(inp) {
+    inp.addEventListener("change", function() { recalcModoA(ctx, parties, lv); });
   });
 
-  el("btn-boleta").addEventListener("click", function() {
-    var liderEl = document.querySelector(".bl-lid:checked");
-    if (!liderEl) { toast("Selecciona quien encabeza"); return; }
-    var lider = liderEl.value;
-    var partidos = parties.map(function(p) {
-      var chkEl = document.querySelector(".bl-chk[value=\"" + p + "\"]");
-      var pctEl = document.querySelector(".bl-pct[data-party=\"" + p + "\"]");
-      return {
-        partido:    p,
-        incluir:    p === lider || (chkEl ? chkEl.checked : false),
-        encabeza:   p === lider,
-        transferPct: pctEl ? Number(pctEl.value) : 85,
-      };
-    });
-    var res = simBoleta(ctx, { partidos:partidos, year:2024 });
-    if (!res) { toast("Error al simular boleta"); return; }
-    renderBoletaResult(el("boleta-result"), res);
+  // Modo B: seleccionar partido base -> territorios -> aliados -> progresivo
+  var modoBSelect = el("modoB-partido");
+  if (modoBSelect) {
+    modoBSelect.addEventListener("change", function() { recalcModoB(ctx, parties, lv); });
+  }
+  document.querySelectorAll(".mB-chk").forEach(function(chk) {
+    chk.addEventListener("change", function() { recalcModoB(ctx, parties, lv); });
   });
+}
+
+function buildModoA(parties, provs, lv, partyOpts, provOpts) {
+  return "<div class=\"row-2col\" style=\"gap:14px;\">" +
+    "<div class=\"card\">" +
+      "<h3>Seleccionar provincia</h3>" +
+      "<select id=\"modoA-prov\" class=\"sel-sm\" style=\"width:100%;margin-bottom:12px;\">" + provOpts + "</select>" +
+      "<h4 style=\"margin-bottom:8px;\">Alianzas para esta provincia</h4>" +
+      "<div id=\"modoA-parties\">" +
+        parties.map(function(p) {
+          return "<div style=\"display:flex;gap:8px;align-items:center;margin-bottom:4px;\">" +
+            "<input type=\"checkbox\" class=\"mA-chk\" value=\"" + p + "" id=\"mA-" + p + "\">" +
+            "<label for=\"mA-" + p + "\" style=\"min-width:55px;\">" + dot(p) + p + "</label>" +
+            "<input class=\"inp-sm mA-pct\" type=\"number\" min=\"0\" max=\"100\" step=\"5\" value=\"80\" style=\"width:58px;\" data-party=\"" + p + "\" disabled>" +
+            "<span class=\"muted\" style=\"font-size:11px;\">% transf.</span>" +
+            "</div>";
+        }).join("") +
+      "</div>" +
+    "</div>" +
+    "<div class=\"card\" id=\"modoA-result\"><p class=\"muted\">Selecciona una provincia para ver el efecto.</p></div>" +
+  "</div>";
+}
+
+function buildModoB(parties, lv, partyOpts) {
+  return "<div class=\"row-2col\" style=\"gap:14px;\">" +
+    "<div class=\"card\">" +
+      "<h3>Partido base</h3>" +
+      "<select id=\"modoB-partido\" class=\"sel-sm\" style=\"width:100%;margin-bottom:12px;\">" + partyOpts + "</select>" +
+      "<h4 style=\"margin-bottom:8px;\">Aliados a incluir</h4>" +
+      "<div id=\"modoB-aliados\">" +
+        parties.slice(1).map(function(p) {
+          return "<div style=\"display:flex;gap:8px;align-items:center;margin-bottom:4px;\">" +
+            "<input type=\"checkbox\" class=\"mB-chk\" value=\"" + p + "" id=\"mB-" + p + "\">" +
+            "<label for=\"mB-" + p + "\">" + dot(p) + p + "</label>" +
+          "</div>";
+        }).join("") +
+      "</div>" +
+    "</div>" +
+    "<div class=\"card\" id=\"modoB-result\"><p class=\"muted\">Selecciona partido base para ver territorios de impacto.</p></div>" +
+  "</div>";
+}
+
+function recalcModoA(ctx, parties, lv) {
+  var provId  = el("modoA-prov") ? el("modoA-prov").value : null;
+  var resDiv  = el("modoA-result");
+  if (!provId || !resDiv) return;
+
+  var prov = lv.prov[provId];
+  if (!prov) { resDiv.innerHTML = "<p class=\"muted\">Sin datos para esta provincia.</p>"; return; }
+
+  // Buscar circ de esta provincia en curules (puede ser multi-circ)
+  var cur = ctx.curules;
+  var circs = (cur.territorial || []).filter(function(c) {
+    return String(c.provincia_id).padStart(2,"0") === provId;
+  });
+  if (!circs.length) { resDiv.innerHTML = "<p class=\"muted\">Sin circunscripciones para provincia " + provId + ".</p>"; return; }
+
+  // Obtener alianzas seleccionadas
+  var liderEl = document.querySelector(".mA-chk:checked");
+  var lider   = liderEl ? null : null; // sin lider obligatorio en modo A
+  var aliados = [];
+  document.querySelectorAll(".mA-chk:checked").forEach(function(chk) {
+    var pct = document.querySelector(".mA-pct[data-party=\"" + chk.value + "\"]");
+    aliados.push({ partido: chk.value, transferPct: pct ? Number(pct.value) : 80 });
+  });
+
+  // D'Hondt por circ, base vs boleta
+  var html = "<h3>" + (prov.nombre || provId) + " - " + circs.length + " circunscripcion(es)</h3>";
+  var lv24  = ctx.r[2024];
+  circs.forEach(function(c) {
+    var key = c.circ > 0 ? provId + "-" + c.circ : provId;
+    var circData = c.circ > 0
+      ? (lv24.dip.circ ? lv24.dip.circ[key] : null)
+      : lv24.dip.prov[provId];
+    if (!circData) return;
+
+    // Calcular boleta aplicando transferencias
+    var baseVotes  = Object.assign({}, circData.votes || {});
+    var boletaVotes = Object.assign({}, baseVotes);
+    if (aliados.length >= 2) {
+      // El primero en la lista es el lider de la alianza
+      var liderId = aliados[0].partido;
+      for (var i = 1; i < aliados.length; i++) {
+        var al = aliados[i];
+        var moved = Math.round((boletaVotes[al.partido] || 0) * (al.transferPct / 100));
+        boletaVotes[al.partido] = (boletaVotes[al.partido] || 0) - moved;
+        boletaVotes[liderId]    = (boletaVotes[liderId]    || 0) + moved;
+      }
+    }
+
+    // D'Hondt simple
+    function dhondtLocal(votes, seats) {
+      var q = [];
+      Object.keys(votes).forEach(function(p) {
+        var v = votes[p] || 0;
+        if (v > 0) {
+          for (var d = 1; d <= seats; d++) q.push({ p: p, q: v/d });
+        }
+      });
+      q.sort(function(a,b){return b.q-a.q;});
+      var bp = {};
+      q.slice(0,seats).forEach(function(x) { bp[x.p] = (bp[x.p]||0)+1; });
+      return bp;
+    }
+
+    var baseRes   = dhondtLocal(baseVotes,   c.seats);
+    var boletaRes = aliados.length >= 2 ? dhondtLocal(boletaVotes, c.seats) : baseRes;
+
+    var baseDist   = Object.keys(baseRes).filter(function(p){return baseRes[p]>0;}).map(function(p){return p+":"+baseRes[p];}).join(", ");
+    var boletaDist = Object.keys(boletaRes).filter(function(p){return boletaRes[p]>0;}).map(function(p){return p+":"+boletaRes[p];}).join(", ");
+
+    html += "<div style=\"margin-top:12px;padding:10px;background:var(--bg3);border-radius:6px;\">" +
+      "<b>Circ " + key + " (" + c.seats + " escanos)</b><br>" +
+      "<span class=\"muted\">Base: </span>" + baseDist + "<br>" +
+      (aliados.length >= 2 ? "<span class=\"muted\">Con alianza: </span><b>" + boletaDist + "</b>" : "<span class=\"muted\">(Selecciona 2+ partidos para ver efecto)</span>") +
+    "</div>";
+  });
+
+  resDiv.innerHTML = html;
+}
+
+function recalcModoB(ctx, parties, lv) {
+  var partido = el("modoB-partido") ? el("modoB-partido").value : null;
+  var resDiv  = el("modoB-result");
+  if (!partido || !resDiv) return;
+
+  var aliados = [];
+  document.querySelectorAll(".mB-chk:checked").forEach(function(chk) {
+    aliados.push({ partido: chk.value, transferPct: 85 });
+  });
+
+  // Usar simBoleta para calcular impacto global
+  var partidos = parties.map(function(p) {
+    return {
+      partido:    p,
+      incluir:    p === partido || aliados.some(function(a){ return a.partido === p; }),
+      encabeza:   p === partido,
+      transferPct: 85,
+    };
+  });
+
+  var res = simBoleta(ctx, { partidos: partidos, year: 2024 });
+  if (!res) { resDiv.innerHTML = "<p class=\"muted\">Error al calcular.</p>"; return; }
+
+  var delta = res.deltaLider;
+  var base  = res.baseTotal[partido] || 0;
+  var con   = res.boletaTotal[partido] || 0;
+
+  var topImpact = res.territorios.slice(0, 10).map(function(t) {
+    var circ = t.circ > 0 ? " C" + t.circ : "";
+    var cls  = t.delta > 0 ? "text-ok" : "text-warn";
+    return "<tr><td>" + t.provincia + circ + "</td><td class=\"r\">" + t.seats +
+      "</td><td class=\"r " + cls + "\">" + (t.delta > 0 ? "+" : "") + t.delta + "</td></tr>";
+  }).join("");
+
+  resDiv.innerHTML =
+    "<h3>Impacto de coalicion para " + partido + "</h3>" +
+    statGrid([
+      ["Aliados activos", String(aliados.length)],
+      ["Curules base", String(base)],
+      ["Curules con boleta", String(con)],
+      ["Delta", (delta >= 0 ? "+" : "") + delta],
+    ]) +
+    (res.territorios.length
+      ? "<h4 style=\"margin:12px 0 6px;\">Top territorios de impacto</h4>" +
+        "<table class=\"tbl\"><thead><tr><th>Territorio</th><th class=\"r\">Esc.</th><th class=\"r\">Delta</th></tr></thead><tbody>" + topImpact + "</tbody></table>"
+      : "<p class=\"muted\" style=\"margin-top:10px;\">Sin impacto con aliados actuales.</p>"
+    );
 }
 
 function renderBoletaResult(container, res) {
@@ -738,6 +978,153 @@ export function renderAuditoria(state, ctx) {
       "<div class=\"card\"><h3 style=\"color:var(--red)\">Alertas (" + audit.issues.length + ")</h3>" + noIssues + (audit.issues.length ? "<ul class=\"audit-list err\">" + issueRows + "</ul>" : "") + "</div>" +
       "<div class=\"card\"><h3 style=\"color:var(--green)\">Validaciones OK (" + audit.ok.length + ")</h3><ul class=\"audit-list good\">" + okRows + "</ul></div>" +
     "</div>";
+}
+
+export function renderEncuestas(state, ctx) {
+  var polls = ctx.polls || [];
+
+  view().innerHTML =
+    "<div class=\"page-header\"><h2>Encuestas</h2>" +
+      "<button class=\"btn-sm\" id=\"btn-enc-upload\">Cargar archivo</button>" +
+      "<input type=\"file\" id=\"enc-file\" accept=\".json\" style=\"display:none;\">" +
+    "</div>" +
+
+    // Toggle aplicar a simulador
+    "<div class=\"card\" style=\"margin-bottom:14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;\">" +
+      "<label style=\"display:flex;align-items:center;gap:8px;font-weight:600;\">" +
+        "<input type=\"checkbox\" id=\"enc-apply\"> Aplicar encuesta activa al Simulador como delta inicial" +
+      "</label>" +
+      "<select id=\"enc-activa\" class=\"sel-sm\">" +
+        (polls.length
+          ? polls.map(function(p, i) {
+              return opt(String(i), p.fecha + " - " + p.encuestadora + " (" + p.nivel + ")", i === 0);
+            }).join("")
+          : "<option>Sin encuestas</option>"
+        ) +
+      "</select>" +
+    "</div>" +
+
+    // Tabla historica
+    "<div class=\"card\" style=\"margin-bottom:14px;\">" +
+      "<h3>Historico de encuestas (" + polls.length + ")</h3>" +
+      (polls.length
+        ? "<div style=\"overflow:auto;\">" +
+            "<table class=\"tbl\">" +
+              "<thead><tr>" +
+                "<th>Fecha</th><th>Encuestadora</th><th>Nivel</th>" +
+                "<th class=\"r\">Muestra</th><th class=\"r\">Margen error</th>" +
+                "<th>Principales resultados</th>" +
+              "</tr></thead>" +
+              "<tbody>" + polls.map(function(p) {
+                var topRes = Object.entries(p.resultados || {})
+                  .sort(function(a,b){return b[1]-a[1];})
+                  .slice(0,5)
+                  .map(function(kv) { return kv[0] + ":" + kv[1] + "%"; })
+                  .join(" | ");
+                return "<tr>" +
+                  "<td>" + (p.fecha || "-") + "</td>" +
+                  "<td>" + (p.encuestadora || "-") + "</td>" +
+                  "<td>" + (p.nivel || "-") + "</td>" +
+                  "<td class=\"r\">" + (p.muestra ? fmtInt(p.muestra) : "-") + "</td>" +
+                  "<td class=\"r\">+/-" + (p.margen_error || "-") + "%</td>" +
+                  "<td style=\"font-size:12px;\">" + topRes + "</td>" +
+                "</tr>";
+              }).join("") +
+              "</tbody>" +
+            "</table>" +
+          "</div>"
+        : "<p class=\"muted\">Sin encuestas cargadas. Usa el boton \"Cargar archivo\" para importar un polls.json.</p>"
+      ) +
+    "</div>" +
+
+    // Grafico comparativo (si hay datos)
+    (polls.length
+      ? "<div class=\"card\">" +
+          "<h3>Comparativo - Encuesta mas reciente</h3>" +
+          renderEncuestaChart(polls[polls.length-1]) +
+        "</div>"
+      : ""
+    );
+
+  // Upload handler
+  el("btn-enc-upload").addEventListener("click", function() {
+    var fi = el("enc-file");
+    if (fi) fi.click();
+  });
+  var fileInp = el("enc-file");
+  if (fileInp) {
+    fileInp.addEventListener("change", function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          var data = JSON.parse(ev.target.result);
+          var arr  = Array.isArray(data) ? data : [data];
+          ctx.polls = (ctx.polls || []).concat(arr);
+          toast("Encuesta cargada: " + arr.length + " registro(s)");
+          renderEncuestas(state, ctx);
+        } catch(err) {
+          toast("Error: JSON invalido");
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // Aplicar al simulador
+  var applyChk = el("enc-apply");
+  if (applyChk) {
+    applyChk.addEventListener("change", function() {
+      if (!applyChk.checked) return;
+      var idx   = el("enc-activa") ? Number(el("enc-activa").value) : 0;
+      var encuesta = polls[idx];
+      if (!encuesta || !encuesta.resultados) {
+        toast("Sin datos de resultados en la encuesta");
+        return;
+      }
+      // Calcular deltas vs 2024
+      var nivel = state.nivel === "pres" ? "pres" : state.nivel;
+      var lv    = getLevel(ctx, 2024, nivel);
+      var nat   = lv.nacional;
+      var totalEm = nat.emitidos || 1;
+      var deltaStore = {};
+      Object.entries(encuesta.resultados).forEach(function(kv) {
+        var p = kv[0]; var pctEnc = kv[1] / 100;
+        var pctBase = (nat.votes[p] || 0) / totalEm;
+        var delta = Math.round((pctEnc - pctBase) * 100 * 10) / 10;
+        if (Math.abs(delta) > 0.1) deltaStore[p] = delta;
+      });
+      localStorage.setItem("sie28-sim-deltas", JSON.stringify(deltaStore));
+      toast("Deltas guardados. Ve al Simulador para aplicarlos.");
+    });
+  }
+}
+
+function renderEncuestaChart(encuesta) {
+  if (!encuesta || !encuesta.resultados) return "<p class=\"muted\">Sin datos.</p>";
+  var sorted = Object.entries(encuesta.resultados)
+    .sort(function(a,b){return b[1]-a[1];})
+    .slice(0, 8);
+  var max = sorted[0] ? sorted[0][1] : 1;
+  return "<div style=\"margin-top:8px;\">" +
+    sorted.map(function(kv) {
+      var p = kv[0]; var pct = kv[1];
+      var w = Math.round((pct/max)*100);
+      return "<div class=\"bar-row\">" +
+        "<span class=\"bar-label\">" + p + "</span>" +
+        "<div class=\"bar-track\">" +
+          "<div class=\"bar-fill\" style=\"width:" + w + "%;background:" + clr(p) + "\"></div>" +
+        "</div>" +
+        "<span class=\"bar-pct\">" + pct + "%</span>" +
+        "</div>";
+    }).join("") +
+    "<p class=\"muted\" style=\"margin-top:8px;font-size:11px;\">" +
+      encuesta.encuestadora + " | " + encuesta.fecha +
+      (encuesta.muestra ? " | n=" + fmtInt(encuesta.muestra) : "") +
+      (encuesta.margen_error ? " | +/-" + encuesta.margen_error + "%" : "") +
+    "</p>" +
+  "</div>";
 }
 
 export { exportarPDF };
