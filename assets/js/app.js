@@ -1,90 +1,90 @@
-import { loadState, setState } from "./core/state.js";
-import { getCTX } from "./core/data.js";
-import { getHashView, onRouteChange } from "./ui/router.js";
+/**
+ * SIE 2028 — app.js  (H3)
+ * Boot único. Router. Estado global. 8 rutas + export PDF.
+ */
+import { loadCTX }         from "./core/data.js";
+import { state }           from "./core/state.js";
+import { toast }           from "./ui/toast.js";
+import { mountGlobalControls,
+         renderDashboard,
+         renderMapa,
+         renderSimulador,
+         renderPotencial,
+         renderMovilizacion,
+         renderObjetivo,
+         renderAuditoria,
+         renderBoleta,
+         exportarPDF }     from "./ui/views.js";
 
-import { renderDashboard } from "./ui/views/dashboard.js";
-import { renderMapa } from "./ui/views/mapa.js";
-import { renderSimulador } from "./ui/views/simulador.js";
-import { renderPotencial } from "./ui/views/potencial.js";
-import { renderMovilizacion } from "./ui/views/movilizacion.js";
-import { renderObjetivo } from "./ui/views/objetivo.js";
-import { renderAuditoria } from "./ui/views/auditoria.js";
+const ROUTES = [
+  { id:"dashboard",    label:"Dashboard",    fn: renderDashboard    },
+  { id:"mapa",         label:"Mapa",         fn: renderMapa         },
+  { id:"simulador",    label:"Simulador",    fn: renderSimulador    },
+  { id:"potencial",    label:"Potencial",    fn: renderPotencial    },
+  { id:"movilizacion", label:"Movilización", fn: renderMovilizacion },
+  { id:"objetivo",     label:"Objetivo",     fn: renderObjetivo     },
+  { id:"boleta",       label:"Boleta única", fn: renderBoleta       },
+  { id:"auditoria",    label:"Auditoría",    fn: renderAuditoria    },
+];
 
-const VIEW_RENDERERS = { dashboard:renderDashboard, mapa:renderMapa, simulador:renderSimulador, potencial:renderPotencial, movilizacion:renderMovilizacion, objetivo:renderObjetivo, auditoria:renderAuditoria };
+let ctx=null, currentRoute="dashboard", rendering=false;
 
-let state = loadState();
-let ctx = null;
-
-function $(sel){ return document.querySelector(sel); }
-
-function ensureShell(){
-  if(!$("#viewRoot")){
-    const main = document.createElement("main");
-    main.id = "viewRoot";
-    document.body.appendChild(main);
-  }
-  if(!$("#globalNivel") || !$("#globalCorte")){
-    const bar = document.createElement("div");
-    bar.className = "card";
-    bar.innerHTML = `
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <label class="muted">Nivel</label>
-        <select id="globalNivel" class="select select-sm">
-          <option value="pres">Presidencial</option>
-          <option value="sen">Senadores</option>
-          <option value="dip">Diputados</option>
-          <option value="mun">Alcaldes</option>
-          <option value="dm">DM</option>
-        </select>
-        <label class="muted">Corte</label>
-        <select id="globalCorte" class="select select-sm">
-          <option value="feb2024">Feb 2024</option>
-          <option value="mayo2024">May 2024</option>
-          <option value="proy2028">Proy 2028</option>
-        </select>
-      </div>`;
-    document.body.insertBefore(bar, document.body.firstChild);
-  }
-  if(!document.querySelector('#navLinks')){
-    const nav=document.createElement('div');
-    nav.id='navLinks';
-    nav.className='card';
-    nav.innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <a class="link" href="#dashboard">Dashboard</a>
-      <a class="link" href="#mapa">Mapa</a>
-      <a class="link" href="#simulador">Simulador</a>
-      <a class="link" href="#potencial">Potencial</a>
-      <a class="link" href="#movilizacion">Movilización</a>
-      <a class="link" href="#objetivo">Objetivo</a>
-      <a class="link" href="#auditoria">Auditoría</a>
-    </div>`;
-    document.body.insertBefore(nav, document.body.children[1]);
-  }
-  }
+async function render(routeId) {
+  if (rendering) return;
+  rendering = true;
+  try {
+    if (!ctx) {
+      document.getElementById("view").innerHTML=`<div class="loading">Cargando datos…</div>`;
+      ctx = await loadCTX();
+    }
+    currentRoute = routeId;
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.route===routeId));
+    history.replaceState({},"","#"+routeId);
+    const route = ROUTES.find(r=>r.id===routeId)||ROUTES[0];
+    route.fn(state, ctx);
+    // Mostrar botón export
+    const expBtn = document.getElementById("btn-export");
+    if (expBtn) expBtn.style.display = ["dashboard","simulador","auditoria"].includes(routeId) ? "" : "none";
+  } catch(e) {
+    console.error("[SIE]",e);
+    toast("Error: "+e.message);
+    document.getElementById("view").innerHTML=`<div class="error-msg">Error: ${e.message}</div>`;
+  } finally { rendering=false; }
 }
 
-function bindHeader(){
-  const nivelSel = $("#globalNivel");
-  const corteSel = $("#globalCorte");
-  nivelSel.value = state.nivel;
-  corteSel.value = state.corte;
-  nivelSel.onchange = () => { state = setState(state, { nivel: nivelSel.value }); recomputeAndRender(); };
-  corteSel.onchange = () => { state = setState(state, { corte: corteSel.value }); recomputeAndRender(); };
+function initTheme() {
+  const saved = localStorage.getItem("sie28-theme")||"dark";
+  document.documentElement.setAttribute("data-theme",saved);
+  const btn = document.getElementById("btn-theme");
+  if(!btn) return;
+  btn.textContent = saved==="dark"?"☀️":"🌙";
+  btn.addEventListener("click",()=>{
+    const cur=document.documentElement.getAttribute("data-theme");
+    const next=cur==="dark"?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next);
+    localStorage.setItem("sie28-theme",next);
+    btn.textContent=next==="dark"?"☀️":"🌙";
+  });
 }
 
-export async function recomputeAndRender(){
-  const view = getHashView();
-  state = setState(state, { view });
-  if(!ctx){ ctx = await getCTX(); }
-  ensureShell();
-  bindHeader();
-  const root = $("#viewRoot");
-  (VIEW_RENDERERS[view] || renderDashboard)(root, ctx, state, (patch)=>{ state = setState(state, patch); recomputeAndRender(); });
+function boot() {
+  initTheme();
+  const nav=document.getElementById("nav");
+  nav.innerHTML=ROUTES.map(r=>`<button class="nav-btn" data-route="${r.id}">${r.label}</button>`).join("");
+  nav.addEventListener("click",e=>{const btn=e.target.closest(".nav-btn");if(btn)render(btn.dataset.route);});
+  mountGlobalControls(state);
+  state.recomputeAndRender=()=>render(currentRoute);
+
+  // Export PDF button
+  const expBtn = document.getElementById("btn-export");
+  if (expBtn) {
+    expBtn.style.display = "none";
+    expBtn.addEventListener("click",()=>exportarPDF(ctx, state));
+  }
+
+  const initial=location.hash.replace("#","")||"dashboard";
+  render(ROUTES.find(r=>r.id===initial)?initial:"dashboard");
+  window.addEventListener("hashchange",()=>{const id=location.hash.replace("#","");if(id&&id!==currentRoute)render(id);});
 }
 
-async function boot(){
-  ensureShell();
-  onRouteChange(recomputeAndRender);
-  await recomputeAndRender();
-}
-boot();
+window.addEventListener("DOMContentLoaded",boot);

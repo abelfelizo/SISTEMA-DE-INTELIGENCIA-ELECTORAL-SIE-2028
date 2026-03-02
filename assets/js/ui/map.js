@@ -1,116 +1,121 @@
+/**
+ * SIE 2028 — ui/map.js
+ * Carga SVG, gestiona zoom/pan, dispara onSelect(provId:"01") al click.
+ * SVG IDs esperados: "DO-01" … "DO-32"
+ * provId extraído: los dos dígitos del ID ("DO-01" → "01")
+ */
+import { clamp } from "../core/utils.js";
+import { toast } from "./toast.js";
 
-import {clamp} from "../core/utils.js";
-import {toast} from "./toast.js";
-
-export function initMap({containerId, svgUrl, onSelect}){
+export function initMap({ containerId, svgUrl, onSelect, onReady }) {
   const wrap = document.getElementById(containerId);
-  wrap.innerHTML = "";
-  const svgHost = document.createElement("div");
-  svgHost.style.width = "100%";
-  svgHost.style.height = "100%";
-  svgHost.style.touchAction = "none";
-  wrap.appendChild(svgHost);
+  if (!wrap) return null;
 
-  let state = {scale:1, tx:0, ty:0, dragging:false, px:0, py:0, vb:null};
+  wrap.innerHTML = `<div class="map-loading">Cargando mapa…</div>`;
 
-  fetch(svgUrl, {cache:"no-store"})
-    .then(r=>r.text())
-    .then(svgText=>{
-      svgHost.innerHTML = svgText;
-      const svg = svgHost.querySelector("svg");
-      if(!svg) throw new Error("SVG inválido");
-      svg.setAttribute("preserveAspectRatio","xMidYMid meet");
-      svg.style.width = "100%";
+  let svg = null;
+  let shapes = [];
+  let selected = null;
+  let s = { scale: 1, tx: 0, ty: 0, vb: null, dragging: false, px: 0, py: 0 };
+
+  function applyTransform() {
+    if (!svg || !s.vb) return;
+    const w = s.vb.w / s.scale;
+    const h = s.vb.h / s.scale;
+    svg.setAttribute("viewBox", `${s.vb.x + s.tx} ${s.vb.y + s.ty} ${w} ${h}`);
+  }
+
+  function zoom(delta) {
+    if (!s.vb) return;
+    const prev = s.scale;
+    s.scale = clamp(s.scale * (delta > 0 ? 1.15 : 0.87), 1, 8);
+    const dw = (s.vb.w / prev) - (s.vb.w / s.scale);
+    const dh = (s.vb.h / prev) - (s.vb.h / s.scale);
+    s.tx += dw / 2;
+    s.ty += dh / 2;
+    applyTransform();
+  }
+
+  function reset() {
+    s.scale = 1; s.tx = 0; s.ty = 0;
+    applyTransform();
+  }
+
+  /** Resalta una provincia por ID ("01") */
+  function highlight(provId) {
+    shapes.forEach(el => el.classList.remove("map-selected"));
+    if (!provId) { selected = null; return; }
+    const el = svg?.querySelector(`[id="DO-${provId}"]`);
+    if (el) { el.classList.add("map-selected"); selected = provId; }
+  }
+
+  fetch(svgUrl)
+    .then(r => { if (!r.ok) throw new Error(`SVG ${r.status}`); return r.text(); })
+    .then(svgText => {
+      wrap.innerHTML = svgText;
+      svg = wrap.querySelector("svg");
+      if (!svg) throw new Error("SVG inválido");
+
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      svg.style.width  = "100%";
       svg.style.height = "100%";
-      // initial viewBox
-      if(!svg.getAttribute("viewBox")){
-        const w = svg.getAttribute("width") || 1000;
+
+      if (!svg.getAttribute("viewBox")) {
+        const w = svg.getAttribute("width")  || 800;
         const h = svg.getAttribute("height") || 600;
         svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
       }
       const vb = svg.getAttribute("viewBox").split(/\s+/).map(Number);
-      state.vb = {x:vb[0], y:vb[1], w:vb[2], h:vb[3]};
-      // group all paths for easy hit
-      const shapes = svg.querySelectorAll("[id^='DO-'],[id^='DO']");
-      shapes.forEach(el=>{
-        el.style.cursor="pointer";
-        el.style.transition="filter .15s, opacity .15s";
-        el.addEventListener("click",(e)=>{
+      s.vb = { x: vb[0], y: vb[1], w: vb[2], h: vb[3] };
+
+      // Shapes con ID "DO-NN"
+      shapes = [...svg.querySelectorAll("[id^='DO-']")];
+      shapes.forEach(el => {
+        el.classList.add("map-shape");
+        el.addEventListener("click", e => {
           e.stopPropagation();
-          shapes.forEach(s=>s.style.filter="");
-          el.style.filter="drop-shadow(0 0 6px rgba(77,163,255,.65))";
-          const id = el.getAttribute("id") || "";
-          onSelect?.(id);
+          const raw = el.getAttribute("id") || "";        // "DO-01"
+          const provId = raw.replace(/^DO-/, "");         // "01"
+          highlight(provId);
+          onSelect?.(provId);
         });
       });
 
-      // apply transform via viewBox manipulation for better compatibility
-      function apply(){
-        const s = state.scale;
-        const vb0 = state.vb;
-        const w = vb0.w / s;
-        const h = vb0.h / s;
-        const x = vb0.x + state.tx;
-        const y = vb0.y + state.ty;
-        svg.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
-      }
-
-      function zoom(delta, cx, cy){
-        const prev = state.scale;
-        state.scale = clamp(state.scale * (delta>0 ? 1.12 : 0.89), 1, 6);
-        // keep center stable by adjusting translation
-        const vb0 = state.vb;
-        const wPrev = vb0.w / prev, hPrev = vb0.h / prev;
-        const wNew  = vb0.w / state.scale, hNew = vb0.h / state.scale;
-        // naive: shift so that zoom is around center of current view
-        state.tx += (wPrev - wNew)/2;
-        state.ty += (hPrev - hNew)/2;
-        apply();
-      }
-
-      svgHost.addEventListener("wheel",(e)=>{
+      // Zoom con rueda
+      wrap.addEventListener("wheel", e => {
         e.preventDefault();
-        zoom(e.deltaY, e.clientX, e.clientY);
-      }, {passive:false});
+        zoom(-e.deltaY);
+      }, { passive: false });
 
-      svgHost.addEventListener("pointerdown",(e)=>{
-        state.dragging=true;
-        state.px=e.clientX; state.py=e.clientY;
-        svgHost.setPointerCapture(e.pointerId);
+      // Pan
+      wrap.addEventListener("pointerdown", e => {
+        s.dragging = true; s.px = e.clientX; s.py = e.clientY;
+        wrap.setPointerCapture(e.pointerId);
       });
-      svgHost.addEventListener("pointermove",(e)=>{
-        if(!state.dragging) return;
-        const dx = (e.clientX - state.px);
-        const dy = (e.clientY - state.py);
-        state.px = e.clientX; state.py = e.clientY;
-        // translate in viewBox units
-        const vb0 = state.vb;
-        const w = vb0.w / state.scale;
-        const h = vb0.h / state.scale;
-        state.tx -= dx * (w / svgHost.clientWidth);
-        state.ty -= dy * (h / svgHost.clientHeight);
-        apply();
+      wrap.addEventListener("pointermove", e => {
+        if (!s.dragging || !s.vb) return;
+        const w = s.vb.w / s.scale;
+        const h = s.vb.h / s.scale;
+        s.tx -= (e.clientX - s.px) * (w / wrap.clientWidth);
+        s.ty -= (e.clientY - s.py) * (h / wrap.clientHeight);
+        s.px = e.clientX; s.py = e.clientY;
+        applyTransform();
       });
-      svgHost.addEventListener("pointerup",(e)=>{
-        state.dragging=false;
-      });
-      svgHost.addEventListener("pointercancel",()=>state.dragging=false);
+      wrap.addEventListener("pointerup",     () => { s.dragging = false; });
+      wrap.addEventListener("pointercancel", () => { s.dragging = false; });
 
-      // expose controls
-      return {zoomIn:()=>zoom(-1), zoomOut:()=>zoom(1), reset:()=>{
-        state.scale=1; state.tx=0; state.ty=0; apply();
-      }};
+      onReady?.({ highlight });
     })
-    .then(api=>{
-      wrap.__mapApi = api;
-    })
-    .catch(err=>{
+    .catch(err => {
+      wrap.innerHTML = `<div class="map-error">Error cargando mapa: ${err.message}</div>`;
       toast("Error cargando mapa: " + err.message);
     });
 
+  // API pública — funciona aunque SVG aún no haya cargado
   return {
-    zoomIn:()=>wrap.__mapApi?.zoomIn?.(),
-    zoomOut:()=>wrap.__mapApi?.zoomOut?.(),
-    reset:()=>wrap.__mapApi?.reset?.()
+    zoomIn:    () => zoom(1),
+    zoomOut:   () => zoom(-1),
+    reset,
+    highlight,
   };
 }

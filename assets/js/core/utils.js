@@ -1,10 +1,33 @@
+/**
+ * SIE 2028 — core/utils.js
+ */
 
-export function clamp(x, a, b){ return Math.max(a, Math.min(b, x)); }
-export function sum(arr){ return arr.reduce((a,b)=>a+b,0); }
-export function deepCopy(obj){ return JSON.parse(JSON.stringify(obj)); }
-export function formatPct(x){ return (Math.round(x*10)/10).toFixed(1) + "%"; }
-export function nowISO(){ return new Date().toISOString(); }
-export function safeJsonParse(text){
-  try { return {ok:true, value: JSON.parse(text)}; }
-  catch(e){ return {ok:false, error:e}; }
+export const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+export const sum   = arr => arr.reduce((a, v) => a + v, 0);
+
+export function fmtInt(n) {
+  return (Math.round(Number(n) || 0)).toLocaleString("en-US");
+}
+
+export function fmtPct(x, decimals = 1) {
+  return (Number(x) * 100).toFixed(decimals) + "%";
+}
+
+/** Ordena {partido:votos} y devuelve array [{p, v, pct}] */
+export function rankVotes(votes, emitidos) {
+  const total = emitidos || Object.values(votes).reduce((a, v) => a + v, 0) || 1;
+  return Object.entries(votes)
+    .filter(([, v]) => v > 0)
+    .map(([p, v]) => ({ p, v, pct: v / total }))
+    .sort((a, b) => b.v - a.v);
+}
+
+/** Top N partidos */
+export function topN(votes, n = 5, emitidos) {
+  return rankVotes(votes, emitidos).slice(0, n);
+}
+
+/** deepCopy seguro */
+export function deepCopy(obj) {
+  return JSON.parse(JSON.stringify(obj));
 }
