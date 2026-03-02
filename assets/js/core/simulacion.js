@@ -141,7 +141,7 @@ export function simDip(ctx, simVotesByCirc) {
 
   // Exterior  si no hay votos por circunscripcin, usar distribucin nacional dip como proxy
   var lv     = getLevel(ctx, 2024, "dip");
-  var natDip = (lv.nacional && lv.nacional.votes) || {};
+  var natDip = lv?.nacional?.votes || {};
   for (var ext of (cur.exterior || [])) {
     var ckey = `C${ext.circ_exterior}`;
     var base = lv.extDip && lv.extDip[ckey] && lv.extDip[ckey].votes || {};
