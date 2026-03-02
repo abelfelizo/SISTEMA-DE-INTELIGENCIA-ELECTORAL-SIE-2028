@@ -1,6 +1,5 @@
 /**
- * SIE 2028 — app.js  (H3)
- * Boot único. Router. Estado global. 8 rutas + export PDF.
+ * SIE 2028 - app.js
  */
 import { loadCTX }         from "./core/data.js";
 import { state }           from "./core/state.js";
@@ -16,75 +15,99 @@ import { mountGlobalControls,
          renderBoleta,
          exportarPDF }     from "./ui/views.js";
 
-const ROUTES = [
+var ROUTES = [
   { id:"dashboard",    label:"Dashboard",    fn: renderDashboard    },
   { id:"mapa",         label:"Mapa",         fn: renderMapa         },
   { id:"simulador",    label:"Simulador",    fn: renderSimulador    },
   { id:"potencial",    label:"Potencial",    fn: renderPotencial    },
-  { id:"movilizacion", label:"Movilización", fn: renderMovilizacion },
+  { id:"movilizacion", label:"Movilizacion", fn: renderMovilizacion },
   { id:"objetivo",     label:"Objetivo",     fn: renderObjetivo     },
-  { id:"boleta",       label:"Boleta única", fn: renderBoleta       },
-  { id:"auditoria",    label:"Auditoría",    fn: renderAuditoria    },
+  { id:"boleta",       label:"Boleta unica", fn: renderBoleta       },
+  { id:"auditoria",    label:"Auditoria",    fn: renderAuditoria    },
 ];
 
-let ctx=null, currentRoute="dashboard", rendering=false;
+var ctx = null;
+var currentRoute = "dashboard";
+var rendering = false;
 
 async function render(routeId) {
   if (rendering) return;
   rendering = true;
   try {
     if (!ctx) {
-      document.getElementById("view").innerHTML=`<div class="loading">Cargando datos…</div>`;
+      document.getElementById("view").innerHTML = "<div class=\"loading\">Cargando datos...</div>";
       ctx = await loadCTX();
     }
     currentRoute = routeId;
-    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.route===routeId));
-    history.replaceState({},"","#"+routeId);
-    const route = ROUTES.find(r=>r.id===routeId)||ROUTES[0];
+    var btns = document.querySelectorAll(".nav-btn");
+    btns.forEach(function(b) {
+      b.classList.toggle("active", b.dataset.route === routeId);
+    });
+    history.replaceState({}, "", "#" + routeId);
+    var route = null;
+    for (var i = 0; i < ROUTES.length; i++) {
+      if (ROUTES[i].id === routeId) { route = ROUTES[i]; break; }
+    }
+    if (!route) route = ROUTES[0];
     route.fn(state, ctx);
-    // Mostrar botón export
-    const expBtn = document.getElementById("btn-export");
-    if (expBtn) expBtn.style.display = ["dashboard","simulador","auditoria"].includes(routeId) ? "" : "none";
+    var expBtn = document.getElementById("btn-export");
+    if (expBtn) {
+      var show = routeId === "dashboard" || routeId === "simulador" || routeId === "auditoria";
+      expBtn.style.display = show ? "" : "none";
+    }
   } catch(e) {
-    console.error("[SIE]",e);
-    toast("Error: "+e.message);
-    document.getElementById("view").innerHTML=`<div class="error-msg">Error: ${e.message}</div>`;
-  } finally { rendering=false; }
+    console.error("[SIE]", e);
+    toast("Error: " + e.message);
+    document.getElementById("view").innerHTML = "<div class=\"error-msg\">Error: " + e.message + "</div>";
+  } finally {
+    rendering = false;
+  }
 }
 
 function initTheme() {
-  const saved = localStorage.getItem("sie28-theme")||"dark";
-  document.documentElement.setAttribute("data-theme",saved);
-  const btn = document.getElementById("btn-theme");
-  if(!btn) return;
-  btn.textContent = saved==="dark"?"☀️":"🌙";
-  btn.addEventListener("click",()=>{
-    const cur=document.documentElement.getAttribute("data-theme");
-    const next=cur==="dark"?"light":"dark";
-    document.documentElement.setAttribute("data-theme",next);
-    localStorage.setItem("sie28-theme",next);
-    btn.textContent=next==="dark"?"☀️":"🌙";
+  var saved = localStorage.getItem("sie28-theme") || "dark";
+  document.documentElement.setAttribute("data-theme", saved);
+  var btn = document.getElementById("btn-theme");
+  if (!btn) return;
+  btn.textContent = saved === "dark" ? "Claro" : "Oscuro";
+  btn.addEventListener("click", function() {
+    var cur  = document.documentElement.getAttribute("data-theme");
+    var next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("sie28-theme", next);
+    btn.textContent = next === "dark" ? "Claro" : "Oscuro";
   });
 }
 
 function boot() {
   initTheme();
-  const nav=document.getElementById("nav");
-  nav.innerHTML=ROUTES.map(r=>`<button class="nav-btn" data-route="${r.id}">${r.label}</button>`).join("");
-  nav.addEventListener("click",e=>{const btn=e.target.closest(".nav-btn");if(btn)render(btn.dataset.route);});
+  var nav = document.getElementById("nav");
+  var navHtml = "";
+  for (var i = 0; i < ROUTES.length; i++) {
+    navHtml += "<button class=\"nav-btn\" data-route=\"" + ROUTES[i].id + "\">" + ROUTES[i].label + "</button>";
+  }
+  nav.innerHTML = navHtml;
+  nav.addEventListener("click", function(e) {
+    var btn = e.target.closest(".nav-btn");
+    if (btn) render(btn.dataset.route);
+  });
   mountGlobalControls(state);
-  state.recomputeAndRender=()=>render(currentRoute);
-
-  // Export PDF button
-  const expBtn = document.getElementById("btn-export");
+  state.recomputeAndRender = function() { render(currentRoute); };
+  var expBtn = document.getElementById("btn-export");
   if (expBtn) {
     expBtn.style.display = "none";
-    expBtn.addEventListener("click",()=>exportarPDF(ctx, state));
+    expBtn.addEventListener("click", function() { exportarPDF(ctx, state); });
   }
-
-  const initial=location.hash.replace("#","")||"dashboard";
-  render(ROUTES.find(r=>r.id===initial)?initial:"dashboard");
-  window.addEventListener("hashchange",()=>{const id=location.hash.replace("#","");if(id&&id!==currentRoute)render(id);});
+  var initial = location.hash.replace("#", "") || "dashboard";
+  var validInitial = false;
+  for (var i = 0; i < ROUTES.length; i++) {
+    if (ROUTES[i].id === initial) { validInitial = true; break; }
+  }
+  render(validInitial ? initial : "dashboard");
+  window.addEventListener("hashchange", function() {
+    var id = location.hash.replace("#", "");
+    if (id && id !== currentRoute) render(id);
+  });
 }
 
-window.addEventListener("DOMContentLoaded",boot);
+window.addEventListener("DOMContentLoaded", boot);

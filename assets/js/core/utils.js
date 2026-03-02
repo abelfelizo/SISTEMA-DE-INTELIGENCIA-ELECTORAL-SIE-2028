@@ -1,5 +1,5 @@
 /**
- * SIE 2028 — core/utils.js
+ * SIE 2028  core/utils.js
  */
 
 export const clamp = (x, a, b) => Math.max(a, Math.min(b, x));

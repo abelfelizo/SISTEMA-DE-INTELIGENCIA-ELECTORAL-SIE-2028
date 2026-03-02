@@ -1,8 +1,8 @@
 /**
- * SIE 2028 — ui/map.js
+ * SIE 2028  ui/map.js
  * Carga SVG, gestiona zoom/pan, dispara onSelect(provId:"01") al click.
- * SVG IDs esperados: "DO-01" … "DO-32"
- * provId extraído: los dos dígitos del ID ("DO-01" → "01")
+ * SVG IDs esperados: "DO-01"  "DO-32"
+ * provId extrado: los dos dgitos del ID ("DO-01"  "01")
  */
 import { clamp } from "../core/utils.js";
 import { toast } from "./toast.js";
@@ -11,7 +11,7 @@ export function initMap({ containerId, svgUrl, onSelect, onReady }) {
   const wrap = document.getElementById(containerId);
   if (!wrap) return null;
 
-  wrap.innerHTML = `<div class="map-loading">Cargando mapa…</div>`;
+  wrap.innerHTML = `<div class="map-loading">Cargando mapa...</div>`;
 
   let svg = null;
   let shapes = [];
@@ -54,7 +54,7 @@ export function initMap({ containerId, svgUrl, onSelect, onReady }) {
     .then(svgText => {
       wrap.innerHTML = svgText;
       svg = wrap.querySelector("svg");
-      if (!svg) throw new Error("SVG inválido");
+      if (!svg) throw new Error("SVG invalido");
 
       svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
       svg.style.width  = "100%";
@@ -111,7 +111,7 @@ export function initMap({ containerId, svgUrl, onSelect, onReady }) {
       toast("Error cargando mapa: " + err.message);
     });
 
-  // API pública — funciona aunque SVG aún no haya cargado
+  // API pblica  funciona aunque SVG an no haya cargado
   return {
     zoomIn:    () => zoom(1),
     zoomOut:   () => zoom(-1),

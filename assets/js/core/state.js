@@ -1,6 +1,6 @@
 /**
- * SIE 2028 — core/state.js
- * Estado global único. recomputeAndRender() se inyecta desde app.js al boot.
+ * SIE 2028  core/state.js
+ * Estado global nico. recomputeAndRender() se inyecta desde app.js al boot.
  *
  * Niveles: pres | sen | dip | mun | dm
  * Cortes:  mayo2024 | feb2024 | proy2028

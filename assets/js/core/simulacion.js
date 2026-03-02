@@ -1,9 +1,9 @@
 /**
- * SIE 2028 — core/simulacion.js
- * Motor central de simulación.
- * Recibe parámetros y devuelve resultado completo por nivel.
+ * SIE 2028  core/simulacion.js
+ * Motor central de simulacin.
+ * Recibe parmetros y devuelve resultado completo por nivel.
  *
- * Params estándar:
+ * Params estndar:
  *   { nivel, year, deltasPP, alianzas, movilizacion, arrastre, corte }
  *
  * Output:
@@ -14,7 +14,7 @@ import { dhondt }                   from "./dhondt.js";
 import { getLevel, getInscritos }   from "./data.js";
 import { clamp, rankVotes, deepCopy } from "./utils.js";
 
-// ── Coeficientes de cascada de movilización ────────────────────
+//  Coeficientes de cascada de movilizacin 
 const MOVILIZACION_COEF = {
   pres: 1.00,
   sen:  0.85,
@@ -23,7 +23,7 @@ const MOVILIZACION_COEF = {
   dm:   0.70,
 };
 
-// ── Arrastre presidencial: k según margen ─────────────────────
+//  Arrastre presidencial: k segn margen 
 function arrastreK(margenPres) {
   if (margenPres > 0.10) return 0.60;
   if (margenPres > 0.05) return 0.40;
@@ -31,10 +31,10 @@ function arrastreK(margenPres) {
 }
 
 /**
- * Aplica Δpp y renormaliza votos.
- * deltasPP: { partido: δ_pp }  (puede ser fracción decimal)
+ * Aplica pp y renormaliza votos.
+ * deltasPP: { partido: _pp }  (puede ser fraccin decimal)
  * baseVotes: { partido: votos }
- * baseEmitidos: número base de emitidos
+ * baseEmitidos: nmero base de emitidos
  */
 export function applyDeltas(baseVotes, deltasPP, baseEmitidos) {
   const total = baseEmitidos || Object.values(baseVotes).reduce((a, v) => a + v, 0) || 1;
@@ -55,9 +55,9 @@ export function applyDeltas(baseVotes, deltasPP, baseEmitidos) {
 }
 
 /**
- * Aplica alianzas: transfiere votos de aliados al líder.
+ * Aplica alianzas: transfiere votos de aliados al lder.
  * alianzas: [ { lider, aliados: [{partido, transferPct}] } ]
- * transferPct: 0–100 (% de votos del aliado que van al líder)
+ * transferPct: 0100 (% de votos del aliado que van al lder)
  */
 export function applyAlianzas(votes, alianzas) {
   const out = { ...votes };
@@ -74,9 +74,9 @@ export function applyAlianzas(votes, alianzas) {
 }
 
 /**
- * Aplica movilización: agrega votos al pool total.
+ * Aplica movilizacin: agrega votos al pool total.
  * pp: puntos porcentuales adicionales
- * inscritos: padrón
+ * inscritos: padrn
  * emitidos: base
  * nivel: para aplicar coeficiente
  * Devuelve { extraVotos, nuevoEmitidos }
@@ -139,13 +139,13 @@ export function simDip(ctx, simVotesByCirc) {
     }
   }
 
-  // Exterior — si no hay votos por circunscripción, usar distribución nacional dip como proxy
+  // Exterior  si no hay votos por circunscripcin, usar distribucin nacional dip como proxy
   const lv     = getLevel(ctx, 2024, "dip");
   const natDip = lv.nacional?.votes || {};
   for (const ext of (cur.exterior || [])) {
     const ckey = `C${ext.circ_exterior}`;
     const base = lv.extDip?.[ckey]?.votes || {};
-    // Fallback: si no hay data propia, usar votos nacionales (mejor aproximación disponible)
+    // Fallback: si no hay data propia, usar votos nacionales (mejor aproximacin disponible)
     const votes = Object.keys(base).length ? base : natDip;
     if (!Object.keys(votes).length) continue;
     const res = dhondt(votes, ext.seats);
@@ -170,7 +170,7 @@ export function simDip(ctx, simVotesByCirc) {
 }
 
 /**
- * Simulación de senadores: ganador por mayoría simple en cada provincia.
+ * Simulacin de senadores: ganador por mayora simple en cada provincia.
  * Devuelve { byProv: {provId: partido}, totalByParty }
  */
 export function simSen(provVotes) {
@@ -187,7 +187,7 @@ export function simSen(provVotes) {
 }
 
 /**
- * Simulación de alcaldes/DM: ganador por mayoría simple en cada municipio/DM.
+ * Simulacin de alcaldes/DM: ganador por mayora simple en cada municipio/DM.
  */
 export function simGanadores(territorioVotes) {
   const byTerritory = {};
@@ -203,16 +203,16 @@ export function simGanadores(territorioVotes) {
 }
 
 /**
- * Simulación principal. Devuelve resultado completo para el nivel dado.
+ * Simulacin principal. Devuelve resultado completo para el nivel dado.
  */
 export function simular(ctx, params) {
   const {
     nivel       = "dip",
     year        = 2024,
-    deltasPP    = {},   // { partido: δpp }
+    deltasPP    = {},   // { partido: deltapp }
     alianzas    = [],   // [ { lider, aliados: [{partido, transferPct}] } ]
-    movPP       = 0,    // puntos porcentuales de movilización
-    movDir      = null, // { partido: pctDirección } — null = proporcional
+    movPP       = 0,    // puntos porcentuales de movilizacion
+    movDir      = null, // { partido: pctDireccion } -- null = proporcional
     arrastre    = false,
     arrastreLider = null,
     arrastreK   = null,
@@ -229,12 +229,12 @@ export function simular(ctx, params) {
 
   const emitidosBase = nat.emitidos || 0;
 
-  // 1. Movilización nacional
+  // 1. Movilizacin nacional
   const { extraVotos, nuevoEmitidos } = applyMovilizacion(
     inscritos, emitidosBase, movPP, nivel
   );
 
-  // 2. Votos base + movilización
+  // 2. Votos base + movilizacin
   let votes = { ...nat.votes };
   if (extraVotos !== 0 && Object.keys(votes).length) {
     // Distribuir votos extra proporcional o dirigido
@@ -251,7 +251,7 @@ export function simular(ctx, params) {
     }
   }
 
-  // 3. Δpp
+  // 3. pp
   votes = applyDeltas(votes, deltasPP, nuevoEmitidos);
 
   // 4. Alianzas
@@ -300,11 +300,11 @@ export function simular(ctx, params) {
   return result;
 }
 
-// ── Helpers de distribución territorial ───────────────────────
+//  Helpers de distribucin territorial 
 
 /**
- * Construye votos simulados por circunscripción/provincia para D'Hondt.
- * Aplica el swing nacional proporcionalmente a cada demarcación.
+ * Construye votos simulados por circunscripcin/provincia para D'Hondt.
+ * Aplica el swing nacional proporcionalmente a cada demarcacin.
  */
 function buildCircVotes(ctx, simVotesNat, baseVotesNat, year, nivel = "dip") {
   const lv     = getLevel(ctx, year, nivel);
@@ -318,7 +318,7 @@ function buildCircVotes(ctx, simVotesNat, baseVotesNat, year, nivel = "dip") {
     out[cid] = scaleVotes(circ.votes, baseVotesNat, simVotesNat, baseTot, simTot);
   }
 
-  // Provincias de circunscripción única
+  // Provincias de circunscripcin nica
   for (const [pid, prov] of Object.entries(lv.prov)) {
     if (!out[pid]) { // solo si no fue cubierta por circ
       out[pid] = scaleVotes(prov.votes, baseVotesNat, simVotesNat, baseTot, simTot);
@@ -352,8 +352,8 @@ function buildTerrVotes(ctx, simVotesNat, baseVotesNat, year, nivel) {
 }
 
 /**
- * Escala votos locales según el swing relativo nacional.
- * Si PRM subió 5pp nacionalmente, sube 5pp en cada territorio.
+ * Escala votos locales segn el swing relativo nacional.
+ * Si PRM subi 5pp nacionalmente, sube 5pp en cada territorio.
  */
 function scaleVotes(localVotes, baseNat, simNat, baseTot, simTot) {
   const out = {};
@@ -366,7 +366,7 @@ function scaleVotes(localVotes, baseNat, simNat, baseTot, simTot) {
     out[p] = Math.max(0, Math.round(lv * ratio));
   }
 
-  // Incluir partidos en sim que no están en local (alianzas nuevas)
+  // Incluir partidos en sim que no estn en local (alianzas nuevas)
   for (const [p, sv] of Object.entries(simNat)) {
     if (!(p in localVotes)) {
       const simShare = simTot > 0 ? sv / simTot : 0;

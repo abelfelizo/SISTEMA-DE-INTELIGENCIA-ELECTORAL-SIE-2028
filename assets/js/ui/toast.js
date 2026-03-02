@@ -1,5 +1,5 @@
 /**
- * SIE 2028 — ui/toast.js
+ * SIE 2028  ui/toast.js
  */
 let _timer = null;
 

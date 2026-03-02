@@ -1,9 +1,9 @@
 /**
- * SIE 2028 — core/dhondt.js
- * D'Hondt para una demarcación.
+ * SIE 2028  core/dhondt.js
+ * D'Hondt para una demarcacin.
  * votes: {partido: votos}  (integers, positivos)
- * seats: número de escaños a repartir
- * returns: { byParty: {partido: escaños}, threshold: cociente del último escaño }
+ * seats: nmero de escaos a repartir
+ * returns: { byParty: {partido: escaos}, threshold: cociente del ltimo escao }
  */
 export function dhondt(votes, seats) {
   if (!seats || seats <= 0) return { byParty: {}, threshold: 0 };
@@ -31,7 +31,7 @@ export function dhondt(votes, seats) {
 }
 
 /**
- * Votos adicionales necesarios para que targetParty gane un escaño más.
+ * Votos adicionales necesarios para que targetParty gane un escao ms.
  * Usa el estado actual de votos y seats.
  */
 export function nextSeatVotes(votes, seats, targetParty) {
@@ -45,7 +45,7 @@ export function nextSeatVotes(votes, seats, targetParty) {
 /**
  * Corre D'Hondt para todas las circunscripciones de diputados.
  * curules: array de { provincia_id, circ, seats }
- * votesById: { "PP-circ": {partido: votos} }  — si falta circ usa provincia
+ * votesById: { "PP-circ": {partido: votos} }   si falta circ usa provincia
  * Devuelve { totalByParty, byCirc: { id: {byParty, seats} } }
  */
 export function dhondtDip(curules, getVotesForCirc) {

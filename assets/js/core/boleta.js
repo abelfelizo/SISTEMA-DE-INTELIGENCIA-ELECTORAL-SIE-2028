@@ -1,15 +1,15 @@
 /**
- * SIE 2028 — core/boleta.js  (H3)
- * Motor de optimización legislativa: boleta única opositora.
- * Simula qué sucede si partidos de oposición van en coalición
- * en cada demarcación para maximizar curules.
+ * SIE 2028  core/boleta.js  (H3)
+ * Motor de optimizacin legislativa: boleta nica opositora.
+ * Simula qu sucede si partidos de oposicin van en coalicin
+ * en cada demarcacin para maximizar curules.
  */
 import { dhondt }         from "./dhondt.js";
 import { getLevel }       from "./data.js";
 import { rankVotes }      from "./utils.js";
 
 /**
- * Calcula el escenario de boleta única.
+ * Calcula el escenario de boleta nica.
  * params:
  *   partidos: [{ partido, incluir: bool, transferPct: 0-100, encabeza: bool }]
  *   year: 2024
@@ -24,14 +24,14 @@ export function simBoleta(ctx, params) {
   const lv  = getLevel(ctx, year, "dip");
   const nat = lv.nacional?.votes || {};
 
-  // Determinar líder (partido que encabeza)
+  // Determinar lder (partido que encabeza)
   const lider = partidos.find(p => p.encabeza && p.incluir)?.partido
     || partidos.find(p => p.incluir)?.partido;
   if (!lider) return null;
 
   const incluidos = partidos.filter(p => p.incluir && p.partido !== lider);
 
-  // Función para obtener votos de una circ con y sin boleta
+  // Funcin para obtener votos de una circ con y sin boleta
   function getVotes(key, c) {
     const isMulti = c.circ > 0;
     const data    = isMulti
@@ -42,7 +42,7 @@ export function simBoleta(ctx, params) {
 
   function applyBoleta(votes) {
     const out = { ...votes };
-    // Transferir votos de aliados al líder
+    // Transferir votos de aliados al lder
     for (const { partido, transferPct } of incluidos) {
       const v     = out[partido] || 0;
       const moved = Math.round(v * (transferPct / 100));

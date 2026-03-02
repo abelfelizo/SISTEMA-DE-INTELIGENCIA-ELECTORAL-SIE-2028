@@ -1,16 +1,16 @@
 /**
- * SIE 2028 — core/objetivo.js
- * Motor de simulación inversa.
+ * SIE 2028  core/objetivo.js
+ * Motor de simulacin inversa.
  * Dado un objetivo (% pres, # curules, # senadores, # alcaldes),
- * calcula el escenario mínimo requerido.
+ * calcula el escenario mnimo requerido.
  */
 
 import { simular }           from "./simulacion.js";
 import { rankVotes }         from "./utils.js";
 
 /**
- * Busca el Δpp necesario para que el partido `lider` alcance `metaPct` en `nivel`.
- * Usa búsqueda binaria sobre el Δpp del líder.
+ * Busca el pp necesario para que el partido `lider` alcance `metaPct` en `nivel`.
+ * Usa bsqueda binaria sobre el pp del lder.
  * Devuelve { deltaPP, resultado } o { imposible: true, maximo }
  */
 export function calcularDeltaParaMeta(ctx, params) {
@@ -54,7 +54,7 @@ export function calcularDeltaParaMeta(ctx, params) {
 
 /**
  * Calcula votos necesarios para obtener `metaCurules` diputados.
- * Estrategia: incrementa Δpp del lider hasta alcanzar meta o máximo.
+ * Estrategia: incrementa pp del lider hasta alcanzar meta o mximo.
  */
 export function calcularDipMeta(ctx, params) {
   const { lider, metaCurules, maxDelta = 25 } = params;

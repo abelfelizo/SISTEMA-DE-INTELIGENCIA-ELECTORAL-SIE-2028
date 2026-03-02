@@ -1,21 +1,21 @@
 /**
- * SIE 2028 — core/data.js
+ * SIE 2028  core/data.js
  * Contrato de datos (congelado H1):
- *   data/results_2024.json  — pres/sen/dip/mun/dm
- *   data/results_2020.json  — misma estructura
- *   data/padron.json        — mayo2024.nacional.inscritos, feb2024.nacional.inscritos
+ *   data/results_2024.json   pres/sen/dip/mun/dm
+ *   data/results_2020.json   misma estructura
+ *   data/padron.json         mayo2024.nacional.inscritos, feb2024.nacional.inscritos
  *   data/padron_2024_meta.json
  *   data/curules_2024.json
  *   data/geography.json
- *   data/polls.json         — array de encuestas
+ *   data/polls.json          array de encuestas
  *
  * Esquemas raw:
- *   pres.nacional          → flat {EMITIDOS,VALIDOS,NULOS,...partidos}
- *   pres.provincias[id]    → {nombre, data:{EMITIDOS,...}}
- *   sen/dip/mun/dm niveles → {nombre, meta:{inscritos,emitidos,validos,nulos}, votes:{...}}
+ *   pres.nacional           flat {EMITIDOS,VALIDOS,NULOS,...partidos}
+ *   pres.provincias[id]     {nombre, data:{EMITIDOS,...}}
+ *   sen/dip/mun/dm niveles  {nombre, meta:{inscritos,emitidos,validos,nulos}, votes:{...}}
  *   2020 igual que 2024 salvo pres.nacional usa tot_inscritos en vez de INSCRITOS
  *
- * Salida normalizada para todos los niveles y años:
+ * Salida normalizada para todos los niveles y aos:
  *   ctx.r[year][nivel] = {
  *     nacional: { inscritos, emitidos, validos, nulos, votes:{partido:n} },
  *     prov:     { [provId]: { nombre, inscritos, emitidos, validos, nulos, votes } },
@@ -30,11 +30,11 @@
  *   ctx.geo     = geography.json raw
  *   ctx.polls   = polls.json raw (array)
  *
- * Provincias interiores: códigos "01"–"32"
- * Exterior pres: "33" (penitenciario), "61"–"72" (países) — se separan en prov.special
+ * Provincias interiores: cdigos "01""32"
+ * Exterior pres: "33" (penitenciario), "61""72" (pases)  se separan en prov.special
  */
 
-// ── Constantes ────────────────────────────────────────────────
+//  Constantes 
 const DATA = {
   r2024:   "./data/results_2024.json",
   r2020:   "./data/results_2020.json",
@@ -45,9 +45,9 @@ const DATA = {
   polls:   "./data/polls.json",
 };
 
-const INTERIOR_MAX_PROV = 32; // códigos 01–32 son interior
+const INTERIOR_MAX_PROV = 32; // codigos 01-32 son interior
 
-// ── Fetch helper ──────────────────────────────────────────────
+//  Fetch helper 
 async function fetchJSON(url) {
   try {
     const r = await fetch(url);
@@ -59,7 +59,7 @@ async function fetchJSON(url) {
   }
 }
 
-// ── Normalizadores atómicos ───────────────────────────────────
+//  Normalizadores atmicos 
 
 /** Extrae {inscritos, emitidos, validos, nulos, votes} de cualquier formato raw */
 function normUnit(raw) {
@@ -89,7 +89,7 @@ function normUnit(raw) {
     };
   }
 
-  // Formato C: plano {EMITIDOS,...} — pres nacional 2024 / 2020
+  // Formato C: plano {EMITIDOS,...}  pres nacional 2024 / 2020
   if ("EMITIDOS" in raw || "emitidos" in raw || "tot_inscritos" in raw) {
     return {
       inscritos: intOrNull(raw.INSCRITOS ?? raw.inscritos ?? raw.tot_inscritos),
@@ -120,7 +120,7 @@ function extractVotes(obj, skip) {
   return out;
 }
 
-// ── Normalizador de nivel completo ────────────────────────────
+//  Normalizador de nivel completo 
 
 function normLevel(raw, nivel) {
   const out = { nacional: empty(), prov: {}, mun: {}, dm: {}, circ: {}, extDip: {} };
@@ -147,7 +147,7 @@ function normLevel(raw, nivel) {
     out.mun[id] = unit;
   }
 
-  // DM — keys pueden ser "0028-141" (correcto) o "0.0" (bug legacy ignorado aquí)
+  // DM  keys pueden ser "0028-141" (correcto) o "0.0" (bug legacy ignorado aqu)
   for (const [id, obj] of Object.entries(raw.dm || {})) {
     if (!/^\d{4}-\d{3}$/.test(id)) continue; // ignora float-keys
     const unit = normUnit(obj);
@@ -183,7 +183,7 @@ function normYear(raw) {
   };
 }
 
-// ── Cache ─────────────────────────────────────────────────────
+//  Cache 
 let _ctx = null;
 
 export async function loadCTX() {
@@ -214,12 +214,12 @@ export async function loadCTX() {
   return _ctx;
 }
 
-/** Devuelve el nivel normalizado para un año y nivel dados */
+/** Devuelve el nivel normalizado para un ao y nivel dados */
 export function getLevel(ctx, year, nivel) {
   return ctx?.r?.[year]?.[nivel] ?? { nacional: empty(), prov: {}, mun: {}, dm: {}, circ: {}, extDip: {} };
 }
 
-/** Inscritos nacionales según corte */
+/** Inscritos nacionales segn corte */
 export function getInscritos(ctx, corte) {
   const key = corte === "feb2024" ? "feb2024" : "mayo2024";
   return int(ctx?.padron?.[key]?.nacional?.inscritos) || 0;

@@ -1,14 +1,14 @@
 /**
- * SIE 2028 — core/potencial.js
- * Motor de score de potencial electoral 0–100.
+ * SIE 2028  core/potencial.js
+ * Motor de score de potencial electoral 0100.
  *
  * Pesos (configurables):
- *   tendencia   25  — cambio pp 2020→2024
- *   margen      20  — margen top1-top2 (invertido: menor margen = más potencial)
- *   abstencion  15  — % abstención (más abstención = más potencial)
- *   padron      15  — tamaño relativo del padrón
- *   elasticidad 15  — sensibilidad al swing nacional
- *   estabilidad 10  — inverso de desviación histórica
+ *   tendencia   25   cambio pp 20202024
+ *   margen      20   margen top1-top2 (invertido: menor margen = ms potencial)
+ *   abstencion  15   % abstencin (ms abstencin = ms potencial)
+ *   padron      15   tamao relativo del padrn
+ *   elasticidad 15   sensibilidad al swing nacional
+ *   estabilidad 10   inverso de desviacin histrica
  */
 
 import { rankVotes } from "./utils.js";
@@ -46,7 +46,7 @@ function scoreTerritory({ t24, t20, lider, maxPadron, weights = DEFAULT_WEIGHTS 
   const votes24 = t24.votes   || {};
   const votes20 = t20?.votes  || {};
 
-  // Abstención 2024
+  // Abstencin 2024
   const abst24 = ins24 > 0 ? 1 - (em24 / ins24) : 0;
 
   // Tendencia lider: pp24 - pp20
@@ -56,23 +56,23 @@ function scoreTerritory({ t24, t20, lider, maxPadron, weights = DEFAULT_WEIGHTS 
   const pct20    = ranked20.find(r => r.p === lider)?.pct || 0;
   const tend     = ins20 > 0 ? pct24 - pct20 : 0; // positivo = sube
 
-  // Margen: inverso del margen top1-top2 (margen pequeño = zona disputada = más potencial para ganar)
+  // Margen: inverso del margen top1-top2 (margen pequeo = zona disputada = ms potencial para ganar)
   const margen = ranked24.length >= 2 ? ranked24[0].pct - ranked24[1].pct : 1;
-  const margenScore = Math.max(0, 1 - Math.min(margen * 5, 1)); // margen 0 → score 1, margen 0.2 → score 0
+  const margenScore = Math.max(0, 1 - Math.min(margen * 5, 1)); // margen 0 -> score 1, margen 0.2 -> score 0
 
-  // Padrón relativo
+  // Padrn relativo
   const padronScore = maxPadron > 0 ? ins24 / maxPadron : 0;
 
-  // Elasticidad: cuánto varió el partido lider entre 2020 y 2024 relativo a la media
-  const elasticidad = Math.abs(tend) * 2; // normalizado 0–1 aprox
+  // Elasticidad: cunto vari el partido lider entre 2020 y 2024 relativo a la media
+  const elasticidad = Math.abs(tend) * 2; // normalizado 0-1 aprox
 
-  // Estabilidad: inverso de variación (alta variación = baja estabilidad pero alta elasticidad)
+  // Estabilidad: inverso de variacin (alta variacin = baja estabilidad pero alta elasticidad)
   const estabilidad = 1 - Math.min(Math.abs(tend) * 3, 1);
 
-  // Abstención normalizada (0–0.6 → 0–1)
+  // Abstencin normalizada (00.6  01)
   const abstScore = Math.min(abst24 / 0.6, 1);
 
-  // Tendencia normalizada: tend positivo (gana) → score alto
+  // Tendencia normalizada: tend positivo (gana)  score alto
   const tendScore = clampN(0.5 + tend * 3, 0, 1);
 
   const raw =
