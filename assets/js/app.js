@@ -1,7 +1,7 @@
 /**
  * SIE 2028 v4.1
  */
-var VERSION = "4.1";
+var VERSION = "5.0";
 
 import { loadCTX }         from "./core/data.js";
 import { state }           from "./core/state.js";
@@ -86,7 +86,7 @@ function initTheme() {
 function boot() {
   initTheme();
   var vBadge = document.querySelector(".brand .badge");
-  if (vBadge) vBadge.textContent = "v4.1";
+  if (vBadge) vBadge.textContent = "v5.0";
   var nav = document.getElementById("nav");
   var navHtml = "";
   for (var i = 0; i < ROUTES.length; i++) {

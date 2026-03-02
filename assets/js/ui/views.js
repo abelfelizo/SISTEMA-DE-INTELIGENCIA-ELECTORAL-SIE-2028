@@ -6,7 +6,7 @@ import { toast }              from "./toast.js";
 import { initMap }            from "./map.js";
 import { getLevel, getInscritos } from "../core/data.js";
 import { simular }            from "../core/simulacion.js";
-import { generarEscenarios }  from "../core/objetivo.js";
+import { generarEscenarios, calcularProvinciasCriticas } from "../core/objetivo.js";
 import { calcPotencial }      from "../core/potencial.js";
 import { runAuditoria }       from "../core/auditoria.js";
 import { simBoleta }          from "../core/boleta.js";
@@ -195,14 +195,38 @@ export function renderDashboard(state, ctx) {
         sign + (delta*100).toFixed(1) + "pp vs 2024");
     })() +
     "</div>" +
+    // H5: Comparison row 2024 vs encuesta vs delta
+    (function() {
+      var polls = ctx.polls || [];
+      if (!polls.length || !ranked.length) return "";
+      var last = polls[polls.length-1];
+      var enc  = last.resultados || {};
+      var topN = ranked.slice(0, 6);
+      var rows = topN.map(function(r) {
+        var e24  = fmtPct(r.pct);
+        var eEnc = enc[r.p] !== undefined ? (enc[r.p]+"%") : "-";
+        var d    = enc[r.p] !== undefined ? enc[r.p]/100 - r.pct : null;
+        var dStr = d !== null ? "<span class=\""+(d>0?"text-ok":d<0?"text-warn":"")+"\">"+
+                  (d>0?"+":"")+(d*100).toFixed(1)+"pp</span>" : "-";
+        return "<tr><td>"+dot(r.p)+r.p+"</td><td class=\"r\">"+e24+"</td><td class=\"r\">"+eEnc+"</td><td class=\"r\">"+dStr+"</td></tr>";
+      }).join("");
+      return "<div class=\"card\" style=\"margin-top:14px;\">" +
+        "<h3 style=\"margin-bottom:8px;\">Comparativo: 2024 Real vs Encuesta (" + last.encuestadora + " " + last.fecha + ")</h3>" +
+        "<div style=\"overflow:auto;\">" +
+          "<table class=\"tbl\"><thead><tr>" +
+            "<th>Partido</th><th class=\"r\">2024 JCE</th><th class=\"r\">Encuesta</th><th class=\"r\">Delta</th>" +
+          "</tr></thead><tbody>" + rows + "</tbody></table>" +
+        "</div>" +
+      "</div>";
+    })() +
     "<div class=\"row-2col\" style=\"margin-top:16px;gap:16px;\">" +
       "<div class=\"card\"><h3>Distribucion - " + NIVEL_LABEL[nivel] + "</h3>" + barChart(ranked, 7) + dipSection + "</div>" +
       "<div class=\"card\"><h3>Resumen Ejecutivo</h3>" +
         "<ul class=\"exec-list\">" + execItems + "</ul>" +
         "<div style=\"margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;\">" +
-          "<button class=\"btn\" onclick=\"location.hash='#simulador'\">Simulador</button>" +
-          "<button class=\"btn-sm\" onclick=\"location.hash='#objetivo'\">Objetivo</button>" +
-          "<button class=\"btn-sm\" onclick=\"location.hash='#auditoria'\">Auditoria</button>" +
+          "<button class=\"btn\" onclick=\"location.hash=\'#simulador\'\">Simulador</button>" +
+          "<button class=\"btn-sm\" onclick=\"location.hash=\'#objetivo\'\">Objetivo</button>" +
+          "<button class=\"btn-sm\" onclick=\"location.hash=\'#auditoria\'\">Auditoria</button>" +
         "</div>" +
       "</div>" +
     "</div>";
@@ -436,6 +460,19 @@ export function renderSimulador(state, ctx) {
       row.style.display = row.dataset.p === lider ? "none" : "";
     });
   });
+  // H5: reactivo con debounce 300ms en modo basico
+  var _simTimer = null;
+  function debouncedSim() {
+    clearTimeout(_simTimer);
+    _simTimer = setTimeout(function() { runSim(ctx, state, nivel, nat); }, 300);
+  }
+  // Aplicar debounce a los inputs de la tabla basica
+  document.querySelectorAll(".delta-in").forEach(function(inp) {
+    inp.addEventListener("input", debouncedSim);
+  });
+  var movInp = el("sim-mov");
+  if (movInp) movInp.addEventListener("input", debouncedSim);
+
   el("btn-sim").addEventListener("click", function() { runSim(ctx, state, nivel, nat); });
   el("btn-sim-reset").addEventListener("click", function() {
     document.querySelectorAll(".delta-in").forEach(function(i) { i.value = "0"; });
@@ -487,6 +524,10 @@ export function renderPotencial(state, ctx) {
       var margenStr = r.margen >= 0
         ? "<span class=\"text-ok\">" + fmtPct(r.margen) + "</span>"
         : "<span class=\"text-warn\">" + fmtPct(r.margen) + "</span>";
+      // H5: segundo partido para contexto competitivo
+      var segundoStr = r.segundo
+        ? dot(r.segundo) + r.segundo + " (" + fmtPct(r.pctSegundo) + ")"
+        : "-";
       return "<tr>" +
         "<td class=\"muted\">" + (i+1) + "</td>" +
         "<td><b>" + r.nombre + "</b></td>" +
@@ -495,6 +536,7 @@ export function renderPotencial(state, ctx) {
         "<td class=\"r\">" + fmtPct(r.pct24) + "</td>" +
         "<td class=\"r " + tendCls + "\">" + tendStr + "</td>" +
         "<td class=\"r\">" + margenStr + "</td>" +
+        "<td class=\"muted\" style=\"font-size:12px;\">" + segundoStr + "</td>" +
         "<td class=\"r\">" + fmtPct(r.abst) + "</td>" +
         "<td class=\"r\">" + fmtInt(r.padron) + "</td>" +
         "</tr>";
@@ -506,7 +548,7 @@ export function renderPotencial(state, ctx) {
         "<table class=\"tbl\"><thead><tr>" +
           "<th>#</th><th>Territorio</th><th class=\"r\">Score</th><th>Categoria</th>" +
           "<th class=\"r\">% " + lider + " 24</th><th class=\"r\">Tend.</th>" +
-          "<th class=\"r\">Margen</th><th class=\"r\">Abstencion</th><th class=\"r\">Inscritos</th>" +
+          "<th class=\"r\">Margen</th><th>Rival</th><th class=\"r\">Abstencion</th><th class=\"r\">Inscritos</th>" +
         "</tr></thead><tbody>" + rows + "</tbody></table>" +
       "</div>";
   }
@@ -721,6 +763,40 @@ function renderObjResult(container, esc, nivel, lider) {
   }).join("");
 
   container.innerHTML = "<div style=\"display:flex;flex-direction:column;gap:12px;\">" + cards + "</div>";
+
+  // H5: Provincias criticas para sen/dip
+  if ((nivel === "sen" || nivel === "dip") && lider) {
+    var criticas = calcularProvinciasCriticas(ctx, { nivel:nivel, lider:lider }, 8);
+    if (criticas.length) {
+      var critRows = criticas.map(function(c) {
+        var tipoCls = c.tipo === "voltear" ? "cat-red" : c.tipo === "consolidar" ? "cat-green" : "cat-yellow";
+        var gapStr  = c.gap > 0
+          ? "<span class=\"text-warn\">-" + fmtPct(c.gap) + "</span>"
+          : "<span class=\"text-ok\">+"+fmtPct(Math.abs(c.gap))+"</span>";
+        return "<tr>" +
+          "<td><b>" + c.nombre + "</b></td>" +
+          "<td class=\"r\">" + fmtPct(c.lPct) + "</td>" +
+          "<td>" + dot(c.rival) + c.rival + " (" + fmtPct(c.pctSegundo || 0) + ")</td>" +
+          "<td class=\"r\">" + gapStr + "</td>" +
+          "<td>" + catBadge(c.tipo, tipoCls) + "</td>" +
+          "</tr>";
+      }).join("");
+      var critDiv = document.createElement("div");
+      critDiv.className = "card";
+      critDiv.style.marginTop = "16px";
+      critDiv.innerHTML =
+        "<h3 style=\"margin-bottom:10px;\">Provincias Criticas para " + NIVEL_LABEL[nivel] + "</h3>" +
+        "<p class=\"muted\" style=\"margin-bottom:10px;font-size:12px;\">" +
+          "Territorios donde el partido puede ganar o perder escanos con cambios menores." +
+        "</p>" +
+        "<div style=\"overflow:auto;\">" +
+          "<table class=\"tbl\"><thead><tr>" +
+            "<th>Provincia</th><th class=\"r\">% "+lider+"</th><th>Rival principal</th><th class=\"r\">Gap</th><th>Tipo</th>" +
+          "</tr></thead><tbody>" + critRows + "</tbody></table>" +
+        "</div>";
+      container.parentElement.appendChild(critDiv);
+    }
+  }
 }
 
 //  7. BOLETA UNICA 
@@ -991,20 +1067,34 @@ function renderBoletaResult(container, res) {
 
 //  8. AUDITORIA 
 export function renderAuditoria(state, ctx) {
-  var audit = runAuditoria(ctx);
-  var issueRows = audit.issues.map(function(i) { return "<li>" + i.msg + "</li>"; }).join("");
-  var okRows    = audit.ok.map(function(i) { return "<li>" + i.msg + "</li>"; }).join("");
+  var audit     = runAuditoria(ctx);
+  var notas     = audit.notas || [];
+  var issueRows = audit.issues.map(function(i) { return "<li><span class=\"aud-lbl err-lbl\">ERROR</span> " + i.msg + "</li>"; }).join("");
+  var okRows    = audit.ok.map(function(i) { return "<li><span class=\"aud-lbl ok-lbl\">OK</span> " + i.msg + "</li>"; }).join("");
+  var notaRows  = notas.map(function(i) { return "<li><span class=\"aud-lbl nota-lbl\">NOTA</span> " + i.msg + "</li>"; }).join("");
   var noIssues  = audit.issues.length === 0 ? "<p class=\"muted\">Sin alertas. Datos integros.</p>" : "";
 
   view().innerHTML =
     "<div class=\"page-header\"><h2>Auditoria de Datos</h2>" +
       badge("Alertas: " + audit.resumen.errores, "badge-err") + " " +
       badge("OK: " + audit.resumen.correctos, "badge-good") +
+      (notas.length ? " " + badge("Notas: " + notas.length, "badge-nota") : "") +
     "</div>" +
     "<div class=\"row-2col\" style=\"gap:14px;\">" +
-      "<div class=\"card\"><h3 style=\"color:var(--red)\">Alertas (" + audit.issues.length + ")</h3>" + noIssues + (audit.issues.length ? "<ul class=\"audit-list err\">" + issueRows + "</ul>" : "") + "</div>" +
-      "<div class=\"card\"><h3 style=\"color:var(--green)\">Validaciones OK (" + audit.ok.length + ")</h3><ul class=\"audit-list good\">" + okRows + "</ul></div>" +
-    "</div>";
+      "<div class=\"card\"><h3 style=\"color:var(--red)\">Alertas (" + audit.issues.length + ")</h3>" +
+        noIssues + (audit.issues.length ? "<ul class=\"audit-list\">" + issueRows + "</ul>" : "") +
+      "</div>" +
+      "<div class=\"card\"><h3 style=\"color:var(--green)\">Validaciones OK (" + audit.ok.length + ")</h3>" +
+        "<ul class=\"audit-list\">" + okRows + "</ul>" +
+      "</div>" +
+    "</div>" +
+    (notaRows ? "<div class=\"card\" style=\"margin-top:14px;\">" +
+      "<h3 style=\"color:var(--accent);margin-bottom:6px;\">Notas Informativas (" + notas.length + ")</h3>" +
+      "<p class=\"muted\" style=\"font-size:12px;margin-bottom:10px;\">" +
+        "Caracteristicas del sistema electoral dominicano. No representan errores en los datos." +
+      "</p>" +
+      "<ul class=\"audit-list\">" + notaRows + "</ul>" +
+    "</div>" : "");
 }
 
 export function renderEncuestas(state, ctx) {

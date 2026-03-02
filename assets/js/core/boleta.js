@@ -17,12 +17,12 @@ import { rankVotes }      from "./utils.js";
  *   { base, boleta, ganados, perdidos, territorios }
  */
 export function simBoleta(ctx, params) {
-  const { partidos = [], year = 2024 } = params;
-  const cur = ctx.curules;
+  var { partidos = [], year = 2024 } = params;
+  var cur = ctx.curules;
   if (!(cur && cur.territorial)) return null;
 
-  const lv  = getLevel(ctx, year, "dip");
-  const nat = lv.(nacional && nacional.votes) || {};
+  var lv  = getLevel(ctx, year, "dip");
+  var nat = (lv.nacional && lv.nacional.votes) || {};
 
   // Determinar lder (partido que encabeza)
   var _lidList = partidos.filter(function(p){return p.encabeza && p.incluir;});
@@ -30,54 +30,54 @@ export function simBoleta(ctx, params) {
   var lider = _lidList.length ? _lidList[0].partido : null;
   if (!lider) return null;
 
-  const incluidos = partidos.filter(p => p.incluir && p.partido !== lider);
+  var incluidos = partidos.filter(p => p.incluir && p.partido !== lider);
 
   // Funcin para obtener votos de una circ con y sin boleta
   function getVotes(key, c) {
-    const isMulti = c.circ > 0;
-    const data    = isMulti
+    var isMulti = c.circ > 0;
+    var data    = isMulti
       ? (lv.circ && lv.circ[key] ? lv.circ[key] : null)
       : (lv.prov && lv.prov[key] ? lv.prov[key] : null);
     return (data && data.votes) || {};
   }
 
   function applyBoleta(votes) {
-    const out = { ...votes };
+    var out = { ...votes };
     // Transferir votos de aliados al lder
-    for (const { partido, transferPct } of incluidos) {
-      const v     = out[partido] || 0;
-      const moved = Math.round(v * (transferPct / 100));
+    for (var { partido, transferPct } of incluidos) {
+      var v     = out[partido] || 0;
+      var moved = Math.round(v * (transferPct / 100));
       out[partido]  = v - moved;
       out[lider]    = (out[lider] || 0) + moved;
     }
     return out;
   }
 
-  const baseTotal   = {};
-  const boletaTotal = {};
-  const territorios = [];
+  var baseTotal   = {};
+  var boletaTotal = {};
+  var territorios = [];
 
-  for (const c of cur.territorial) {
-    const pid = String(c.provincia_id).padStart(2, "0");
-    const key = c.circ > 0 ? `${pid}-${c.circ}` : pid;
+  for (var c of cur.territorial) {
+    var pid = String(c.provincia_id).padStart(2, "0");
+    var key = c.circ > 0 ? `${pid}-${c.circ}` : pid;
 
-    const baseVotes   = getVotes(key, c);
-    const boletaVotes = applyBoleta(baseVotes);
+    var baseVotes   = getVotes(key, c);
+    var boletaVotes = applyBoleta(baseVotes);
     if (!Object.keys(baseVotes).length) continue;
 
-    const baseRes   = dhondt(baseVotes,   c.seats);
-    const boletaRes = dhondt(boletaVotes, c.seats);
+    var baseRes   = dhondt(baseVotes,   c.seats);
+    var boletaRes = dhondt(boletaVotes, c.seats);
 
-    for (const [p, s] of Object.entries(baseRes.byParty)) {
+    for (var [p, s] of Object.entries(baseRes.byParty)) {
       baseTotal[p] = (baseTotal[p] || 0) + s;
     }
-    for (const [p, s] of Object.entries(boletaRes.byParty)) {
+    for (var [p, s] of Object.entries(boletaRes.byParty)) {
       boletaTotal[p] = (boletaTotal[p] || 0) + s;
     }
 
-    const liderBase   = baseRes.byParty[lider]   || 0;
-    const liderBoleta = boletaRes.byParty[lider]  || 0;
-    const delta       = liderBoleta - liderBase;
+    var liderBase   = baseRes.byParty[lider]   || 0;
+    var liderBoleta = boletaRes.byParty[lider]  || 0;
+    var delta       = liderBoleta - liderBase;
 
     if (delta !== 0) {
       territorios.push({
@@ -94,8 +94,8 @@ export function simBoleta(ctx, params) {
     }
   }
 
-  const ganados  = territorios.filter(t => t.delta > 0);
-  const perdidos = territorios.filter(t => t.delta < 0);
+  var ganados  = territorios.filter(t => t.delta > 0);
+  var perdidos = territorios.filter(t => t.delta < 0);
 
   return {
     lider,

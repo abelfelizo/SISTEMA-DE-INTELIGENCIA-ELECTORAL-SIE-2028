@@ -9,13 +9,17 @@
  */
 import { rankVotes } from "./utils.js";
 
+// H5: margen aumentado (indicador mas directo de posicion actual)
+//     abstencion aumentado (potencial de movilizacion)
+//     tendencia reducido (2020 es outlier para partidos nuevos como FP)
+//     estabilidad eliminado (penaliza territorios recuperables)
 export var WEIGHTS_DEFAULT = {
-  tendencia:   25,
-  margen:      20,
-  abstencion:  15,
+  tendencia:   20,
+  margen:      30,
+  abstencion:  20,
   padron:      15,
   elasticidad: 15,
-  estabilidad: 10,
+  estabilidad: 0,
 };
 
 export var CATEGORIAS = [
@@ -90,6 +94,11 @@ function scoreOne(t24, t20, lider, maxPadron, weights) {
   var score = Math.round((raw / maxRaw) * 100);
   score = clampN(score, 0, 100);
 
+  // Segundo partido para comparacion
+  var segundo = ranked24[0] && ranked24[0].p === lider
+    ? (ranked24[1] ? ranked24[1] : null)
+    : (ranked24[0] ? ranked24[0] : null);
+
   return {
     score:     score,
     tendencia: tend,
@@ -98,6 +107,8 @@ function scoreOne(t24, t20, lider, maxPadron, weights) {
     padron:    ins24,
     pct24:     pct24,
     pct20:     pct20,
+    segundo:   segundo ? segundo.p   : null,
+    pctSegundo: segundo ? segundo.pct : 0,
     categoria: getCategoria(score),
   };
 }

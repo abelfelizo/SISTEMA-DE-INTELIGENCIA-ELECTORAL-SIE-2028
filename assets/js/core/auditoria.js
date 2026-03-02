@@ -1,15 +1,21 @@
 /**
- * SIE 2028 -- core/auditoria.js  (H4)
- * Full defensive, no blocking on null/error.
+ * SIE 2028 -- core/auditoria.js  (H5)
+ * 
+ * H5 changes:
+ *  - "Diferencia Pres vs Dip" es nota explicativa (info), no error
+ *  - Voto en casilla partido es caracteristica del sistema electoral RD, no anomalia
+ *  - Agrega validacion de partidos.json
+ *  - Agrega nota explicativa sobre voto diferenciado
  */
 import { getLevel, getInscritos } from "./data.js";
 
-const NL = { pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM" };
+var NL = { pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM" };
 
 export function runAuditoria(ctx) {
-  var issues = [], ok = [];
+  var issues = [], ok = [], notas = [];
   function err(msg, n)  { issues.push({ msg:msg, nivel:n||null }); }
   function good(msg, n) { ok.push({ msg:msg, nivel:n||null }); }
+  function nota(msg, n) { notas.push({ msg:msg, nivel:n||null }); }
 
   var niveles = ["pres","sen","dip","mun","dm"];
   for (var ni = 0; ni < niveles.length; ni++) {
@@ -42,12 +48,11 @@ export function runAuditoria(ctx) {
       if (tc===0) err("["+lbl+"] Sin territorios desagregados", nivel);
       else        good("["+lbl+"] "+tc+" territorios OK", nivel);
 
-      // Spot check 3 territories
       var sample = Object.keys(terr).slice(0,3);
       sample.forEach(function(tid) {
         var t = terr[tid];
         if (!t) return;
-        var tv = Object.values(t.votes||{}).reduce(function(a,v){return a+v;},0);
+        var tv   = Object.values(t.votes||{}).reduce(function(a,v){return a+v;},0);
         var tval = t.validos || t.emitidos || 0;
         if (tval > 0 && Math.abs(tv-tval) > 500) {
           err("["+lbl+"] Territorio "+tid+": suma partidos D="+fmt(Math.abs(tv-tval)), nivel);
@@ -56,7 +61,10 @@ export function runAuditoria(ctx) {
     } catch(e) { err("["+lbl+"] Error territorios: "+e.message, nivel); }
   }
 
-  // Pres vs Dip participacion
+  // H5: Pres vs Dip - es NOTA, no error
+  // El voto diferenciado es una caracteristica del sistema electoral dominicano
+  // donde el elector puede votar partido (casilla) o candidato (boleta individual)
+  // La diferencia de participacion Pres > Dip es normal y esperada
   try {
     var presLv  = getLevel(ctx, 2024, "pres");
     var dipLv   = getLevel(ctx, 2024, "dip");
@@ -65,9 +73,14 @@ export function runAuditoria(ctx) {
     var dipIns  = dipLv.nacional.inscritos || 0;
     var dipPrt  = dipIns ? dipLv.nacional.emitidos / dipIns : null;
     if (presPrt !== null && dipPrt !== null) {
-      var gap = Math.abs(presPrt - dipPrt);
-      if (gap > 0.08) err("Diferencia Pres vs Dip: "+pctS(gap)+" (>8pp)", null);
-      else            good("Participacion Pres vs Dip: diff="+pctS(gap)+" OK", null);
+      var gap = presPrt - dipPrt; // directional: pres > dip es lo normal
+      if (gap > 0.08) {
+        nota("Voto diferenciado Pres-Dip: "+pctS(gap)+" (>8pp). " +
+             "Normal en RD: el voto de casilla partido se contabiliza en presidencial " +
+             "pero no necesariamente en legislativo. No es error de datos.", null);
+      } else {
+        good("Participacion Pres vs Dip: diferencia "+pctS(Math.abs(gap))+" OK", null);
+      }
     }
   } catch(e) { err("Error comparando participacion: "+e.message, null); }
 
@@ -92,11 +105,18 @@ export function runAuditoria(ctx) {
     else         err("Padron mayo2024: sin inscritos", null);
   } catch(e) { err("Error padron: "+e.message, null); }
 
+  // Partidos.json
+  try {
+    var partidos = ctx.partidos || [];
+    if (partidos.length > 0) good("partidos.json: "+partidos.length+" partidos cargados OK", null);
+    else nota("partidos.json: vacio (se usaran partidos del nivel activo)", null);
+  } catch(e) { err("Error partidos: "+e.message, null); }
+
   // Encuestas
   try {
     var polls = ctx.polls || [];
     if (polls.length > 0) good("Encuestas: "+polls.length+" registro(s) OK", null);
-    else                  err("polls.json: vacio o sin datos", null);
+    else nota("polls.json: sin datos. Carga encuestas en el modulo Encuestas.", null);
   } catch(e) { err("Error encuestas: "+e.message, null); }
 
   // 32 provincias
@@ -107,7 +127,17 @@ export function runAuditoria(ctx) {
     if (dipP===32) good("[Diputados] 32 provincias OK", "dip"); else err("[Diputados] "+dipP+" provincias (esperado 32)", "dip");
   } catch(e) { err("Error contando provincias: "+e.message, null); }
 
-  return { issues:issues, ok:ok, resumen:{ total:issues.length+ok.length, errores:issues.length, correctos:ok.length } };
+  return {
+    issues:  issues,
+    ok:      ok,
+    notas:   notas,
+    resumen: {
+      total:     issues.length + ok.length + notas.length,
+      errores:   issues.length,
+      correctos: ok.length,
+      notas:     notas.length,
+    }
+  };
 }
 
 function fmt(n)   { return (Math.round(Number(n)||0)).toLocaleString("en-US"); }

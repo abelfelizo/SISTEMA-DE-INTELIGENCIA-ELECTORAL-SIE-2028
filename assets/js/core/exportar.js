@@ -7,28 +7,28 @@ import { getLevel, getInscritos }    from "./data.js";
 import { simular }                   from "./simulacion.js";
 import { runAuditoria }              from "./auditoria.js";
 
-const NIVEL_LABEL = { pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM" };
-const CORTE_LABEL = { mayo2024:"Mayo 2024", feb2024:"Feb 2024", proy2028:"Proy. 2028" };
+var NIVEL_LABEL = { pres:"Presidencial", sen:"Senadores", dip:"Diputados", mun:"Alcaldes", dm:"DM" };
+var CORTE_LABEL = { mayo2024:"Mayo 2024", feb2024:"Feb 2024", proy2028:"Proy. 2028" };
 
 export function exportarPDF(ctx, state, simResult = null) {
-  const nivel  = state.nivel;
-  const lv     = getLevel(ctx, 2024, nivel);
-  const nat    = lv.nacional;
-  const ins    = nivel === "pres" ? (getInscritos(ctx, state.corte) || nat.inscritos || 0) : (nat.inscritos || 0);
-  const em     = nat.emitidos || 0;
-  const part   = ins ? em / ins : 0;
-  const ranked = rankVotes(nat.votes, em);
-  const audit  = runAuditoria(ctx);
-  const dipBase = nivel === "dip" ? simular(ctx, { nivel:"dip", year:2024 }) : null;
-  const now    = new Date().toLocaleDateString("es-DO", { year:"numeric", month:"long", day:"numeric" });
+  var nivel  = state.nivel;
+  var lv     = getLevel(ctx, 2024, nivel);
+  var nat    = lv.nacional;
+  var ins    = nivel === "pres" ? (getInscritos(ctx, state.corte) || nat.inscritos || 0) : (nat.inscritos || 0);
+  var em     = nat.emitidos || 0;
+  var part   = ins ? em / ins : 0;
+  var ranked = rankVotes(nat.votes, em);
+  var audit  = runAuditoria(ctx);
+  var dipBase = nivel === "dip" ? simular(ctx, { nivel:"dip", year:2024 }) : null;
+  var now    = new Date().toLocaleDateString("es-DO", { year:"numeric", month:"long", day:"numeric" });
 
-  const dipCurRow = (p) => nivel === "dip"
+  var dipCurRow = (p) => nivel === "dip"
     ? `<td>${(dipBase && dipBase.curules && dipBase.curules.totalByParty && dipBase.curules.totalByParty[p]) || 0}</td>` : "";
-  const dipCurTh  = nivel === "dip" ? "<th>Cur. 2024</th>" : "";
+  var dipCurTh  = nivel === "dip" ? "<th>Cur. 2024</th>" : "";
 
-  let simSection = "";
+  var simSection = "";
   if (simResult) {
-    const sr = simResult;
+    var sr = simResult;
     simSection = `
       <h2>Escenario Simulado</h2>
       <table>
@@ -48,7 +48,7 @@ export function exportarPDF(ctx, state, simResult = null) {
         }</p>` : ""}`;
   }
 
-  const html = `<!doctype html>
+  var html = `<!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8">
 <title>SIE 2028 -- ${NIVEL_LABEL[nivel]} -- ${now}</title>
@@ -104,7 +104,7 @@ ${audit.issues.length ? `<ul>${audit.issues.map(i=>`<li>${i.msg}</li>`).join("")
 <script>window.onload=()=>setTimeout(()=>window.print(),300);</script>
 </body></html>`;
 
-  const win = window.open("", "_blank");
+  var win = window.open("", "_blank");
   if (!win) {
     alert("Habilita ventanas emergentes para exportar PDF.");
     return;
